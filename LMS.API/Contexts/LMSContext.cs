@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
-using LMS.API.Entities;
+using LMS.API.Models;
 
 namespace LMS.Services.Contexts
 {
-    public class UserContext : DbContext
+    public class LMSContext : DbContext
     {
-        public UserContext()
-            : base("name=UserContext") // this uses the "UserContext" connection string from the config
+        public LMSContext()
+            : base("name=LMSContext") // this uses the "LMSContext" connection string from the config
         {
             //
         }
 
         public DbSet<User> Users { get; set; }
+
+        public DbSet<Client> Clients { get; set; }
     }
 }

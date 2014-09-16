@@ -13,52 +13,44 @@ using LMS.Services.Contexts;
 
 namespace LMS.API.Controllers
 {
-    public class UsersController : ApiController
+    public class ClientsController : ApiController
     {
         private LMSContext db = new LMSContext();
 
-        // GET: api/Users
-        public IQueryable<User> GetUsers()
+        // GET: api/Clients
+        public IQueryable<Client> GetClients()
         {
-            return db.Users;
+            return db.Clients;
         }
 
-        // GET: api/Users/5
+        // GET: api/Clients/5
         [HttpGet]
-        public IHttpActionResult GetUser(int id)
+        public IHttpActionResult GetClient(int id)
         {
-            User user = db.Users.Find(id);
-            if (user == null)
+            Client client = db.Clients.Find(id);
+            if (client == null)
             {
                 return NotFound();
             }
 
-            return Ok(user);
+            return Ok(client);
         }
 
-        //[HttpGet]
-        public IHttpActionResult GetUsersByClient(int id)
-        {
-            IEnumerable<User> users = db.Users.Where(u => u.ClientId == id);
-
-            return Ok(users);
-        }
-
-        // PUT: api/Users/5
+        // PUT: api/Clients/5
         [HttpPut]
-        public IHttpActionResult UpdateUser(int id, [FromBody]User user)
+        public IHttpActionResult UpdateClient(int id, Client client)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != user.UserId)
+            if (id != client.ClientId)
             {
                 return BadRequest();
             }
 
-            db.Entry(user).State = EntityState.Modified;
+            db.Entry(client).State = EntityState.Modified;
 
             try
             {
@@ -66,7 +58,7 @@ namespace LMS.API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!ClientExists(id))
                 {
                     return NotFound();
                 }
@@ -79,39 +71,35 @@ namespace LMS.API.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Users
+        // POST: api/Clients
         [HttpPost]
-        public IHttpActionResult CreateUser([FromBody]User[] users)
+        public IHttpActionResult CreateClient(Client client)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            foreach (User user in users)
-            {
-                db.Users.Add(user);
-                db.SaveChanges();
-            }
+            db.Clients.Add(client);
+            db.SaveChanges();
 
-            return Ok(users);
-            //return CreatedAtRoute("DefaultApi", new { id = user.UserId }, user);
+            return CreatedAtRoute("DefaultApi", new { id = client.ClientId }, client);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/Clients/5
         [HttpDelete]
-        public IHttpActionResult DeleteUser(int id)
+        public IHttpActionResult DeleteClient(int id)
         {
-            User user = db.Users.Find(id);
-            if (user == null)
+            Client client = db.Clients.Find(id);
+            if (client == null)
             {
                 return NotFound();
             }
 
-            db.Users.Remove(user);
+            db.Clients.Remove(client);
             db.SaveChanges();
 
-            return Ok(user);
+            return Ok(client);
         }
 
         protected override void Dispose(bool disposing)
@@ -123,9 +111,9 @@ namespace LMS.API.Controllers
             base.Dispose(disposing);
         }
 
-        private bool UserExists(int id)
+        private bool ClientExists(int id)
         {
-            return db.Users.Count(e => e.UserId == id) > 0;
+            return db.Clients.Count(e => e.ClientId == id) > 0;
         }
     }
 }

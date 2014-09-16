@@ -5,12 +5,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
-namespace LMS.API.Entities
+namespace LMS.API.Models
 {
     [Table("User")]
     public class User
     {
-        public int Id { get; set; }
+        public int UserId { get; set; }
 
         [StringLength(50)]
         public string FirstName { get; set; }
@@ -23,5 +23,10 @@ namespace LMS.API.Entities
 
         [StringLength(50)]
         public string Password { get; set; }
+
+        [ForeignKey("Client")]
+        public int ClientId { get; set; }
+
+        public virtual Client Client { get; set; }
     }
 }
