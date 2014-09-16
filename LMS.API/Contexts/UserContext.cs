@@ -9,6 +9,12 @@ namespace LMS.Services.Contexts
 {
     public class UserContext : DbContext
     {
+        public UserContext()
+            : base("name=UserContext") // this uses the "UserContext" connection string from the config
+        {
+            //
+        }
+
         public DbSet<User> Users { get; set; }
     }
 }

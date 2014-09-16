@@ -6,7 +6,6 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using LMS.API.Entities;
@@ -14,21 +13,21 @@ using LMS.Services.Contexts;
 
 namespace LMS.API.Controllers
 {
-    public class AccountController : ApiController
+    public class UsersController : ApiController
     {
         private UserContext db = new UserContext();
 
-        // GET api/Account
+        // GET: api/Users
         public IQueryable<User> GetUsers()
         {
             return db.Users;
         }
 
-        // GET api/Account/5
-        [ResponseType(typeof(User))]
-        public async Task<IHttpActionResult> GetUser(int id)
+        // GET: api/Users/5
+        [HttpGet]
+        public IHttpActionResult GetUser(int id)
         {
-            User user = await db.Users.FindAsync(id);
+            User user = db.Users.Find(id);
             if (user == null)
             {
                 return NotFound();
@@ -37,8 +36,9 @@ namespace LMS.API.Controllers
             return Ok(user);
         }
 
-        // PUT api/Account/5
-        public async Task<IHttpActionResult> PutUser(int id, User user)
+        // PUT: api/Users/5
+        [HttpPut]
+        public IHttpActionResult PutUser(int id, [FromBody]User user)
         {
             if (!ModelState.IsValid)
             {
@@ -54,7 +54,7 @@ namespace LMS.API.Controllers
 
             try
             {
-                await db.SaveChangesAsync();
+                db.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -71,9 +71,9 @@ namespace LMS.API.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST api/Account
-        [ResponseType(typeof(User))]
-        public async Task<IHttpActionResult> PostUser(User user)
+        // POST: api/Users
+        [HttpPost]
+        public IHttpActionResult PostUser([FromBody]User user)
         {
             if (!ModelState.IsValid)
             {
@@ -81,23 +81,23 @@ namespace LMS.API.Controllers
             }
 
             db.Users.Add(user);
-            await db.SaveChangesAsync();
+            db.SaveChanges();
 
             return CreatedAtRoute("DefaultApi", new { id = user.Id }, user);
         }
 
-        // DELETE api/Account/5
-        [ResponseType(typeof(User))]
-        public async Task<IHttpActionResult> DeleteUser(int id)
+        // DELETE: api/Users/5
+        [HttpDelete]
+        public IHttpActionResult DeleteUser(int id)
         {
-            User user = await db.Users.FindAsync(id);
+            User user = db.Users.Find(id);
             if (user == null)
             {
                 return NotFound();
             }
 
             db.Users.Remove(user);
-            await db.SaveChangesAsync();
+            db.SaveChanges();
 
             return Ok(user);
         }
