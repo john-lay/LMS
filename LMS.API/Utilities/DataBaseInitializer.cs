@@ -18,6 +18,8 @@ namespace LMS.API.Utilities
 
             User user = new User { ClientId = 1, FirstName = "Joe", LastName = "Bloggs", EmailAddress = "joe.bloggs@test.com", Password = "somehash" };
             db.Users.Add(user);
+            Group group = new Group {  GroupId = 1, GroupName = "cohorts", ParentId = -1 };
+            db.Groups.Add(group);
             db.SaveChanges();
         }
     }
