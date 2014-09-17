@@ -39,7 +39,27 @@ namespace LMS.API.Controllers
         //[HttpGet]
         public IHttpActionResult GetUsersByClient(int id)
         {
-            IEnumerable<User> users = db.Users.Where(u => u.ClientId == id);
+            IEnumerable<User> users = db.Users
+                .Where(u => u.ClientId == id)
+                .Select(u => new // use projection here to create an anonymous object. Then below return a new User object as a subset
+                { 
+                    ClientId = u.ClientId,
+                    UserId = u.UserId,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    EmailAddress = u.EmailAddress
+                    //ClientObj = u.Client,
+                    //Password = u.Password
+                }) 
+                .ToList()
+                .Select(u => new User 
+                {
+                    ClientId = u.ClientId,
+                    UserId = u.UserId,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    EmailAddress = u.EmailAddress
+                });
 
             return Ok(users);
         }
