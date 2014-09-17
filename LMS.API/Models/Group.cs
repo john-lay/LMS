@@ -7,20 +7,19 @@ using System.Web;
 
 namespace LMS.API.Models
 {
-    [Table("Client")]
-    public class Client
+    [Table("Group")]
+    public class Group
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ClientId { get; set; }
+        public int GroupId { get; set; }
 
         [StringLength(50)]
-        public string Name { get; set; }
+        public string GroupName { get; set; }
 
-        [StringLength(50)]
-        public string LogoTitle { get; set; }
-
-        [StringLength(50)]
-        public string LogoResource { get; set; }
+        // -1 for root
+        public int ParentId { get; set; }
     }
 }
+
+

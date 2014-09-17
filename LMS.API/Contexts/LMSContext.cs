@@ -18,5 +18,7 @@ namespace LMS.Services.Contexts
         public DbSet<User> Users { get; set; }
 
         public DbSet<Client> Clients { get; set; }
+
+        public DbSet<Group> Groups { get; set; }
     }
 }

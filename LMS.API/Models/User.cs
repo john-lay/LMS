@@ -10,6 +10,8 @@ namespace LMS.API.Models
     [Table("User")]
     public class User
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserId { get; set; }
 
         [StringLength(50)]
