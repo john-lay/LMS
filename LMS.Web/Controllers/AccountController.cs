@@ -17,7 +17,7 @@ namespace LMS.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                return View();
+                return RedirectToAction("Index", "Client");
             }
 
             ModelState.AddModelError(string.Empty, "There was an error logging you in, please try again.");
