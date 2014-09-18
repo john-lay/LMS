@@ -85,10 +85,14 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Contexts\LMSContext.cs" />
     <Compile Include="Controllers\ClientsController.cs" />
+    <Compile Include="Controllers\ContentsController.cs" />
+    <Compile Include="Controllers\CoursesController.cs" />
     <Compile Include="Controllers\GroupsController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Controllers\UsersInGroupsController.cs" />
     <Compile Include="Models\Client.cs" />
+    <Compile Include="Models\Content.cs" />
+    <Compile Include="Models\Course.cs" />
     <Compile Include="Models\Group.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Global.asax.cs">

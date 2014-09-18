@@ -18,10 +18,10 @@ namespace LMS.API.Controllers
         private LMSContext db = new LMSContext();
 
         // GET: api/Users
-        public IQueryable<User> GetUsers()
-        {
-            return db.Users;
-        }
+        //public IQueryable<User> GetUsers()
+        //{
+        //    return db.Users;
+        //}
 
         // GET: api/Users/5
         [HttpGet]
