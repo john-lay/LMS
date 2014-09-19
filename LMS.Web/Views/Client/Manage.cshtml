@@ -10,7 +10,9 @@
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>ClientViewModel</h4>
+        <p class="lead">
+            <ol id="clients"></ol>
+        </p>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
@@ -32,22 +34,58 @@
 @section Scripts {
     <script type="text/javascript">
         $(function () {
+            // list existing clients
+            loadClients();
+
+            // add client
             $("#Create").click(function () {
                 $.ajax({                    
                     url: "http://localhost:58021/api/clients/CreateClient/",
                     data: { Name: $("#Name").val() },
                     type: "POST",
-                    //dataType: "json",
-                    contentType: "application/json",
                     cache: false,
                     success: function (result) {
-                        console.log(result);
+                        showClientSuccess(result);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         console.log("error");
                     }
                 });
             });
-        }); 
+        });
+
+        function showClientSuccess(result)
+        {
+            console.log(result);
+            var msg = "Client: " + result.Name + " successfully created!";
+
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
+                    .removeClass("hidden")
+                    .slideDown();
+
+            $("#Name").val("");
+
+            $('#clients').slideUp();
+            loadClients()
+            $('#clients').slideDown();
+        }
+
+        function loadClients()
+        {
+            var list = $("#clients");
+            list.html("");
+
+            $.ajax({
+                url: 'http://localhost:58021/api/clients/GetClients/',
+                success: function (clients) {
+                    
+                    $.each(clients, function () {
+                        list.append('<li>' + this.Name + '</li>');
+                    })
+                }
+            });
+        }
     </script>
 }

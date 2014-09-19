@@ -19,14 +19,14 @@ namespace LMS.Web.Controllers
             return View();
         }
 
-        public ActionResult Create()
+        public ActionResult Manage()
         {
             var model = new ClientViewModel();
             return View(model);
         }
 
         //[HttpPost]
-        //public async Task<ActionResult> Create(ClientViewModel model, UserProfile user)
+        //public async Task<ActionResult> Manage(ClientViewModel model, UserProfile user)
         //{
         //    if (ModelState.IsValid)
         //    {

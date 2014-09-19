@@ -242,7 +242,7 @@
     <Content Include="Views\Shared\_Layout.entry.cshtml" />
     <Content Include="Views\Shared\_Layout.admin.cshtml" />
     <Content Include="Views\Client\Index.cshtml" />
-    <Content Include="Views\Client\Create.cshtml" />
+    <Content Include="Views\Client\Manage.cshtml" />
     <Content Include="Views\Client\Logo.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
