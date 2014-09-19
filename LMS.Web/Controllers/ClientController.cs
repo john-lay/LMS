@@ -47,5 +47,30 @@ namespace LMS.Web.Controllers
 
         //    return View();
         //}
+
+        public ActionResult Logo()
+        {
+            var model = new UploadViewModel();
+            return View(model);
+        }
+
+        //[HttpPost]
+        //public ActionResult Logo(UploadViewModel model, UserProfile user)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+
+        //        // save file to disk
+        //        string path = @"C:\Temp\";
+
+        //        if (model.File != null)
+        //            model.File.SaveAs(path + model.File.FileName);
+
+        //        // update record
+        //        HttpClient client = new HttpClient();
+        //        var task = client.PostAsJsonAsync<UploadViewModel>("http://localhost:<port>/api/CustomerDetail", model);
+        //    }
+        //    return View();
+        //}
     }
 }

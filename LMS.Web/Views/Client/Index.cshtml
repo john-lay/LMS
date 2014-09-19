@@ -3,10 +3,10 @@
     Layout = "~/Views/Shared/_Layout.admin.cshtml";
 }
 <p class="lead">
-    Pin a fixed-height footer to the bottom of the viewport in desktop browsers with this custom HTML and CSS.
-    A fixed navbar has been added with <code>padding-top: 60px;</code> on the <code>body > .container</code>.
-    <br />
-    <a href="@Url.Action("Create")">add client</a>
+    <ul>
+        <li><a href="@Url.Action("Create")">add client</a></li>
+        <li><a href="@Url.Action("Logo")">upload logo</a></li>
+    </ul>
 </p>
 <p>Back to <a href="../sticky-footer">the default sticky footer</a> minus the navbar.</p>
 

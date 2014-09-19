@@ -227,6 +227,7 @@
     <Compile Include="Infrastructure\UserProfileModelBinder.cs" />
     <Compile Include="Models\ClientViewModel.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
+    <Compile Include="Models\UploadViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -242,6 +243,7 @@
     <Content Include="Views\Shared\_Layout.admin.cshtml" />
     <Content Include="Views\Client\Index.cshtml" />
     <Content Include="Views\Client\Create.cshtml" />
+    <Content Include="Views\Client\Logo.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

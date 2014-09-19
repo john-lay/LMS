@@ -10,9 +10,12 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using LMS.API.Models;
 using LMS.Services.Contexts;
+using System.Web.Http.Cors;
+using System.Web;
 
 namespace LMS.API.Controllers
 {
+    [EnableCors(origins: "http://localhost:58733", headers: "*", methods: "*")]
     public class ClientsController : ApiController
     {
         private LMSContext db = new LMSContext();
@@ -38,7 +41,7 @@ namespace LMS.API.Controllers
 
         // PUT: api/Clients/5
         [HttpPut]
-        public IHttpActionResult UpdateClient(int id, Client client)
+        public IHttpActionResult UpdateClient(int id, [FromBody]Client client)
         {
             if (!ModelState.IsValid)
             {
@@ -73,7 +76,7 @@ namespace LMS.API.Controllers
 
         // POST: api/Clients
         [HttpPost]
-        public IHttpActionResult CreateClient(Client client)
+        public IHttpActionResult CreateClient([FromBody]Client client)
         {
             if (!ModelState.IsValid)
             {
@@ -83,7 +86,39 @@ namespace LMS.API.Controllers
             db.Clients.Add(client);
             db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = client.ClientId }, client);
+            return Ok(client);
+        }
+
+        [HttpPost]
+        public HttpResponseMessage UploadLogo()
+        {
+            HttpResponseMessage result = null;
+            var httpRequest = HttpContext.Current.Request;
+
+            if (httpRequest.Files.Count > 0)
+            {
+                var docfiles = new List<string>();
+                foreach (string file in httpRequest.Files)
+                {
+                    var postedFile = httpRequest.Files[file];
+                    var filePath = HttpContext.Current.Server.MapPath("~/" + postedFile.FileName);
+                    postedFile.SaveAs(filePath);
+
+                    docfiles.Add(filePath);
+                }
+                result = Request.CreateResponse(HttpStatusCode.Created, docfiles);
+            }
+            else
+            {
+                result = Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+
+            //httpRequest.Form["Name"]
+
+            //db.Clients.Add(client);
+            //db.SaveChanges();
+
+            return result;
         }
 
         // DELETE: api/Clients/5

@@ -1,16 +1,16 @@
-﻿@model LMS.Web.Models.ClientViewModel
+﻿@model LMS.Web.Models.UploadViewModel
 
 @{
     ViewBag.Title = "Create";
     Layout = "~/Views/Shared/_Layout.admin.cshtml";
 }
 
-@using (Html.BeginForm()) 
-{
+
+<form name="form1" method="post" action="http://localhost:58021/api/clients/UploadLogo/" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
-        <h4>ClientViewModel</h4>
+        <h4>UploadViewModel</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
@@ -20,21 +20,28 @@
                 @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
             </div>
         </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.File, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(m => m.File, new { type = "file" })
+            </div>
+        </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <button id="Create" type="button" class="btn btn-default">Create</button>
+                <input type="submit" value="create" class="btn btn-default" />
+                @*<button id="Create" class="btn btn-default">create</button>*@
             </div>
         </div>
     </div>
-}
+</form>
 
 @section Scripts {
     <script type="text/javascript">
         $(function () {
             $("#Create").click(function () {
-                $.ajax({                    
-                    url: "http://localhost:58021/api/clients/CreateClient/",
+                $.ajax({
+                    url: "http://localhost:58021/api/clients/UploadLogo/",
                     data: { Name: $("#Name").val() },
                     type: "POST",
                     //dataType: "json",
@@ -48,6 +55,6 @@
                     }
                 });
             });
-        }); 
+        });
     </script>
 }
