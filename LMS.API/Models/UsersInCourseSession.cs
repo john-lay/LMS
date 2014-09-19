@@ -7,14 +7,14 @@ using System.Web;
 
 namespace LMS.API.Models
 {
-    [Table("GroupUser")]
-    public class UsersInGroup
+    [Table("UsersInCourseSession")]
+    public class UsersInCourseSession
     {
         [Key, Column(Order = 0)]
-        [ForeignKey("Group")]
-        public int GroupId { get; set; }
+        [ForeignKey("CourseSession")]
+        public int CourseSessionId { get; set; }
 
-        public virtual Group Group { get; set; }
+        public virtual CourseSession CourseSession { get; set; }
 
         [Key, Column(Order = 1)]
         [ForeignKey("User")]

@@ -30,5 +30,15 @@ namespace LMS.API.Models
         public int ClientId { get; set; }
 
         public virtual Client Client { get; set; }
+
+        public DateTime? Locked { get; set; }
+
+        public bool IsLocked 
+        { 
+            get
+            {
+                return Locked != null;
+            } 
+        }
     }
 }

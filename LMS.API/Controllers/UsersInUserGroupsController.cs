@@ -13,21 +13,21 @@ using LMS.Services.Contexts;
 
 namespace LMS.API.Controllers
 {
-    public class UsersInGroupsController : ApiController
+    public class UsersInUserGroupsController : ApiController
     {
         private LMSContext db = new LMSContext();
 
         // GET: api/UsersInGroups
-        public IQueryable<UsersInGroup> GetGroupUser()
+        public IQueryable<UsersInUserGroup> GetGroupUser()
         {
-            return db.GroupUser;
+            return db.UsersInUserGroups;
         }
 
         // GET: api/UsersInGroups/5
         [HttpGet]
         public IHttpActionResult GetUsersInGroup(int id)
         {
-            UsersInGroup usersInGroup = db.GroupUser.Find(id);
+            UsersInUserGroup usersInGroup = db.UsersInUserGroups.Find(id);
             if (usersInGroup == null)
             {
                 return NotFound();
@@ -50,7 +50,7 @@ namespace LMS.API.Controllers
 
             foreach (User user in users)
             {
-                db.GroupUser.Add(new UsersInGroup { GroupId = id, UserId = user.UserId });
+                db.UsersInUserGroups.Add(new UsersInUserGroup { UserGroupId = id, UserId = user.UserId });
             }
 
             try
@@ -97,13 +97,13 @@ namespace LMS.API.Controllers
         [HttpDelete]
         public IHttpActionResult DeleteUsersInGroup(int id)
         {
-            UsersInGroup usersInGroup = db.GroupUser.Find(id);
+            UsersInUserGroup usersInGroup = db.UsersInUserGroups.Find(id);
             if (usersInGroup == null)
             {
                 return NotFound();
             }
 
-            db.GroupUser.Remove(usersInGroup);
+            db.UsersInUserGroups.Remove(usersInGroup);
             db.SaveChanges();
 
             return Ok(usersInGroup);

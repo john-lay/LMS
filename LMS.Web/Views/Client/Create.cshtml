@@ -23,12 +23,31 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <button id="Create" type="button" class="btn btn-default">Create</button>
             </div>
         </div>
     </div>
 }
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+            $("#Create").click(function () {
+                $.ajax({                    
+                    url: "http://localhost:58021/api/clients/CreateClient/",
+                    data: { Name: $("#Name").val() },
+                    type: "POST"/*,
+                    dataType: "json",
+                    contentType: "application/json",
+                    cache: false,
+                    success: function (result) {
+                        console.log(result);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log("error");
+                    }*/
+                });
+            });
+        }); 
+    </script>
+}

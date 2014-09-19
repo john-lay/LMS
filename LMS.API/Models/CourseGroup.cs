@@ -7,19 +7,14 @@ using System.Web;
 
 namespace LMS.API.Models
 {
-    [Table("Group")]
-    public class Group
+    [Table("CourseGroup")]
+    public class CourseGroup
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int GroupId { get; set; }
+        public int CourseGroupId { get; set; }
 
         [StringLength(50)]
-        public string GroupName { get; set; }
-
-        // -1 for root
-        public int ParentId { get; set; }
+        public string Name { get; set; }
     }
 }
-
-

@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using LMS.API.Models;
+using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace LMS.Services.Contexts
 {
@@ -15,16 +16,29 @@ namespace LMS.Services.Contexts
             //
         }
 
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
+        }
+
         public DbSet<User> Users { get; set; }
 
         public DbSet<Client> Clients { get; set; }
 
-        public DbSet<Group> Groups { get; set; }
+        public DbSet<UserGroup> UserGroups { get; set; }
 
-        public DbSet<UsersInGroup> GroupUser { get; set; }
+        public DbSet<UsersInUserGroup> UsersInUserGroups { get; set; }
 
         public DbSet<Course> Courses { get; set; }
 
         public DbSet<Content> Contents { get; set; }
+
+        public DbSet<CourseGroup> CourseGroups { get; set; }
+
+        public DbSet<CoursesInCourseGroup> CoursesInCourseGroups { get; set; }
+
+        public DbSet<CourseSession> CourseSessions { get; set; }
+
+        public DbSet<UsersInCourseSession> UsersInCourseSessions { get; set; }
     }
 }

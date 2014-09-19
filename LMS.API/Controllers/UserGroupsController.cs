@@ -13,14 +13,14 @@ using LMS.Services.Contexts;
 
 namespace LMS.API.Controllers
 {
-    public class GroupsController : ApiController
+    public class UserGroupsController : ApiController
     {
         private LMSContext db = new LMSContext();
 
         // GET: api/Groups
-        public IQueryable<Group> GetGroups()
+        public IQueryable<UserGroup> GetGroups()
         {
-            return db.Groups;
+            return db.UserGroups;
         }
 
         // GET: api/Groups/5
@@ -34,21 +34,21 @@ namespace LMS.API.Controllers
             //}
 
             //return Ok(group);
-            var ret = db.Groups.Find(id);
+            var ret = db.UserGroups.Find(id);
             return ret == null ? Request.CreateErrorResponse(HttpStatusCode.NotFound, "group not found")
                                : Request.CreateResponse(HttpStatusCode.OK, ret);
         }
         
         // PUT: api/Groups/5
         [HttpPut]
-        public IHttpActionResult UpdateGroup(int id, Group group)
+        public IHttpActionResult UpdateGroup(int id, UserGroup group)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != group.GroupId)
+            if (id != group.UserGroupId)
             {
                 return BadRequest();
             }
@@ -76,7 +76,7 @@ namespace LMS.API.Controllers
 
         // POST: api/Groups
         [HttpPost]
-        public HttpResponseMessage CreateGroup(Group group)
+        public HttpResponseMessage CreateGroup(UserGroup group)
         {
             HttpResponseMessage msg;
 
@@ -87,13 +87,13 @@ namespace LMS.API.Controllers
             }
 
             //generate group id
-            group.GroupId = db.Groups.Count();
+            group.UserGroupId = db.UserGroups.Count();
 
-            db.Groups.Add(group);
+            db.UserGroups.Add(group);
             db.SaveChanges();
 
             msg = Request.CreateResponse(HttpStatusCode.Created);
-            msg.Headers.Location = new Uri(Request.RequestUri + group.GroupId.ToString());
+            msg.Headers.Location = new Uri(Request.RequestUri + group.UserGroupId.ToString());
 
             return msg;
         }
@@ -102,13 +102,13 @@ namespace LMS.API.Controllers
         [HttpDelete]
         public IHttpActionResult DeleteGroup(int id)
         {
-            Group group = db.Groups.Find(id);
+            UserGroup group = db.UserGroups.Find(id);
             if (group == null)
             {
                 return NotFound();
             }
 
-            db.Groups.Remove(group);
+            db.UserGroups.Remove(group);
             db.SaveChanges();
 
             return Ok(group);
@@ -125,7 +125,7 @@ namespace LMS.API.Controllers
 
         private bool GroupExists(int id)
         {
-            return db.Groups.Count(e => e.GroupId == id) > 0;
+            return db.UserGroups.Count(e => e.UserGroupId == id) > 0;
         }
     }
 }
