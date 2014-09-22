@@ -25,34 +25,11 @@ namespace LMS.Web.Controllers
             return View(model);
         }
 
-        //[HttpPost]
-        //public async Task<ActionResult> Manage(ClientViewModel model, UserProfile user)
+        //public ActionResult Logo()
         //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        using (var client = new HttpClient())
-        //        {
-        //            client.BaseAddress = new Uri("http://localhost:58021/");
-        //            client.DefaultRequestHeaders.Accept.Clear();
-        //            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-        //            // New code:
-        //            HttpResponseMessage response = await client.PostAsync("api/clients/CreateClient", JsonConvert.SerializeObject(model));
-        //            if (response.IsSuccessStatusCode)
-        //            {
-        //                return View();
-        //            }
-        //        }
-        //    }
-
-        //    return View();
+        //    var model = new UploadViewModel();
+        //    return View(model);
         //}
-
-        public ActionResult Logo()
-        {
-            var model = new UploadViewModel();
-            return View(model);
-        }
 
         //[HttpPost]
         //public ActionResult Logo(UploadViewModel model, UserProfile user)

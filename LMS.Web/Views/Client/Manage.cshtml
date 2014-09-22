@@ -1,38 +1,115 @@
 ﻿@model LMS.Web.Models.ClientViewModel
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Manage Clients";
     Layout = "~/Views/Shared/_Layout.admin.cshtml";
 }
-
-@using (Html.BeginForm()) 
-{
-    @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <p class="lead">
-            <ol id="clients"></ol>
-        </p>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+<p class="lead">
+    <a href="#" data-toggle="modal" data-target="#CreateModal" class="btn btn-primary">Add new client »</a>
+</p>
+<hr />
+<p class="lead">
+    <table id="clients" class="table"></table>
+</p>
+@* -- Create Modal -- *@
+<div class="modal fade" id="CreateModal" tabindex="-1" role="dialog" aria-labelledby="CreateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="CreateModal">Add new client</h4>
             </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <button id="Create" type="button" class="btn btn-default">Create</button>
+            <div class="modal-body">
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-horizontal">                        
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <button id="Create" type="button" class="btn btn-default">Create</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
-}
+</div>
+
+@* -- Edit Modal -- *@
+<div class="modal fade" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="EditModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="EditModal">Edit</h4>
+            </div>
+            <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-md-2">Name</label>
+                            <div class="col-md-10">
+                                <input id="EditName" class="form-control text-box single-line" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <button id="Update" type="button" class="btn btn-default">Update</button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* -- Delete Modal -- *@
+<div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="DeleteModal">Delete</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-md-offset-1">Are you sure you want to delete client <span style="text-decoration: underline" id="DeleteName"></span>?</label>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-1">
+                            <button id="Delete" type="button" class="btn btn-default">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script type="text/javascript">
+
+        var clientId = -1;
+        var clientName = "";
+
         $(function () {
             // list existing clients
             loadClients();
@@ -45,6 +122,7 @@
                     type: "POST",
                     cache: false,
                     success: function (result) {
+                        $("#CreateModal").modal("hide");
                         showClientSuccess(result);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
@@ -52,12 +130,91 @@
                     }
                 });
             });
+
+            // edit client
+            $("#EditModal").on("show.bs.modal", function (e) {
+                var $invoker = $(e.relatedTarget);
+                clientId = $invoker.attr("data-val");
+                clientName = $invoker.attr("data-name");
+                $("#EditName").val(clientName);
+            });
+
+            $("#Update").click(function () {
+                $.ajax({
+                    url: "http://localhost:58021/api/clients/UpdateClient/" + clientId,
+                    data: { ClientId: clientId, Name: $("#EditName").val() },
+                    type: "PUT",
+                    cache: false,
+                    success: function (result) {
+                        $("#EditModal").modal("hide");
+                        clientName = $("#EditName").val();
+                        showClientUpdate();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log("error");
+                    }
+                });
+            });
+
+            // delete client
+            $("#DeleteModal").on("show.bs.modal", function (e) {
+                var $invoker = $(e.relatedTarget);
+                clientId = $invoker.attr("data-val");
+                clientName = $invoker.attr("data-name");
+                $("#DeleteName").html(clientName);
+            });
+
+            $("#Delete").click(function () {
+                $.ajax({
+                    url: "http://localhost:58021/api/clients/DeleteClient/" + clientId,
+                    type: "DELETE",
+                    cache: false,
+                    success: function (result) {
+                        $("#DeleteModal").modal("hide");
+                        showClientDelete();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log("error");
+                    }
+                });
+            });            
         });
 
         function showClientSuccess(result)
         {
-            console.log(result);
-            var msg = "Client: " + result.Name + " successfully created!";
+            var msg = "Client: <b>" + result.Name + "</b> successfully created!";
+
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
+                    .removeClass("hidden")
+                    .slideDown();
+
+            $("#Name").val("");
+
+            $('#clients').slideUp();
+            loadClients()
+            $('#clients').slideDown();
+        }
+
+        function showClientUpdate() {
+            var msg = "Client: <b>" + clientName + "</b> successfully updated!";
+
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
+                    .removeClass("hidden")
+                    .slideDown();
+
+            $("#Name").val("");
+
+            $('#clients').slideUp();
+            loadClients()
+            $('#clients').slideDown();
+        }
+
+        function showClientDelete() {
+            var msg = "Client: <b>" + clientName + "</b> successfully deleted!";
 
             $(".alert-success .msg")
                 .html(msg)
@@ -74,15 +231,24 @@
 
         function loadClients()
         {
-            var list = $("#clients");
-            list.html("");
+            var table = $("#clients");
+            table.html("<tr></tr>");
 
             $.ajax({
                 url: 'http://localhost:58021/api/clients/GetClients/',
                 success: function (clients) {
                     
+                    var row = '';
                     $.each(clients, function () {
-                        list.append('<li>' + this.Name + '</li>');
+                        row = '<tr>';
+                        row += '<td>' + this.Name + '</td>';
+                        row += '<td width="15%">';
+                        row += '<a href="#" data-toggle="modal" data-target="#EditModal" class="edit" data-val="' + this.ClientId + '" data-name="' + this.Name + '">Edit</a> | ';
+                        //row += '<a href="#" data-toggle="modal" data-target="#DetailsModal" class="details" data-val="' + this.ClientId + '" data-name="' + this.Name + '">Details</a> | ';
+                        row += '<a href="#" data-toggle="modal" data-target="#DeleteModal" class="delete" data-val="' + this.ClientId + '" data-name="' + this.Name + '">Delete</a>';
+                        row += '</td>';
+                        row += '</tr>';
+                        table.append(row);
                     })
                 }
             });
