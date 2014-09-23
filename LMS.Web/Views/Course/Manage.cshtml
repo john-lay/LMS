@@ -1,0 +1,135 @@
+﻿@{
+    ViewBag.Title = "Manage Clients";
+    Layout = "~/Views/Shared/_Layout.admin.cshtml";
+}
+@section head {
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.common.min.css" rel="stylesheet" />
+    @*<link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.default.min.css" rel="stylesheet" />*@
+    <link href="~/Content/kendo-styles/kendo.silver.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.default.min.css" rel="stylesheet" />
+}
+<div class="row col-md-12">
+    <div class="col-md-3">
+        <div id="treeview" data-role="treeview" class="k-widget k-treeview" tabindex="0" role="tree" aria-activedescendant="treeview_tv_active"></div>
+        <div id="result"></div>
+    </div>
+    <div class="col-md-9">
+        <div class="form-group row col-md-12">
+            <div class="col-md-6">
+                <label class="control-label" for="CategoryName">Category Name:</label>
+                <input id="CategoryName" class="form-control text-box single-line" type="text" placeholder="Course category name..." />
+            </div>
+            <div class="col-md-6" style="margin-top: 2em">
+                <button id="CreateCategory" type="button" class="btn btn-primary pull-right">Save</button>
+            </div>
+            <div class="clearfix"></div>
+            <hr />
+            <div class="col-md-12">
+                <label class="control-label" for="CategoryNotes">Category Notes:</label>
+                <textarea id="CategoryNotes" class="form-control" cols="40" rows="5" placeholder="A brief description of the new course category..."></textarea>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
+    <script type="text/javascript">
+        $("#treeview").kendoTreeView({
+            checkboxes: {
+                checkChildren: true
+            },
+
+            check: onCheck,
+
+            dataSource: [{
+                id: 1, text: "My Documents", expanded: true, items: [
+                    {
+                        id: 2, text: "Kendo UI Project", expanded: true, items: [
+                            { id: 3, text: "about.html" },
+                            { id: 4, text: "index.html" },
+                            { id: 5, text: "logo.png" }
+                        ]
+                    },
+                    {
+                        id: 6, text: "New Web Site", expanded: true, items: [
+                            { id: 7, text: "mockup.jpg" },
+                            { id: 8, text: "Research.pdf" },
+                        ]
+                    },
+                    {
+                        id: 9, text: "Reports", expanded: true, items: [
+                            { id: 10, text: "February.pdf" },
+                            { id: 11, text: "March.pdf" },
+                            { id: 12, text: "April.pdf" }
+                        ]
+                    }
+                ]
+            }]
+        });
+
+        // function that gathers IDs of checked nodes
+        function checkedNodeIds(nodes, checkedNodes) {
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].checked) {
+                    checkedNodes.push(nodes[i].id);
+                }
+
+                if (nodes[i].hasChildren) {
+                    checkedNodeIds(nodes[i].children.view(), checkedNodes);
+                }
+            }
+        }
+
+        // show checked node IDs on datasource change
+        function onCheck() {
+            var checkedNodes = [],
+                treeView = $("#treeview").data("kendoTreeView"),
+                message;
+
+            checkedNodeIds(treeView.dataSource.view(), checkedNodes);
+
+            if (checkedNodes.length > 0) {
+                message = "IDs of checked nodes: " + checkedNodes.join(",");
+            } else {
+                message = "No nodes checked.";
+            }
+
+            $("#result").html(message);
+        }
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $("#CreateCategory").click(function () {
+                $.ajax({
+                    url: "http://localhost:58021/api/CourseCategories/CreateCourseCategory/",
+                    data: { Name: $("#CategoryName").val(), Notes: $("#CategoryNotes").val() },
+                    type: "POST",
+                    cache: false,
+                    success: function (result) {
+                        showCategorySuccess(result);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log("error");
+                    }
+                });
+            });
+        });
+
+        function showCategorySuccess(result) {
+            var msg = "Category: <b>" + result.Name + "</b> successfully created!";
+
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
+                    .removeClass("hidden")
+                    .slideDown();
+
+            //$("#Name").val("");
+
+            //$('#clients').slideUp();
+            //loadClients()
+            //$('#clients').slideDown();
+        }
+    </script>
+    }

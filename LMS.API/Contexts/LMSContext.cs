@@ -33,9 +33,9 @@ namespace LMS.Services.Contexts
 
         public DbSet<Content> Contents { get; set; }
 
-        public DbSet<CourseGroup> CourseGroups { get; set; }
+        public DbSet<CourseCategory> CourseCategories { get; set; }
 
-        public DbSet<CoursesInCourseGroup> CoursesInCourseGroups { get; set; }
+        public DbSet<CoursesInCourseCategory> CoursesInCourseCategories { get; set; }
 
         public DbSet<CourseSession> CourseSessions { get; set; }
 

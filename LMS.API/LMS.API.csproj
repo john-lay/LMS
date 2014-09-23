@@ -94,10 +94,10 @@
     <Compile Include="Contexts\LMSContext.cs" />
     <Compile Include="Controllers\ClientsController.cs" />
     <Compile Include="Controllers\ContentsController.cs" />
-    <Compile Include="Controllers\CourseGroupsController.cs" />
+    <Compile Include="Controllers\CourseCategoriesController.cs" />
     <Compile Include="Controllers\CoursesController.cs" />
     <Compile Include="Controllers\CourseSessionsController.cs" />
-    <Compile Include="Controllers\CoursesInCourseGroupsController.cs" />
+    <Compile Include="Controllers\CoursesInCourseCategoriesController.cs" />
     <Compile Include="Controllers\UserGroupsController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Controllers\UsersInCourseSessionsController.cs" />
@@ -105,9 +105,9 @@
     <Compile Include="Models\Client.cs" />
     <Compile Include="Models\Content.cs" />
     <Compile Include="Models\Course.cs" />
-    <Compile Include="Models\CourseGroup.cs" />
+    <Compile Include="Models\CourseCategory.cs" />
     <Compile Include="Models\CourseSession.cs" />
-    <Compile Include="Models\CoursesInCourseGroup.cs" />
+    <Compile Include="Models\CoursesInCourseCategory.cs" />
     <Compile Include="Models\UserGroup.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Global.asax.cs">

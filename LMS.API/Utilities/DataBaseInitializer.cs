@@ -37,10 +37,10 @@ namespace LMS.API.Utilities
             db.Contents.Add(content);
 
             //course group
-            CourseGroup cg = new CourseGroup { CourseGroupId = 1, Name = "Web technology" };
-            db.CourseGroups.Add(cg);
-            CoursesInCourseGroup ccg = new CoursesInCourseGroup { CourseGroupId = 1, CourseId = 1 };
-            db.CoursesInCourseGroups.Add(ccg);
+            CourseCategory cg = new CourseCategory { CourseCategoryId = 1, Name = "Web technology" };
+            db.CourseCategories.Add(cg);
+            CoursesInCourseCategory ccg = new CoursesInCourseCategory { CourseCategoryId = 1, CourseId = 1 };
+            db.CoursesInCourseCategories.Add(ccg);
 
             // course session
             CourseSession cs = new CourseSession { CourseId = 1, IsRolling = false, StartDate = new DateTime(2014, 09, 01), EndTime = new DateTime(2014, 11, 01) };

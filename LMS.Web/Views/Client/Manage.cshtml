@@ -4,12 +4,15 @@
     ViewBag.Title = "Manage Clients";
     Layout = "~/Views/Shared/_Layout.admin.cshtml";
 }
+@section head {
+    <link href="~/Content/kendo-styles/kendo.silver.min.css" rel="stylesheet" />
+}
 <p class="lead">
     <a href="#" data-toggle="modal" data-target="#CreateModal" class="btn btn-primary">Add new client »</a>
 </p>
 <hr />
 <p class="lead">
-    <table id="clients" class="table"></table>
+    <table id="clients" class="table"><tr><td>Loading... <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div></td></tr></table>
 </p>
 @* -- Create Modal -- *@
 <div class="modal fade" id="CreateModal" tabindex="-1" role="dialog" aria-labelledby="CreateModalLabel" aria-hidden="true">
@@ -104,7 +107,7 @@
     </div>
 </div>
 
-@section Scripts {
+@section scripts {
     <script type="text/javascript">
 
         var clientId = -1;
@@ -231,13 +234,12 @@
 
         function loadClients()
         {
-            var table = $("#clients");
-            table.html("<tr></tr>");
+            var table = $("#clients");           
 
             $.ajax({
                 url: 'http://localhost:58021/api/clients/GetClients/',
                 success: function (clients) {
-                    
+                    table.html("<tr></tr>");
                     var row = '';
                     $.each(clients, function () {
                         row = '<tr>';
