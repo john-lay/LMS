@@ -11,6 +11,7 @@ using System.Web.Http.Description;
 using LMS.API.Models;
 using LMS.Services.Contexts;
 using System.Web.Http.Cors;
+using System.Web.Script.Serialization;
 
 namespace LMS.API.Controllers
 {
@@ -20,9 +21,14 @@ namespace LMS.API.Controllers
         private LMSContext db = new LMSContext();
 
         // GET: api/CourseCategories
-        public IQueryable<CourseCategory> GetCourseCategories()
+        public string GetCourseCategories()
         {
-            return db.CourseCategories;
+            //return db.CourseCategories;
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            return serializer.Serialize(
+                db.CourseCategories
+                .Select(x => new { id = x.CourseCategoryId, text = x.Name })
+                .ToArray());
         }
 
         // GET: api/CourseCategories/5

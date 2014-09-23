@@ -99,6 +99,8 @@
         }
     </script>
     <script type="text/javascript">
+        var courseCategories;
+
         $(function () {
             $("#CreateCategory").click(function () {
                 $.ajax({
@@ -113,7 +115,7 @@
                         console.log("error");
                     }
                 });
-            });
+            });            
         });
 
         function showCategorySuccess(result) {
@@ -125,11 +127,35 @@
                     .removeClass("hidden")
                     .slideDown();
 
-            //$("#Name").val("");
-
-            //$('#clients').slideUp();
-            //loadClients()
-            //$('#clients').slideDown();
+            $('#treeview').slideUp();
+            loadCourses()
+            $('#treeview').slideDown();
         }
+
+        function loadCourses() {
+            $.ajax({
+                url: 'http://localhost:58021/api/CourseCategories/GetCourseCategories/',
+                success: function (courses) {
+                    populateTree(JSON.parse(courses));
+                    courseCategories = JSON.parse(courses);
+                }
+            });            
+        }
+
+        function populateTree(treeData) {
+            var treeview = $("#treeview").data("kendoTreeView");
+            treeview.setDataSource(new kendo.data.HierarchicalDataSource({
+                data: treeData
+            }));
+        }
+
+        // bind to ajax created elements
+        $(document).on('click', '.k-in', function() {
+            var courseName = $(this).html();
+            $.each(courseCategories, function () {
+                if (this.text == courseName)
+                    console.log("ecit course category: " + this.id);
+            });
+        });
     </script>
     }
