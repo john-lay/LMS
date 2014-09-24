@@ -14,14 +14,15 @@
         <div id="treeview" data-role="treeview" class="k-widget k-treeview" tabindex="0" role="tree" aria-activedescendant="treeview_tv_active"></div>
         <div id="result"></div>
     </div>
-    <div class="col-md-9">
+    <div id="EditorContainer" class="col-md-9">
         <div class="form-group row col-md-12">
             <div class="col-md-6">
                 <label class="control-label" for="CategoryName">Category Name:</label>
                 <input id="CategoryName" class="form-control text-box single-line" type="text" placeholder="Course category name..." />
             </div>
             <div class="col-md-6" style="margin-top: 2em">
-                <button id="CreateCategory" type="button" class="btn btn-primary pull-right">Save</button>
+                <button id="CreateCategory" type="button" class="btn btn-primary pull-right">Save</button>                
+                <button id="UpdateCategory" data-id="-1" type="button" class="btn btn-primary pull-right hidden">Update</button>
             </div>
             <div class="clearfix"></div>
             <hr />
@@ -30,6 +31,9 @@
                 <textarea id="CategoryNotes" class="form-control" cols="40" rows="5" placeholder="A brief description of the new course category..."></textarea>
             </div>
         </div>
+    </div>
+    <div id="LoadingContainer" class="col-md-9 hidden">
+        <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
     </div>
 </div>
 @section scripts {
@@ -127,19 +131,17 @@
                     .removeClass("hidden")
                     .slideDown();
 
-            $('#treeview').slideUp();
-            loadCourses()
-            $('#treeview').slideDown();
+            loadCategoryEditor(result.CourseCategoryId);
         }
 
-        function loadCourses() {
+        function loadCategories() {
             $.ajax({
                 url: 'http://localhost:58021/api/CourseCategories/GetCourseCategories/',
-                success: function (courses) {
-                    populateTree(JSON.parse(courses));
-                    courseCategories = JSON.parse(courses);
+                success: function (categories) {
+                    populateTree(JSON.parse(categories));
+                    courseCategories = JSON.parse(categories);
                 }
-            });            
+            });
         }
 
         function populateTree(treeData) {
@@ -151,11 +153,70 @@
 
         // bind to ajax created elements
         $(document).on('click', '.k-in', function() {
-            var courseName = $(this).html();
+            var categoryName = $(this).html();
             $.each(courseCategories, function () {
-                if (this.text == courseName)
-                    console.log("ecit course category: " + this.id);
+                if (this.text == categoryName)
+                    loadCategoryEditor(this.id);
             });
         });
+
+        function loadCategoryEditor(categoryId) {
+            // hide editor and show loading
+            $("#EditorContainer").slideUp();
+            $("#LoadingContainer").slideDown(function () {
+                //get the data
+                $.ajax({
+                    url: 'http://localhost:58021/api/CourseCategories/GetCourseCategory/' + categoryId,
+                    success: function (category) {
+                        $("#CategoryName").val(category.Name);
+                        $("#CategoryNotes").val(category.Notes);
+                    }
+                });
+
+                // hide loading and show editor
+                $("#LoadingContainer").slideUp();
+                $("#EditorContainer").slideDown();
+                $("#CreateCategory").hide();
+                // show the update button and set its ID to category ID we want to edit.
+                $("#UpdateCategory")
+                    .attr("data-id", categoryId)
+                    .removeClass("hidden");
+            });
+        }
+
+        $(function () {
+            $("#UpdateCategory").click(function () {
+                var categoryId = $(this).attr("data-id");
+                var categoryName = $("#CategoryName").val();
+                var categoryNotes = $("#CategoryNotes").val();
+
+                $.ajax({
+                    url: "http://localhost:58021/api/CourseCategories/UpdateCourseCategory/" + categoryId,
+                    data: { CourseCategoryId: categoryId, Name: categoryName, Notes: categoryNotes },
+                    type: "PUT",
+                    cache: false,
+                    success: function (result) {
+                        showCategoryUpdated();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log("error");
+                    }
+                });
+            });
+        });
+
+        function showCategoryUpdated() {
+            var msg = "Category: <b>" + $("#CategoryName").val() + "</b> successfully updated!";
+
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
+                    .removeClass("hidden")
+                    .slideDown();
+
+            $('#treeview').slideUp();
+            loadCategories();
+            $('#treeview').slideDown();
+        }
     </script>
     }
