@@ -11,6 +11,8 @@
 }
 <div class="row col-md-12">
     <div class="col-md-3">
+        <a href="#" id="ShowCategoryCreator" class="btn btn-sm btn-primary">Add new category »</a>
+        <br /><br />
         <div id="treeview" data-role="treeview" class="k-widget k-treeview" tabindex="0" role="tree" aria-activedescendant="treeview_tv_active"></div>
         <div id="result"></div>
     </div>
@@ -21,8 +23,9 @@
                 <input id="CategoryName" class="form-control text-box single-line" type="text" placeholder="Course category name..." />
             </div>
             <div class="col-md-6" style="margin-top: 2em">
-                <button id="CreateCategory" type="button" class="btn btn-primary pull-right">Save</button>                
-                <button id="UpdateCategory" data-id="-1" type="button" class="btn btn-primary pull-right hidden">Update</button>
+                <button id="CreateCategory" type="button" class="btn btn-primary pull-right">Save</button>
+                <a href="#" id="DeleteCategoryModal" data-toggle="modal" data-target="#DeleteModal" class="btn btn-danger pull-right hidden" style="margin-left: 1em">Delete</a>
+                <button id="UpdateCategory" type="button" class="btn btn-primary pull-right hidden">Update</button>
             </div>
             <div class="clearfix"></div>
             <hr />
@@ -36,6 +39,34 @@
         <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
     </div>
 </div>
+
+@* -- Delete Modal -- *@
+<div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="DeleteModal">Delete</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-md-offset-1">Are you sure you want to delete client category&nbsp;<span style="text-decoration: underline" id="DeleteCategoryName"></span>?</label>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-1">
+                            <button id="DeleteCategory" type="button" class="btn btn-default">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section scripts {
     <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
     <script type="text/javascript">
@@ -104,7 +135,10 @@
     </script>
     <script type="text/javascript">
         var courseCategories;
+        var categoryId = -1;
+        var categoryName = "";
 
+        // Create
         $(function () {
             $("#CreateCategory").click(function () {
                 $.ajax({
@@ -131,62 +165,19 @@
                     .removeClass("hidden")
                     .slideDown();
 
+            $('#treeview').slideUp();
+            loadCategories();
+            $('#treeview').slideDown();
             loadCategoryEditor(result.CourseCategoryId);
+
+            // set cat id and cat name for update/delete
+            categoryId = result.CourseCategoryId;
+            categoryName = result.Name;
         }
 
-        function loadCategories() {
-            $.ajax({
-                url: 'http://localhost:58021/api/CourseCategories/GetCourseCategories/',
-                success: function (categories) {
-                    populateTree(JSON.parse(categories));
-                    courseCategories = JSON.parse(categories);
-                }
-            });
-        }
-
-        function populateTree(treeData) {
-            var treeview = $("#treeview").data("kendoTreeView");
-            treeview.setDataSource(new kendo.data.HierarchicalDataSource({
-                data: treeData
-            }));
-        }
-
-        // bind to ajax created elements
-        $(document).on('click', '.k-in', function() {
-            var categoryName = $(this).html();
-            $.each(courseCategories, function () {
-                if (this.text == categoryName)
-                    loadCategoryEditor(this.id);
-            });
-        });
-
-        function loadCategoryEditor(categoryId) {
-            // hide editor and show loading
-            $("#EditorContainer").slideUp();
-            $("#LoadingContainer").slideDown(function () {
-                //get the data
-                $.ajax({
-                    url: 'http://localhost:58021/api/CourseCategories/GetCourseCategory/' + categoryId,
-                    success: function (category) {
-                        $("#CategoryName").val(category.Name);
-                        $("#CategoryNotes").val(category.Notes);
-                    }
-                });
-
-                // hide loading and show editor
-                $("#LoadingContainer").slideUp();
-                $("#EditorContainer").slideDown();
-                $("#CreateCategory").hide();
-                // show the update button and set its ID to category ID we want to edit.
-                $("#UpdateCategory")
-                    .attr("data-id", categoryId)
-                    .removeClass("hidden");
-            });
-        }
-
+        // Update
         $(function () {
             $("#UpdateCategory").click(function () {
-                var categoryId = $(this).attr("data-id");
                 var categoryName = $("#CategoryName").val();
                 var categoryNotes = $("#CategoryNotes").val();
 
@@ -217,6 +208,108 @@
             $('#treeview').slideUp();
             loadCategories();
             $('#treeview').slideDown();
+        }
+
+        // Delete
+        $("#DeleteCategory").click(function () {
+            $.ajax({
+                url: "http://localhost:58021/api/CourseCategories/DeleteCourseCategory/" + categoryId,
+                type: "DELETE",
+                cache: false,
+                success: function (result) {
+                    $("#DeleteModal").modal("hide");
+                    showCategoryDelete();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("error");
+                }
+            });
+        });
+
+        function showCategoryDelete() {
+            var msg = "Client: <b>" + categoryName + "</b> successfully deleted!";
+
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
+                    .removeClass("hidden")
+                    .slideDown();
+
+            $('#treeview').slideUp();
+            loadCategories();
+            $('#treeview').slideDown();
+            loadCategoryCreator();
+        }
+
+        // Library functions
+        function loadCategories() {
+            $.ajax({
+                url: 'http://localhost:58021/api/CourseCategories/GetCourseCategories/',
+                success: function (categories) {
+                    populateTree(JSON.parse(categories));
+                    courseCategories = JSON.parse(categories);
+                }
+            });
+        }
+
+        function populateTree(treeData) {
+            var treeview = $("#treeview").data("kendoTreeView");
+            treeview.setDataSource(new kendo.data.HierarchicalDataSource({
+                data: treeData
+            }));
+        }
+
+        // bind to ajax created elements (clicking on categories in tree)
+        $(document).on('click', '.k-in', function() {
+            var catName = $(this).html();
+            $.each(courseCategories, function () {
+                if (this.text == catName) {
+                    categoryId = this.id;
+                    loadCategoryEditor(this.id);
+                    categoryName = catName;
+                    $("#DeleteCategoryName").html(catName);
+                }                    
+            });
+        });
+
+        function loadCategoryEditor(categoryId) {
+            // hide editor and show loading
+            $("#EditorContainer").slideUp();
+            $("#LoadingContainer").slideDown(function () {
+                //get the data
+                $.ajax({
+                    url: 'http://localhost:58021/api/CourseCategories/GetCourseCategory/' + categoryId,
+                    success: function (category) {
+                        $("#CategoryName").val(category.Name);
+                        $("#CategoryNotes").val(category.Notes);
+                    }
+                });
+
+                // hide loading and show the update editor
+                $("#LoadingContainer").slideUp();
+                $("#EditorContainer").slideDown();
+                $("#CreateCategory").hide();
+
+                // show the update and delete buttons
+                $("#UpdateCategory").removeClass("hidden");
+                $("#DeleteCategoryModal").removeClass("hidden");
+            });
+        }
+
+        $("#ShowCategoryCreator").click(loadCategoryCreator);
+
+        function loadCategoryCreator() {
+            // hide editor and show loading
+            $("#EditorContainer").slideUp();
+            $("#EditorContainer").slideDown(function () {
+                // clear the fields
+                $("#CategoryName").val("");
+                $("#CategoryNotes").val("");
+                // hide the update and delete buttons, show the create button
+                $("#UpdateCategory").addClass("hidden");
+                $("#DeleteCategoryModal").addClass("hidden");
+                $("#CreateCategory").show();
+            });
         }
     </script>
     }
