@@ -10,35 +10,57 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using LMS.API.Models;
 using LMS.Services.Contexts;
+using System.Web.Http.Cors;
+using System.Web.Script.Serialization;
 
 namespace LMS.API.Controllers
 {
+    [EnableCors(origins: "http://localhost:58733", headers: "*", methods: "*")]
     public class CoursesInCourseCategoriesController : ApiController
     {
         private LMSContext db = new LMSContext();
 
-        // GET: api/CoursesInCourseCategories
-        public IQueryable<CoursesInCourseCategory> GetCoursesInCourseCategories()
+        /// <summary>
+        /// GET: api/CoursesInCourseCategories
+        /// </summary>
+        /// <param name="id">Client ID</param>
+        /// <returns></returns>
+        public string GetCourseCategoriesAndCourses(int id)
         {
-            return db.CoursesInCourseCategories;
-        }
+            List<CourseCategoryNode> courseCategoryTree = new List<CourseCategoryNode>();
+            var categories = db.CourseCategories;
 
-        // GET: api/CoursesInCourseCategories/5
-        [ResponseType(typeof(CoursesInCourseCategory))]
-        public IHttpActionResult GetCoursesInCourseCategory(int id)
-        {
-            CoursesInCourseCategory coursesInCourseCategory = db.CoursesInCourseCategories.Find(id);
-            if (coursesInCourseCategory == null)
+            foreach (var cat in categories)
             {
-                return NotFound();
+                var query = from coursesInCourseCat in db.CoursesInCourseCategories
+                        join course in db.Courses on coursesInCourseCat.CourseId equals course.CourseId
+                        where coursesInCourseCat.CourseCategoryId == cat.CourseCategoryId && course.ClientId == id
+                        select course;
+
+                courseCategoryTree.Add(new CourseCategoryNode
+                {
+                    Category = cat,
+                    Courses = query.ToArray()
+                });
             }
 
-            return Ok(coursesInCourseCategory);
+            // normalize courseCategoryTree for Kendo Tree
+            var returnKendo = courseCategoryTree
+                .Select(x => new 
+                {
+                    id = x.Category.CourseCategoryId,
+                    text = x.Category.Name,
+                    expanded = true,
+                    items = x.Courses.Select(c => new { id = c.CourseId, text = c.Name }).ToArray()
+                });
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            return serializer.Serialize(returnKendo);
         }
 
         // PUT: api/CoursesInCourseCategories/5
-        [ResponseType(typeof(void))]
-        public IHttpActionResult PutCoursesInCourseCategory(int id, CoursesInCourseCategory coursesInCourseCategory)
+        [HttpPut]
+        public IHttpActionResult UpdateCoursesInCourseCategory(int id, CoursesInCourseCategory coursesInCourseCategory)
         {
             if (!ModelState.IsValid)
             {
@@ -72,8 +94,8 @@ namespace LMS.API.Controllers
         }
 
         // POST: api/CoursesInCourseCategories
-        [ResponseType(typeof(CoursesInCourseCategory))]
-        public IHttpActionResult PostCoursesInCourseCategory(CoursesInCourseCategory coursesInCourseCategory)
+        [HttpPost]
+        public IHttpActionResult AddCourseToCourseCategory(CoursesInCourseCategory coursesInCourseCategory)
         {
             if (!ModelState.IsValid)
             {
@@ -98,11 +120,11 @@ namespace LMS.API.Controllers
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = coursesInCourseCategory.CourseCategoryId }, coursesInCourseCategory);
+            return Ok(coursesInCourseCategory);
         }
 
         // DELETE: api/CoursesInCourseCategories/5
-        [ResponseType(typeof(CoursesInCourseCategory))]
+        [HttpDelete]
         public IHttpActionResult DeleteCoursesInCourseCategory(int id)
         {
             CoursesInCourseCategory coursesInCourseCategory = db.CoursesInCourseCategories.Find(id);

@@ -10,9 +10,11 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using LMS.API.Models;
 using LMS.Services.Contexts;
+using System.Web.Http.Cors;
 
 namespace LMS.API.Controllers
 {
+    [EnableCors(origins: "http://localhost:58733", headers: "*", methods: "*")]
     public class CoursesController : ApiController
     {
         private LMSContext db = new LMSContext();

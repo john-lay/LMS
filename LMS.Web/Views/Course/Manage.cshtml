@@ -13,7 +13,9 @@
     <div class="col-md-3">
         <a href="#" id="ShowCategoryCreator" class="btn btn-sm btn-primary">Add new category »</a>
         <br /><br />
-        <div id="treeview" data-role="treeview" class="k-widget k-treeview" tabindex="0" role="tree" aria-activedescendant="treeview_tv_active"></div>
+        <div id="treeview" data-role="treeview" class="k-widget k-treeview" tabindex="0" role="tree" aria-activedescendant="treeview_tv_active">
+            <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
+        </div>
         <div id="result"></div>
     </div>
     <div id="EditorContainer" class="col-md-9">
@@ -24,14 +26,16 @@
             </div>
             <div class="col-md-6" style="margin-top: 2em">
                 <button id="CreateCategory" type="button" class="btn btn-primary pull-right">Save</button>
-                <a href="#" id="DeleteCategoryModal" data-toggle="modal" data-target="#DeleteModal" class="btn btn-danger pull-right hidden" style="margin-left: 1em">Delete</a>
-                <button id="UpdateCategory" type="button" class="btn btn-primary pull-right hidden">Update</button>
+                <a href="#" id="DeleteCategoryModal" data-toggle="modal" data-target="#DeleteModal" class="editor-btn btn btn-danger pull-right hidden" style="margin-left: 1em">Delete</a>
+                <button id="UpdateCategory" type="button" class="editor-btn btn btn-primary pull-right hidden">Update</button>
             </div>
             <div class="clearfix"></div>
             <hr />
             <div class="col-md-12">
                 <label class="control-label" for="CategoryNotes">Category Notes:</label>
                 <textarea id="CategoryNotes" class="form-control" cols="40" rows="5" placeholder="A brief description of the new course category..."></textarea>
+                <br />
+                <a href="#" data-toggle="modal" data-target="#CreateCourseModal" class="editor-btn btn btn-primary pull-right hidden">Add course to&nbsp;<span style="text-decoration: underline" class="currentCategoryName"></span> »</a>
             </div>
         </div>
     </div>
@@ -40,22 +44,22 @@
     </div>
 </div>
 
-@* -- Delete Modal -- *@
+@* -- Delete Category Modal -- *@
 <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="DeleteModal">Delete</h4>
+                <h4 class="modal-title">Delete</h4>
             </div>
             <div class="modal-body">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        <label class="control-label col-md-offset-1">Are you sure you want to delete client category&nbsp;<span style="text-decoration: underline" id="DeleteCategoryName"></span>?</label>
+                        <label class="control-label col-md-offset-1">Are you sure you want to delete client category&nbsp;<span style="text-decoration: underline" class="currentCategoryName"></span>?</label>
                     </div>
                     <div class="form-group">
                         <div class="col-md-offset-1">
-                            <button id="DeleteCategory" type="button" class="btn btn-default">Delete</button>
+                            <button id="DeleteCategory" type="button" class="btn btn-danger btn-default">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -67,42 +71,62 @@
     </div>
 </div>
 
+@* -- Create Course Modal -- *@
+<div class="modal fade" id="CreateCourseModal" tabindex="-1" role="dialog" aria-labelledby="CreateCourseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Create Course</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Course Name</label>
+                        <div class="col-md-10">
+                            <input id="CourseName" class="form-control text-box single-line" type="text" placeholder="Course name..." />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Course Description</label>
+                        <div class="col-md-10">
+                            <textarea id="CourseDescription" class="form-control" cols="40" rows="5" placeholder="A brief description of the new course..."></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button id="CreateCourse" type="button" class="btn btn-default btn-primary">Save</button>
+                        </div>
+                    </div>
+                </div>                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section scripts {
     <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
-    <script type="text/javascript">
-        $("#treeview").kendoTreeView({
-            checkboxes: {
-                checkChildren: true
-            },
-
-            check: onCheck,
-
-            dataSource: [{
-                id: 1, text: "My Documents", expanded: true, items: [
-                    {
-                        id: 2, text: "Kendo UI Project", expanded: true, items: [
-                            { id: 3, text: "about.html" },
-                            { id: 4, text: "index.html" },
-                            { id: 5, text: "logo.png" }
-                        ]
-                    },
-                    {
-                        id: 6, text: "New Web Site", expanded: true, items: [
-                            { id: 7, text: "mockup.jpg" },
-                            { id: 8, text: "Research.pdf" },
-                        ]
-                    },
-                    {
-                        id: 9, text: "Reports", expanded: true, items: [
-                            { id: 10, text: "February.pdf" },
-                            { id: 11, text: "March.pdf" },
-                            { id: 12, text: "April.pdf" }
-                        ]
-                    }
-                ]
-            }]
+    <script type="text/javascript" title="Kendo UI tree view">
+        var clientId = 1; // TODO: Make this dynamic on a per client basis
+        var courseCategories;
+        $(function () {
+            $.ajax({
+                url: 'http://localhost:58021/api/CoursesInCourseCategories/GetCourseCategoriesAndCourses/' + clientId,
+                success: function (categories) {
+                    $("#treeview").kendoTreeView({
+                        checkboxes: {
+                            checkChildren: true
+                        },
+                        check: onCheck,
+                        dataSource: JSON.parse(categories)
+                    });
+                    courseCategories = JSON.parse(categories);
+                }
+            });
         });
-
         // function that gathers IDs of checked nodes
         function checkedNodeIds(nodes, checkedNodes) {
             for (var i = 0; i < nodes.length; i++) {
@@ -133,8 +157,7 @@
             $("#result").html(message);
         }
     </script>
-    <script type="text/javascript">
-        var courseCategories;
+    <script type="text/javascript" title="CRUD operations for Course Categories">        
         var categoryId = -1;
         var categoryName = "";
 
@@ -243,8 +266,9 @@
 
         // Library functions
         function loadCategories() {
+            var clientId = 1; // TODO: Make this dynamic on a per client basis
             $.ajax({
-                url: 'http://localhost:58021/api/CourseCategories/GetCourseCategories/',
+                url: 'http://localhost:58021/api/CoursesInCourseCategories/GetCourseCategoriesAndCourses/' + clientId,
                 success: function (categories) {
                     populateTree(JSON.parse(categories));
                     courseCategories = JSON.parse(categories);
@@ -267,7 +291,7 @@
                     categoryId = this.id;
                     loadCategoryEditor(this.id);
                     categoryName = catName;
-                    $("#DeleteCategoryName").html(catName);
+                    $(".currentCategoryName").html(catName);
                 }                    
             });
         });
@@ -287,12 +311,11 @@
 
                 // hide loading and show the update editor
                 $("#LoadingContainer").slideUp();
-                $("#EditorContainer").slideDown();
-                $("#CreateCategory").hide();
+                $("#EditorContainer").slideDown();               
 
-                // show the update and delete buttons
-                $("#UpdateCategory").removeClass("hidden");
-                $("#DeleteCategoryModal").removeClass("hidden");
+                // show the update / delete category buttons, and the create course button
+                $("#CreateCategory").hide();
+                $(".editor-btn").removeClass("hidden");
             });
         }
 
@@ -306,10 +329,60 @@
                 $("#CategoryName").val("");
                 $("#CategoryNotes").val("");
                 // hide the update and delete buttons, show the create button
-                $("#UpdateCategory").addClass("hidden");
-                $("#DeleteCategoryModal").addClass("hidden");
+                $(".editor-btn").addClass("hidden");
                 $("#CreateCategory").show();
             });
+        }
+    </script>
+    <script type="text/javascript" title="CRUD operations for Course Categories">
+        $(function () {
+            $("#CreateCourse").click(function () {
+                $.ajax({
+                    url: "http://localhost:58021/api/Courses/CreateCourse/",
+                    data: { Name: $("#CourseName").val(), Description: $("#CourseDescription").val(), ClientId: 1 },
+                    type: "POST",
+                    cache: false,
+                    success: function (result) {
+                        addCourseToCourseCategory(result);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log("error");
+                    }
+                });
+            });
+        });
+
+        function addCourseToCourseCategory(course) {
+            var courseId = course.CourseId;
+            var courseName = course.Name;
+
+            $.ajax({
+                url: "http://localhost:58021/api/CoursesInCourseCategories/AddCourseToCourseCategory/",
+                data: { CourseCategoryId: categoryId, CourseId: courseId },
+                type: "POST",
+                cache: false,
+                success: function (result) {
+                    $("#CreateCourseModal").modal("hide");
+                    showCourseSuccess(courseName);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("error");
+                }
+            });            
+        }
+
+        function showCourseSuccess(courseName) {
+            var msg = "Course: <b>" + courseName + "</b> successfully added to category: <b>" + categoryName + "</b>.";
+
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
+                    .removeClass("hidden")
+                    .slideDown();
+
+            $('#treeview').slideUp();
+            loadCategories();
+            $('#treeview').slideDown();
         }
     </script>
     }
