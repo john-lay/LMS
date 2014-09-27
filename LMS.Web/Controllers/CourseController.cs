@@ -12,5 +12,11 @@ namespace LMS.Web.Controllers
         {
             return View();
         }
+
+        public ActionResult Edit(int id)
+        {
+            ViewBag.courseId = id;
+            return View();
+        }
     }
 }

@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Manage Clients";
+    ViewBag.Title = "Manage Course Categories";
     Layout = "~/Views/Shared/_Layout.admin.cshtml";
 }
 @section head {
@@ -40,7 +40,11 @@
         </div>
     </div>
     <div id="LoadingContainer" class="col-md-9 hidden">
-        <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
+        <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...        
+    </div>
+    <div id="CourseContainer" class="col-md-9 hidden">
+        <p class="lead">Click below to add content, create sessions, and manage <span style="text-decoration: underline" class="courseName"></span>.</p>
+        <a href="#" id="EditCourse" class="btn btn-primary">Manage Course »</a>
     </div>
 </div>
 
@@ -285,20 +289,28 @@
 
         // bind to ajax created elements (clicking on categories in tree)
         $(document).on('click', '.k-in', function() {
-            var catName = $(this).html();
+            var Name = $(this).html();
+            var isCourse = true;
             $.each(courseCategories, function () {
-                if (this.text == catName) {
+                if (this.text == Name) {
                     categoryId = this.id;
                     loadCategoryEditor(this.id);
-                    categoryName = catName;
-                    $(".currentCategoryName").html(catName);
-                }                    
+                    categoryName = Name;
+                    $(".currentCategoryName").html(Name);
+                    isCourse = false;
+                }
             });
+
+            // not a course category. Must be a course.
+            if (isCourse) {
+                loadCourseEditor(Name);
+            }
         });
 
         function loadCategoryEditor(categoryId) {
             // hide editor and show loading
             $("#EditorContainer").slideUp();
+            $("#CourseContainer").hide();
             $("#LoadingContainer").slideDown(function () {
                 //get the data
                 $.ajax({
@@ -324,6 +336,7 @@
         function loadCategoryCreator() {
             // hide editor and show loading
             $("#EditorContainer").slideUp();
+            $("#CourseContainer").hide();
             $("#EditorContainer").slideDown(function () {
                 // clear the fields
                 $("#CategoryName").val("");
@@ -332,6 +345,31 @@
                 $(".editor-btn").addClass("hidden");
                 $("#CreateCategory").show();
             });
+        }
+
+        function loadCourseEditor(courseName) {
+            // hide editor and show loading
+            $("#EditorContainer").hide();
+            $("#CourseContainer").slideDown(function () {
+                $(".courseName").html(courseName);
+                console.log(getEditCourseUrl(courseName));
+                $("#EditCourse").attr("href", getEditCourseUrl(courseName));
+                $(this).removeClass("hidden");
+            });
+        }
+
+        function getEditCourseUrl(courseName) {
+            var url = "@Url.Action("Edit", "Course")";
+
+            $.each(courseCategories, function (categoryIndex, category) {
+                $.each(category.items, function (courseIndex, course) {
+                    if (course.text == courseName) {
+                        url = url + "/" + course.id;                        
+                    }
+                });
+            });
+
+            return url;
         }
     </script>
     <script type="text/javascript" title="CRUD operations for Course Categories">
