@@ -816,6 +816,7 @@
     <Compile Include="Infrastructure\UserProfile.cs" />
     <Compile Include="Infrastructure\UserProfileModelBinder.cs" />
     <Compile Include="Models\ClientViewModel.cs" />
+    <Compile Include="Models\CourseViewModel.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
     <Compile Include="Models\UploadViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -899,6 +900,7 @@
     <Content Include="Scripts\kendo-js\kendo.view.min.js.map" />
     <Content Include="Scripts\kendo-js\kendo.window.min.js.map" />
     <Content Include="Views\Course\Manage.cshtml" />
+    <Content Include="Views\Course\Edit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

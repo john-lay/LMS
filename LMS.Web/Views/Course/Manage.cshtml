@@ -4,7 +4,6 @@
 }
 @section head {
     <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.common.min.css" rel="stylesheet" />
-    @*<link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.default.min.css" rel="stylesheet" />*@
     <link href="~/Content/kendo-styles/kendo.silver.min.css" rel="stylesheet" />
     <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.min.css" rel="stylesheet" />
     <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.default.min.css" rel="stylesheet" />
@@ -113,7 +112,7 @@
 
 @section scripts {
     <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
-    <script type="text/javascript" title="Kendo UI tree view">
+    <script type="text/javascript" title="Kendo UI tree">
         var clientId = 1; // TODO: Make this dynamic on a per client basis
         var courseCategories;
         $(function () {
@@ -160,8 +159,46 @@
 
             $("#result").html(message);
         }
+
+        function loadCategories() {
+            var clientId = 1; // TODO: Make this dynamic on a per client basis
+            $.ajax({
+                url: 'http://localhost:58021/api/CoursesInCourseCategories/GetCourseCategoriesAndCourses/' + clientId,
+                success: function (categories) {
+                    populateTree(JSON.parse(categories));
+                    courseCategories = JSON.parse(categories);
+                }
+            });
+        }
+
+        function populateTree(treeData) {
+            var treeview = $("#treeview").data("kendoTreeView");
+            treeview.setDataSource(new kendo.data.HierarchicalDataSource({
+                data: treeData
+            }));
+        }
+
+        // bind to ajax created elements (clicking on categories in tree)
+        $(document).on('click', '.k-in', function () {
+            var Name = $(this).html();
+            var isCourse = true;
+            $.each(courseCategories, function () {
+                if (this.text == Name) {
+                    categoryId = this.id;
+                    loadCategoryEditor(this.id);
+                    categoryName = Name;
+                    $(".currentCategoryName").html(Name);
+                    isCourse = false;
+                }
+            });
+
+            // not a course category. Must be a course.
+            if (isCourse) {
+                loadCourseEditor(Name);
+            }
+        });
     </script>
-    <script type="text/javascript" title="CRUD operations for Course Categories">        
+    <script type="text/javascript" title="Manage Course Categories">        
         var categoryId = -1;
         var categoryName = "";
 
@@ -269,44 +306,6 @@
         }
 
         // Library functions
-        function loadCategories() {
-            var clientId = 1; // TODO: Make this dynamic on a per client basis
-            $.ajax({
-                url: 'http://localhost:58021/api/CoursesInCourseCategories/GetCourseCategoriesAndCourses/' + clientId,
-                success: function (categories) {
-                    populateTree(JSON.parse(categories));
-                    courseCategories = JSON.parse(categories);
-                }
-            });
-        }
-
-        function populateTree(treeData) {
-            var treeview = $("#treeview").data("kendoTreeView");
-            treeview.setDataSource(new kendo.data.HierarchicalDataSource({
-                data: treeData
-            }));
-        }
-
-        // bind to ajax created elements (clicking on categories in tree)
-        $(document).on('click', '.k-in', function() {
-            var Name = $(this).html();
-            var isCourse = true;
-            $.each(courseCategories, function () {
-                if (this.text == Name) {
-                    categoryId = this.id;
-                    loadCategoryEditor(this.id);
-                    categoryName = Name;
-                    $(".currentCategoryName").html(Name);
-                    isCourse = false;
-                }
-            });
-
-            // not a course category. Must be a course.
-            if (isCourse) {
-                loadCourseEditor(Name);
-            }
-        });
-
         function loadCategoryEditor(categoryId) {
             // hide editor and show loading
             $("#EditorContainer").slideUp();
@@ -345,34 +344,9 @@
                 $(".editor-btn").addClass("hidden");
                 $("#CreateCategory").show();
             });
-        }
-
-        function loadCourseEditor(courseName) {
-            // hide editor and show loading
-            $("#EditorContainer").hide();
-            $("#CourseContainer").slideDown(function () {
-                $(".courseName").html(courseName);
-                console.log(getEditCourseUrl(courseName));
-                $("#EditCourse").attr("href", getEditCourseUrl(courseName));
-                $(this).removeClass("hidden");
-            });
-        }
-
-        function getEditCourseUrl(courseName) {
-            var url = "@Url.Action("Edit", "Course")";
-
-            $.each(courseCategories, function (categoryIndex, category) {
-                $.each(category.items, function (courseIndex, course) {
-                    if (course.text == courseName) {
-                        url = url + "/" + course.id;                        
-                    }
-                });
-            });
-
-            return url;
-        }
+        }        
     </script>
-    <script type="text/javascript" title="CRUD operations for Course Categories">
+    <script type="text/javascript" title="Manage Course">
         $(function () {
             $("#CreateCourse").click(function () {
                 $.ajax({
@@ -421,6 +395,31 @@
             $('#treeview').slideUp();
             loadCategories();
             $('#treeview').slideDown();
+        }
+
+        function loadCourseEditor(courseName) {
+            // hide editor and show loading
+            $("#EditorContainer").hide();
+            $("#CourseContainer").slideDown(function () {
+                $(".courseName").html(courseName);
+                console.log(getEditCourseUrl(courseName));
+                $("#EditCourse").attr("href", getEditCourseUrl(courseName));
+                $(this).removeClass("hidden");
+            });
+        }
+
+        function getEditCourseUrl(courseName) {
+            var url = "@Url.Action("Edit", "Course")";
+
+            $.each(courseCategories, function (categoryIndex, category) {
+                $.each(category.items, function (courseIndex, course) {
+                    if (course.text == courseName) {
+                        url = url + "/" + course.id;                        
+                    }
+                });
+            });
+
+            return url;
         }
     </script>
     }
