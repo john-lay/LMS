@@ -1,5 +1,7 @@
-﻿using LMS.API.Models;
-using LMS.Services.Contexts;
+﻿using LMS.API.Contexts;
+using LMS.API.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -10,8 +12,19 @@ namespace LMS.API.Utilities
 {
     public class DatabaseInitializer : CreateDatabaseIfNotExists<LMSContext>
     {
+        private AuthContext _ctx;
+
+        private UserManager<IdentityUser> _userManager;
+
         protected override void Seed(LMSContext db)
         {
+            _ctx = new AuthContext();
+            _userManager = new UserManager<IdentityUser>(new UserStore<IdentityUser>(_ctx));
+
+            // admin
+            IdentityUser adminUser = new IdentityUser { UserName = "admin@avemtec.com" };
+            _userManager.CreateAsync(adminUser, "SuperPass");
+
             // client
             Client client = new Client { ClientId = 1, Name="Apple", LogoTitle = "Apple Logo", LogoResource = "/path/to/resource"};
             db.Clients.Add(client);

@@ -6,7 +6,7 @@ using System.Web;
 using LMS.API.Models;
 using System.Data.Entity.ModelConfiguration.Conventions;
 
-namespace LMS.Services.Contexts
+namespace LMS.API.Contexts
 {
     public class LMSContext : DbContext
     {

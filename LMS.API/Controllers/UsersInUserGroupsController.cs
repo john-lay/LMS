@@ -9,7 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using LMS.API.Models;
-using LMS.Services.Contexts;
+using LMS.API.Contexts;
 
 namespace LMS.API.Controllers
 {

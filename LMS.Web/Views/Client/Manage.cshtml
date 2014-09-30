@@ -234,10 +234,16 @@
 
         function loadClients()
         {
-            var table = $("#clients");           
+            var table = $("#clients");
+            var token = "@ViewBag.Token";
 
             $.ajax({
                 url: 'http://localhost:58021/api/clients/GetClients/',
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + token);
+                },
+                type: "GET",
+                cache: false,
                 success: function (clients) {
                     table.html("<tr></tr>");
                     var row = '';

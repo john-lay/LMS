@@ -19,8 +19,9 @@ namespace LMS.Web.Controllers
             return View();
         }
 
-        public ActionResult Manage()
+        public ActionResult Manage(UserProfile user)
         {
+            ViewBag.Token = user.Token;
             var model = new ClientViewModel();
             return View(model);
         }
