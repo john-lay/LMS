@@ -58,15 +58,15 @@
 </div>
 @section scripts {
 <script type="text/javascript" title="">
-    // get current course details    
+    // get current course details
     $(function () {
         $.ajax({
-            url: 'http://localhost:58021/api/Courses/GetCourse/' + @Model.Id,
+            url: "@this.GetApiUrl()" + "/api/Courses/GetCourse/" + @Model.Id,
             success: function (course) {
                 $("#Name").val(course.Name);
                 $("#Description").val(course.Description);
             }
-        });
+    });
     });
 </script>
     

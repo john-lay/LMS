@@ -12,16 +12,15 @@ using Newtonsoft.Json;
 
 namespace LMS.Web.Controllers
 {
-    public class ClientController : Controller
+    public class ClientController : LMSBaseController
     {
         public ActionResult Index()
         {
             return View();
         }
 
-        public ActionResult Manage(UserProfile user)
+        public ActionResult Manage()
         {
-            ViewBag.Token = user.Token;
             var model = new ClientViewModel();
             return View(model);
         }

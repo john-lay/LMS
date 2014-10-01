@@ -117,7 +117,7 @@
         var courseCategories;
         $(function () {
             $.ajax({
-                url: 'http://localhost:58021/api/CoursesInCourseCategories/GetCourseCategoriesAndCourses/' + clientId,
+                url: "@this.GetApiUrl()" + "/api/CoursesInCourseCategories/GetCourseCategoriesAndCourses/" + clientId,
                 success: function (categories) {
                     $("#treeview").kendoTreeView({
                         checkboxes: {
@@ -163,7 +163,7 @@
         function loadCategories() {
             var clientId = 1; // TODO: Make this dynamic on a per client basis
             $.ajax({
-                url: 'http://localhost:58021/api/CoursesInCourseCategories/GetCourseCategoriesAndCourses/' + clientId,
+                url: "@this.GetApiUrl()" + "/api/CoursesInCourseCategories/GetCourseCategoriesAndCourses/" + clientId,
                 success: function (categories) {
                     populateTree(JSON.parse(categories));
                     courseCategories = JSON.parse(categories);
@@ -206,7 +206,7 @@
         $(function () {
             $("#CreateCategory").click(function () {
                 $.ajax({
-                    url: "http://localhost:58021/api/CourseCategories/CreateCourseCategory/",
+                    url: "@this.GetApiUrl()" + "/api/CourseCategories/CreateCourseCategory/",
                     data: { Name: $("#CategoryName").val(), Notes: $("#CategoryNotes").val() },
                     type: "POST",
                     cache: false,
@@ -246,7 +246,7 @@
                 var categoryNotes = $("#CategoryNotes").val();
 
                 $.ajax({
-                    url: "http://localhost:58021/api/CourseCategories/UpdateCourseCategory/" + categoryId,
+                    url: "@this.GetApiUrl()" + "/api/CourseCategories/UpdateCourseCategory/" + categoryId,
                     data: { CourseCategoryId: categoryId, Name: categoryName, Notes: categoryNotes },
                     type: "PUT",
                     cache: false,
@@ -277,7 +277,7 @@
         // Delete
         $("#DeleteCategory").click(function () {
             $.ajax({
-                url: "http://localhost:58021/api/CourseCategories/DeleteCourseCategory/" + categoryId,
+                url: "@this.GetApiUrl()" + "/api/CourseCategories/DeleteCourseCategory/" + categoryId,
                 type: "DELETE",
                 cache: false,
                 success: function (result) {
@@ -313,7 +313,7 @@
             $("#LoadingContainer").slideDown(function () {
                 //get the data
                 $.ajax({
-                    url: 'http://localhost:58021/api/CourseCategories/GetCourseCategory/' + categoryId,
+                    url: "@this.GetApiUrl()" + "/api/CourseCategories/GetCourseCategory/" + categoryId,
                     success: function (category) {
                         $("#CategoryName").val(category.Name);
                         $("#CategoryNotes").val(category.Notes);
@@ -350,7 +350,7 @@
         $(function () {
             $("#CreateCourse").click(function () {
                 $.ajax({
-                    url: "http://localhost:58021/api/Courses/CreateCourse/",
+                    url: "@this.GetApiUrl()" + "/api/Courses/CreateCourse/",
                     data: { Name: $("#CourseName").val(), Description: $("#CourseDescription").val(), ClientId: 1 },
                     type: "POST",
                     cache: false,
@@ -369,7 +369,7 @@
             var courseName = course.Name;
 
             $.ajax({
-                url: "http://localhost:58021/api/CoursesInCourseCategories/AddCourseToCourseCategory/",
+                url: "@this.GetApiUrl()" + "/api/CoursesInCourseCategories/AddCourseToCourseCategory/",
                 data: { CourseCategoryId: categoryId, CourseId: courseId },
                 type: "POST",
                 cache: false,

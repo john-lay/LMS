@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace LMS.Web.Controllers
 {
-    public class CourseController : Controller
+    public class CourseController : LMSBaseController
     {
         public ActionResult Manage()
         {

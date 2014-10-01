@@ -17,5 +17,15 @@ namespace LMS.Web.Extensions
         {
             return session["UserInfo"] as UserProfile;
         }
+
+        public static void SetUserToken(this HttpSessionStateBase session, string token)
+        {
+            session["UserToken"] = token;
+        }
+
+        public static string GetUserToken(this HttpSessionStateBase session)
+        {
+            return session["UserToken"] as string;
+        }
     }
 }

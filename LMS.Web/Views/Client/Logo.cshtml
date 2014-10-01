@@ -41,7 +41,7 @@
         $(function () {
             $("#Create").click(function () {
                 $.ajax({
-                    url: "http://localhost:58021/api/clients/UploadLogo/",
+                    url: "@this.GetApiUrl()" + "/api/clients/UploadLogo/",
                     data: { Name: $("#Name").val() },
                     type: "POST",
                     //dataType: "json",

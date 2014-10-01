@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace LMS.Web.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : LMSBaseController
     {
         // GET: Home
         public ActionResult Index()
