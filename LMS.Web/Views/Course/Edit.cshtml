@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = "Edit Course";
     Layout = "~/Views/Shared/_Layout.admin.cshtml";
+    string formActionUrl = this.GetApiUrl() + "/api/Courses/UpdateCourse/" + Model.Id;
 }
 @section head {
 
@@ -11,7 +12,7 @@
         course tree
     </div>
     <div class="col-md-9">
-        <form name="course" method="post" action="" enctype="multipart/form-data">
+        <form id="CourseForm" name="course" method="put" action="@formActionUrl" enctype="multipart/form-data">
             <div class="form-group row col-md-12">
                 <div class="form-group row col-md-12">
                     <div class="col-md-6">
@@ -24,7 +25,8 @@
                         @Html.ValidationMessageFor(m => m.Name)
                     </div>
                     <div class="col-md-6">
-                        <input type="submit" value="Save" class="btn btn-primary pull-right" />
+                        <button id="SaveCourse" class="btn btn-primary pull-right">Save</button>
+                        @*<input type="submit" value="Save" class="btn btn-primary pull-right" />*@
                     </div>
                 </div>
                 <div class="form-group row col-md-12">
@@ -57,6 +59,7 @@
     </div>
 </div>
 @section scripts {
+<script src="~/Scripts/jquery.form.min.js"></script>
 <script type="text/javascript" title="">
     // get current course details
     $(function () {
@@ -66,7 +69,30 @@
                 $("#Name").val(course.Name);
                 $("#Description").val(course.Description);
             }
-    });
+        });
+
+        //http://stackoverflow.com/questions/10899384/uploading-both-data-and-files-in-one-form-using-ajax
+        var formData = new FormData($("form")[0]);
+        $("#SaveCourse").click(function() {
+            $.ajax({
+                url: "@formActionUrl",
+                data: formData,
+                async: false,
+                type: "POST",
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },                
+                success: function (result) {
+                    console.log("success");
+                    console.log(result);
+                }
+            });
+            console.log(formData);
+            return false;
+        });
     });
 </script>
     

@@ -70,7 +70,7 @@ namespace LMS.Web.Controllers
             string resultContent = result.Content.ReadAsStringAsync().Result;
             Token token = JsonConvert.DeserializeObject<Token>(resultContent);
 
-            return token;            
+            return token;
         }
     }
 }

@@ -11,6 +11,8 @@ using System.Web.Http.Description;
 using LMS.API.Models;
 using LMS.API.Contexts;
 using System.Web.Http.Cors;
+using System.Threading;
+using System.Web;
 
 namespace LMS.API.Controllers
 {
@@ -55,39 +57,73 @@ namespace LMS.API.Controllers
         }
 
         // PUT: api/Courses/5
-        [HttpPut]
-        public IHttpActionResult UpdateCourse(int id, Course course)
+        [HttpPost]
+        public HttpResponseMessage UpdateCourse(int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var identity = Thread.CurrentPrincipal.Identity;
 
-            if (id != course.CourseId)
-            {
-                return BadRequest();
-            }
+            HttpResponseMessage result = null;
+            var httpRequest = HttpContext.Current.Request;
 
-            db.Entry(course).State = EntityState.Modified;
-
-            try
+            if (httpRequest.Files.Count > 0)
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CourseExists(id))
+                var docfiles = new List<string>();
+                foreach (string file in httpRequest.Files)
                 {
-                    return NotFound();
+                    var postedFile = httpRequest.Files[file];
+                    var filePath = HttpContext.Current.Server.MapPath("~/" + postedFile.FileName);
+                    postedFile.SaveAs(filePath);
+
+                    docfiles.Add(filePath);
                 }
-                else
-                {
-                    throw;
-                }
+                result = Request.CreateResponse(HttpStatusCode.Created, docfiles);
+            }
+            else
+            {
+                result = Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
-            return StatusCode(HttpStatusCode.NoContent);
+            //httpRequest.Form["Name"]
+
+            //db.Clients.Add(client);
+            //db.SaveChanges();
+
+            return result;
         }
+        //[HttpPut]
+        //public IHttpActionResult UpdateCourse(int id, Course course)
+        //{
+        //    var identity = Thread.CurrentPrincipal.Identity;
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    if (id != course.CourseId)
+        //    {
+        //        return BadRequest();
+        //    }
+
+        //    db.Entry(course).State = EntityState.Modified;
+
+        //    try
+        //    {
+        //        db.SaveChanges();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!CourseExists(id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
+
+        //    return StatusCode(HttpStatusCode.NoContent);
+        //}
 
         // POST: api/Courses
         [HttpPost]

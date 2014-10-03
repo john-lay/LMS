@@ -9,6 +9,7 @@ namespace LMS.Web.Controllers
     public class HomeController : LMSBaseController
     {
         // GET: Home
+        [AllowAnonymous]
         public ActionResult Index()
         {
             return View();

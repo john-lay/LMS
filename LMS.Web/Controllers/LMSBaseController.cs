@@ -8,6 +8,7 @@ using LMS.Web.Extensions;
 
 namespace LMS.Web.Controllers
 {
+    [Authorize]
     public class LMSBaseController : Controller
     {
         protected override void OnResultExecuting(ResultExecutingContext filterContext)
