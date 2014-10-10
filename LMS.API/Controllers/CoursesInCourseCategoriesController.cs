@@ -59,39 +59,39 @@ namespace LMS.API.Controllers
         }
 
         // PUT: api/CoursesInCourseCategories/5
-        [HttpPut]
-        public IHttpActionResult UpdateCoursesInCourseCategory(int id, CoursesInCourseCategory coursesInCourseCategory)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //[HttpPut]
+        //public IHttpActionResult UpdateCoursesInCourseCategory(int id, CoursesInCourseCategory coursesInCourseCategory)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            if (id != coursesInCourseCategory.CourseCategoryId)
-            {
-                return BadRequest();
-            }
+        //    if (id != coursesInCourseCategory.CourseCategoryId)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            db.Entry(coursesInCourseCategory).State = EntityState.Modified;
+        //    db.Entry(coursesInCourseCategory).State = EntityState.Modified;
 
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CoursesInCourseCategoryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        //    try
+        //    {
+        //        db.SaveChanges();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!CoursesInCourseCategoryExists(id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
 
-            return StatusCode(HttpStatusCode.NoContent);
-        }
+        //    return StatusCode(HttpStatusCode.NoContent);
+        //}
 
         // POST: api/CoursesInCourseCategories
         [HttpPost]
@@ -125,9 +125,11 @@ namespace LMS.API.Controllers
 
         // DELETE: api/CoursesInCourseCategories/5
         [HttpDelete]
-        public IHttpActionResult DeleteCoursesInCourseCategory(int id)
+        public IHttpActionResult DeleteCourseInCourseCategory(CoursesInCourseCategory model)
         {
-            CoursesInCourseCategory coursesInCourseCategory = db.CoursesInCourseCategories.Find(id);
+            CoursesInCourseCategory coursesInCourseCategory = db.CoursesInCourseCategories
+                .First(c => c.CourseId == model.CourseId && c.CourseCategoryId == model.CourseCategoryId);
+
             if (coursesInCourseCategory == null)
             {
                 return NotFound();
@@ -136,6 +138,14 @@ namespace LMS.API.Controllers
             db.CoursesInCourseCategories.Remove(coursesInCourseCategory);
             db.SaveChanges();
 
+            // now delete course too
+            var resource = new CoursesController();
+            if (resource.DeleteCourse(model.CourseId) == NotFound())
+            {
+                return NotFound();
+            }
+
+            // TODO: delete all course content for this course
             return Ok(coursesInCourseCategory);
         }
 

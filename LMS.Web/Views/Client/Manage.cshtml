@@ -120,7 +120,7 @@
         // add client
         $("#Create").click(function () {
             $.ajax({
-                url: "@this.GetApiUrl()" + "/api/clients/CreateClient/",
+                url: "@this.GetApiUrl()" + "/clients/CreateClient/",
                 data: { Name: $("#Name").val() },
                 type: "POST",
                 cache: false,
@@ -144,7 +144,7 @@
 
         $("#Update").click(function () {
             $.ajax({
-                url: "@this.GetApiUrl()" + "/api/clients/UpdateClient/" + clientId,
+                url: "@this.GetApiUrl()" + "/clients/UpdateClient/" + clientId,
                 data: { ClientId: clientId, Name: $("#EditName").val() },
                 type: "PUT",
                 cache: false,
@@ -169,7 +169,7 @@
 
         $("#Delete").click(function () {
             $.ajax({
-                url: "@this.GetApiUrl()" + "/api/clients/DeleteClient/" + clientId,
+                url: "@this.GetApiUrl()" + "/clients/DeleteClient/" + clientId,
                 type: "DELETE",
                 cache: false,
                 success: function (result) {
@@ -236,7 +236,7 @@
         var token = "@this.GetToken()";
 
         $.ajax({
-            url: "@this.GetApiUrl()" + "/api/clients/GetClients/",
+            url: "@this.GetApiUrl()" + "/clients/GetClients/",
             beforeSend: function (request) {
                 request.setRequestHeader("Authorization", "Bearer " + token);
             },

@@ -6,7 +6,7 @@
 }
 
 
-<form name="form1" method="post" action="http://localhost:58021/api/clients/UploadLogo/" enctype="multipart/form-data">
+<form name="form1" method="post" action="http://localhost:58021/clients/UploadLogo/" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
@@ -41,7 +41,7 @@
         $(function () {
             $("#Create").click(function () {
                 $.ajax({
-                    url: "@this.GetApiUrl()" + "/api/clients/UploadLogo/",
+                    url: "@this.GetApiUrl()" + "/clients/UploadLogo/",
                     data: { Name: $("#Name").val() },
                     type: "POST",
                     //dataType: "json",

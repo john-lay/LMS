@@ -20,6 +20,9 @@ namespace LMS.API.Models
         [StringLength(500)]
         public string Description { get; set; }
 
+        [StringLength(50)]
+        public string CourseType { get; set; }
+
         [ForeignKey("Client")]
         public int ClientId { get; set; }
 

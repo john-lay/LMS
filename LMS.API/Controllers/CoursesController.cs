@@ -56,74 +56,74 @@ namespace LMS.API.Controllers
             return Ok(courses);
         }
 
-        // PUT: api/Courses/5
-        [HttpPost]
-        public HttpResponseMessage UpdateCourse(int id)
-        {
-            var identity = Thread.CurrentPrincipal.Identity;
-
-            HttpResponseMessage result = null;
-            var httpRequest = HttpContext.Current.Request;
-
-            if (httpRequest.Files.Count > 0)
-            {
-                var docfiles = new List<string>();
-                foreach (string file in httpRequest.Files)
-                {
-                    var postedFile = httpRequest.Files[file];
-                    var filePath = HttpContext.Current.Server.MapPath("~/" + postedFile.FileName);
-                    postedFile.SaveAs(filePath);
-
-                    docfiles.Add(filePath);
-                }
-                result = Request.CreateResponse(HttpStatusCode.Created, docfiles);
-            }
-            else
-            {
-                result = Request.CreateResponse(HttpStatusCode.BadRequest);
-            }
-
-            //httpRequest.Form["Name"]
-
-            //db.Clients.Add(client);
-            //db.SaveChanges();
-
-            return result;
-        }
-        //[HttpPut]
-        //public IHttpActionResult UpdateCourse(int id, Course course)
+        //// PUT: api/Courses/5
+        //[HttpPost]
+        //public HttpResponseMessage UpdateCourse(int id)
         //{
         //    var identity = Thread.CurrentPrincipal.Identity;
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
 
-        //    if (id != course.CourseId)
-        //    {
-        //        return BadRequest();
-        //    }
+        //    HttpResponseMessage result = null;
+        //    var httpRequest = HttpContext.Current.Request;
 
-        //    db.Entry(course).State = EntityState.Modified;
-
-        //    try
+        //    if (httpRequest.Files.Count > 0)
         //    {
-        //        db.SaveChanges();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!CourseExists(id))
+        //        var docfiles = new List<string>();
+        //        foreach (string file in httpRequest.Files)
         //        {
-        //            return NotFound();
+        //            var postedFile = httpRequest.Files[file];
+        //            var filePath = HttpContext.Current.Server.MapPath("~/" + postedFile.FileName);
+        //            postedFile.SaveAs(filePath);
+
+        //            docfiles.Add(filePath);
         //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
+        //        result = Request.CreateResponse(HttpStatusCode.Created, docfiles);
+        //    }
+        //    else
+        //    {
+        //        result = Request.CreateResponse(HttpStatusCode.BadRequest);
         //    }
 
-        //    return StatusCode(HttpStatusCode.NoContent);
+        //    //httpRequest.Form["Name"]
+
+        //    //db.Clients.Add(client);
+        //    //db.SaveChanges();
+
+        //    return result;
         //}
+        [HttpPut]
+        public IHttpActionResult UpdateCourse(int id, Course course)
+        {
+            var identity = Thread.CurrentPrincipal.Identity;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != course.CourseId)
+            {
+                return BadRequest();
+            }
+
+            db.Entry(course).State = EntityState.Modified;
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CourseExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return StatusCode(HttpStatusCode.NoContent);
+        }
 
         // POST: api/Courses
         [HttpPost]
