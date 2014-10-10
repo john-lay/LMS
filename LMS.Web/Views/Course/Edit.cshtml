@@ -2,72 +2,68 @@
 @{
     ViewBag.Title = "Edit Course";
     Layout = "~/Views/Shared/_Layout.admin.cshtml";
-    string formActionUrl = this.GetApiUrl() + "/Contents/UpdateContent/" + Model.Id;
+    string formActionUrl = this.GetApiUrl() + "/Contents/UploadContent/" + Model.CourseId;
 }
 @section head {
 
 }
-<div class="row col-md-12">
-    <div class="col-md-3">
-        course tree
-    </div>
-    <div class="col-md-9">
-        <div class="form-group row col-md-12">
+@using (Html.BeginForm("Content", "Course", FormMethod.Post, new { enctype = "multipart/form-data", role = "form", autocomplete = "off" }))
+{
+    <div class="row col-md-12">
+        <div class="col-md-3">
+            course tree
+        </div>
+        <div class="col-md-9">
             <div class="form-group row col-md-12">
-                <div class="col-md-6">
-                    @Html.LabelFor(m => m.CourseType, new { @class = "control-label" })
-                    @Html.DropDownListFor(m => m.CourseType, Model.CourseTypeList, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.CourseType)
-                    <br />
-                    @Html.LabelFor(m => m.Name, new { @class = "control-label" })
-                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.Name)
+                <div class="form-group row col-md-12">
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.CourseType, new { @class = "control-label" })
+                        @Html.DropDownListFor(m => m.CourseType, Model.CourseTypeList, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CourseType)
+                        <br />
+                        @Html.LabelFor(m => m.Name, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Name)
+                    </div>
+                    <div class="col-md-6">
+                        <button id="SaveCourse" class="btn btn-primary pull-right">Save</button>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <button id="SaveCourse" class="btn btn-primary pull-right">Save</button>
-                    @*<input type="submit" value="Save" class="btn btn-primary pull-right" />*@
-                </div>
-            </div>
-            <div class="form-group row col-md-12">
-                <div class="col-md-12">
-                    @Html.LabelFor(m => m.Description, new { @class = "control-label" })
-                    @Html.TextAreaFor(m => m.Description, new { @class = "form-control", cols = "55", rows = "5" })
-                    @Html.ValidationMessageFor(m => m.Description)
-                </div>
-                <div class="clearfix"><br /></div>
-                @*<div class="col-md-12">
-                    @Html.LabelFor(m => m.Objectives, new { @class = "control-label" })
-                    @Html.TextBoxFor(m => m.Objectives, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.Objectives)
-                </div>
-                <div class="clearfix"><br /></div>
-                <div class="col-md-12">
-                    @Html.LabelFor(m => m.Notes, new { @class = "control-label" })
-                    @Html.TextBoxFor(m => m.Notes, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.Notes)
-                </div>
-                <div class="clearfix"><br /></div>*@
-                <div class="col-md-12">
-                    <a href="#" data-toggle="modal" data-target="#UploadContentModal" class="btn btn-default">Upload Content &raquo;</a>
-                    @*<button id="SaveCourse" class="btn btn-primary pull-right">Save</button>
-                    @Html.LabelFor(m => m.Content, new { @class = "control-label" })
-                        @Html.TextBoxFor(m => m.Content, new { type = "file" })
-                        @Html.ValidationMessageFor(m => m.Content)*@
+                <div class="form-group row col-md-12">
+                    <div class="col-md-12">
+                        @Html.LabelFor(m => m.Description, new { @class = "control-label" })
+                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", cols = "55", rows = "5" })
+                        @Html.ValidationMessageFor(m => m.Description)
+                    </div>
+                    <div class="clearfix"><br /></div>
+                    @*<div class="col-md-12">
+                        @Html.LabelFor(m => m.Objectives, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.Objectives, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Objectives)
+                    </div>
+                    <div class="clearfix"><br /></div>
+                    <div class="col-md-12">
+                        @Html.LabelFor(m => m.Notes, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.Notes, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Notes)
+                    </div>
+                    <div class="clearfix"><br /></div>*@
+                    <div class="col-md-12">
+                        <a href="#" data-toggle="modal" data-target="#UploadContentModal" class="btn btn-default">Upload Content &raquo;</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-@* -- Add content Modal -- *@
-<div class="modal fade" id="UploadContentModal" tabindex="-1" role="dialog" aria-labelledby="AddContenteModallLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Upload Content</h4>
-            </div>
-            <div class="modal-body">
-                <form id="ContentForm" name="content" method="post" action="/" enctype="multipart/form-data">
+    @* -- Add content Modal -- *@
+    <div class="modal fade" id="UploadContentModal" tabindex="-1" role="dialog" aria-labelledby="AddContenteModallLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Upload Content</h4>
+                </div>
+                <div class="modal-body">                
                     <div class="form-horizontal">
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                         <div class="form-group">
@@ -79,26 +75,26 @@
                         </div>
                         <div class="form-group">
                             <div class="col-md-offset-2 col-md-10">
-                                <button id="UploadContent" type="button" class="btn btn-primary">Upload</button>
+                                <button id="UploadContent" type="submit" class="btn btn-primary">Upload</button>
                             </div>
                         </div>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
+    @Html.HiddenFor(m => m.CourseId, new { Value = Model.CourseId })
+}
 @section scripts {
     <script src="~/Scripts/jquery.form.min.js"></script>
     <script type="text/javascript" title="">
         // get current course details
         $(function () {
             $.ajax({
-                url: "@this.GetApiUrl()" + "/Courses/GetCourse/" + @Model.Id,
+                url: "@this.GetApiUrl()" + "/Courses/GetCourse/" + @Model.CourseId,
                 success: function (course) {
                     $("#Name").val(course.Name);
                     $("#Description").val(course.Description);
@@ -106,34 +102,11 @@
                 }
             });
 
-            //http://stackoverflow.com/questions/10899384/uploading-both-data-and-files-in-one-form-using-ajax
-            var formData = new FormData($("ContentForm")[0]);
-            $("#UploadContent").click(function() {
-                $.ajax({
-                    url: "@formActionUrl",
-                    data: formData,
-                    async: false,
-                    type: "POST",
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    beforeSend: function (request) {
-                        request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-                    },
-                    success: function (result) {
-                        console.log("success");
-                        console.log(result);
-                    }
-                });
-                console.log(formData);
-                return false;
-            });
-
             // TODO: fix hard coded course ID
             $("#SaveCourse").click(function () {
                 $.ajax({
-                    url: "@this.GetApiUrl()" + "/Courses/UpdateCourse/" + @Model.Id,
-                    data: { ClientId: 1, CourseId: @Model.Id, Name: $("#Name").val(), Description: $("#Description").val(), CourseType: $("#CourseType").val() },
+                    url: "@this.GetApiUrl()" + "/Courses/UpdateCourse/" + @Model.CourseId,
+                    data: { ClientId: 1, CourseId: @Model.CourseId, Name: $("#Name").val(), Description: $("#Description").val(), CourseType: $("#CourseType").val() },
                     type: "PUT",
                     cache: false,
                     success: function (result) {

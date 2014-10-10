@@ -10,7 +10,7 @@ namespace LMS.Web.Models
     public class CourseViewModel
     {
         [Required]
-        public int Id { get; set; }
+        public int CourseId { get; set; }
 
         [Required]
         [Display(Name = "Course Type")]

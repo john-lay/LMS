@@ -7,6 +7,6 @@ namespace LMS.Web.Infrastructure
 {
     public class UserProfile
     {
-        //public string Token { get; set; }
+        public int ClientId { get; set; }
     }
 }

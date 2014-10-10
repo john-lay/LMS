@@ -50,22 +50,7 @@
 
     <!-- Begin page content -->
     <div class="container">
-        <div class="alert alert-success alert-dismissible hidden" role="alert">
-            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <span class="msg"></span>
-        </div>
-        <div class="alert alert-info alert-dismissible hidden" role="alert">
-            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <span class="msg"></span>
-        </div>
-        <div class="alert alert-warning alert-dismissible hidden" role="alert">
-            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <span class="msg"></span>
-        </div>
-        <div class="alert alert-danger alert-dismissible hidden" role="alert">
-            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <span class="msg"></span>
-        </div>
+        @Html.Partial("_alert")
         <div class="page-header">
             <h1>@ViewBag.Title</h1>
         </div>

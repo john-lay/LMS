@@ -42,40 +42,7 @@ namespace LMS.API.Controllers
             return Ok(contents);
         }
 
-        // PUT: api/Contents/5
-        [HttpPost]
-        public HttpResponseMessage UploadContent(int id)
-        {
-            var identity = Thread.CurrentPrincipal.Identity;
-
-            HttpResponseMessage result = null;
-            var httpRequest = HttpContext.Current.Request;
-
-            if (httpRequest.Files.Count > 0)
-            {
-                var docfiles = new List<string>();
-                foreach (string file in httpRequest.Files)
-                {
-                    var postedFile = httpRequest.Files[file];
-                    var filePath = HttpContext.Current.Server.MapPath("~/" + postedFile.FileName);
-                    postedFile.SaveAs(filePath);
-
-                    docfiles.Add(filePath);
-                }
-                result = Request.CreateResponse(HttpStatusCode.Created, docfiles);
-            }
-            else
-            {
-                result = Request.CreateResponse(HttpStatusCode.BadRequest);
-            }
-
-            //httpRequest.Form["Name"]
-
-            //db.Clients.Add(client);
-            //db.SaveChanges();
-
-            return result;
-        }
+        // PUT: api/Contents/5        
         //[HttpPut]
         //public IHttpActionResult UpdateContent(int id, Content content)
         //{

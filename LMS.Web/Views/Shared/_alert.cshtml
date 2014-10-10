@@ -1,0 +1,22 @@
+﻿@{
+    string successHidden = string.Compare(ViewBag.AlertStatus, "success", true) == 0 ? string.Empty : "hidden";
+    string infoHidden = string.Compare(ViewBag.AlertStatus, "info", true) == 0 ? string.Empty : "hidden";
+    string warningHidden = string.Compare(ViewBag.AlertStatus, "warning", true) == 0 ? string.Empty : "hidden";
+    string dangerHidden = string.Compare(ViewBag.AlertStatus, "danger", true) == 0 ? string.Empty : "hidden";
+}
+<div class="alert alert-success alert-dismissible @successHidden" role="alert">
+    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+    <span id="AlertSuccess" class="msg">@ViewBag.alertMessage</span>
+</div>
+<div class="alert alert-info alert-dismissible @infoHidden" role="alert">
+    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+    <span id="AlertInfo" class="msg">@ViewBag.alertMessage</span>
+</div>
+<div class="alert alert-warning alert-dismissible @warningHidden" role="alert">
+    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+    <span id="AlertWarning" class="msg">@ViewBag.alertMessage</span>
+</div>
+<div class="alert alert-danger alert-dismissible @dangerHidden" role="alert">
+    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+    <span id="AlertDanger" class="msg">@ViewBag.alertMessage</span>
+</div>

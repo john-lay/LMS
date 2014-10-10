@@ -33,6 +33,7 @@ namespace LMS.Web.Controllers
                     FormsAuthentication.SetAuthCookie(model.Username, false);
                     // add the token to the session, and initialize the Api base URL
                     SetTokenForApplication(token);
+                    user.ClientId = 1; // TODO: set this properly
                     return RedirectToAction("Index", "Client");
                 }
             }
@@ -64,7 +65,7 @@ namespace LMS.Web.Controllers
                     new KeyValuePair<string, string>("grant_type", "password")
                 });
 
-                result = client.PostAsync("/token", content).Result;                    
+                result = client.PostAsync("/token", content).Result;
             }
 
             string resultContent = result.Content.ReadAsStringAsync().Result;

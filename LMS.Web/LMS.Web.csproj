@@ -904,6 +904,7 @@
     <Content Include="Scripts\kendo-js\kendo.window.min.js.map" />
     <Content Include="Views\Course\Manage.cshtml" />
     <Content Include="Views\Course\Edit.cshtml" />
+    <Content Include="Views\Shared\_alert.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
