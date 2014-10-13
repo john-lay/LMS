@@ -3,6 +3,7 @@
     ViewBag.Title = "Edit Course";
     Layout = "~/Views/Shared/_Layout.admin.cshtml";
     string formActionUrl = this.GetApiUrl() + "/Contents/UploadContent/" + Model.CourseId;
+    string sessionUrl = Url.Action("Session", "Course") + "/" + Model.CourseId;
 }
 @section head {
 
@@ -12,45 +13,45 @@
     <div class="row col-md-12">
         <div class="col-md-3">
             course tree
+            <br />
+            <a href="@sessionUrl" class="btn btn-primary">Manage Session &raquo;</a>
         </div>
         <div class="col-md-9">
             <div class="form-group row col-md-12">
-                <div class="form-group row col-md-12">
-                    <div class="col-md-6">
-                        @Html.LabelFor(m => m.CourseType, new { @class = "control-label" })
-                        @Html.DropDownListFor(m => m.CourseType, Model.CourseTypeList, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.CourseType)
-                        <br />
-                        @Html.LabelFor(m => m.Name, new { @class = "control-label" })
-                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Name)
-                    </div>
-                    <div class="col-md-6">
-                        <button id="SaveCourse" class="btn btn-primary pull-right">Save</button>
-                    </div>
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.CourseType, new { @class = "control-label" })
+                    @Html.DropDownListFor(m => m.CourseType, Model.CourseTypeList, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.CourseType)
+                    <br />
+                    @Html.LabelFor(m => m.Name, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Name)
                 </div>
-                <div class="form-group row col-md-12">
-                    <div class="col-md-12">
-                        @Html.LabelFor(m => m.Description, new { @class = "control-label" })
-                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", cols = "55", rows = "5" })
-                        @Html.ValidationMessageFor(m => m.Description)
-                    </div>
-                    <div class="clearfix"><br /></div>
-                    @*<div class="col-md-12">
-                        @Html.LabelFor(m => m.Objectives, new { @class = "control-label" })
-                        @Html.TextBoxFor(m => m.Objectives, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Objectives)
-                    </div>
-                    <div class="clearfix"><br /></div>
-                    <div class="col-md-12">
-                        @Html.LabelFor(m => m.Notes, new { @class = "control-label" })
-                        @Html.TextBoxFor(m => m.Notes, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Notes)
-                    </div>
-                    <div class="clearfix"><br /></div>*@
-                    <div class="col-md-12">
-                        <a href="#" data-toggle="modal" data-target="#UploadContentModal" class="btn btn-default">Upload Content &raquo;</a>
-                    </div>
+                <div class="col-md-6">
+                    <button id="SaveCourse" class="btn btn-primary pull-right">Save</button>
+                </div>
+            </div>
+            <div class="form-group row col-md-12">
+                <div class="col-md-12">
+                    @Html.LabelFor(m => m.Description, new { @class = "control-label" })
+                    @Html.TextAreaFor(m => m.Description, new { @class = "form-control", cols = "55", rows = "5" })
+                    @Html.ValidationMessageFor(m => m.Description)
+                </div>
+                <div class="clearfix"><br /></div>
+                @*<div class="col-md-12">
+                    @Html.LabelFor(m => m.Objectives, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Objectives, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Objectives)
+                </div>
+                <div class="clearfix"><br /></div>
+                <div class="col-md-12">
+                    @Html.LabelFor(m => m.Notes, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Notes, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Notes)
+                </div>
+                <div class="clearfix"><br /></div>*@
+                <div class="col-md-12">
+                    <a href="#" data-toggle="modal" data-target="#UploadContentModal" class="btn btn-default">Upload Content &raquo;</a>
                 </div>
             </div>
         </div>
@@ -89,8 +90,7 @@
     @Html.HiddenFor(m => m.CourseId, new { Value = Model.CourseId })
 }
 @section scripts {
-    <script src="~/Scripts/jquery.form.min.js"></script>
-    <script type="text/javascript" title="">
+    <script type="text/javascript">
         // get current course details
         $(function () {
             $.ajax({
@@ -102,7 +102,7 @@
                 }
             });
 
-            // TODO: fix hard coded course ID
+            // TODO: fix hard coded client ID
             $("#SaveCourse").click(function () {
                 $.ajax({
                     url: "@this.GetApiUrl()" + "/Courses/UpdateCourse/" + @Model.CourseId,

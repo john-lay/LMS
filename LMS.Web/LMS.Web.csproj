@@ -115,6 +115,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\datepicker.css" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\kendo-styles\Black\editor.png" />
     <Content Include="Content\kendo-styles\Black\imagebrowser.png" />
@@ -285,6 +286,7 @@
     <Content Include="Content\kendo-styles\Uniform\sprite_2x.png" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
+    <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
@@ -905,6 +907,7 @@
     <Content Include="Views\Course\Manage.cshtml" />
     <Content Include="Views\Course\Edit.cshtml" />
     <Content Include="Views\Shared\_alert.cshtml" />
+    <Content Include="Views\Course\Session.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

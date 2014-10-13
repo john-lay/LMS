@@ -25,7 +25,8 @@ namespace LMS.Web
             commonStylesBundle.Orderer = new NullOrderer();
 
             commonStylesBundle.Include(
-                "~/Content/bootstrap/bootstrap.less");
+                "~/Content/bootstrap/bootstrap.less",
+                "~/Content/datepicker.css");
 
             bundles.Add(commonStylesBundle);
 

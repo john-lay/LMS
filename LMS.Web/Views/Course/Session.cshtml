@@ -1,0 +1,371 @@
+﻿@model LMS.Web.Models.CourseViewModel
+@{
+    ViewBag.Title = "Course Session";
+    Layout = "~/Views/Shared/_Layout.admin.cshtml";
+}
+@section head {
+    <link href="~/Content/kendo-styles/kendo.silver.min.css" rel="stylesheet" />
+    <style type="text/css">
+        .datepicker {
+            z-index: 2000 !important; /* Bootstrap model has z-index of 1050 */
+        }
+        .modal-checkbox {
+            padding-left: 0;
+        }
+        .modal-checkbox input[type="checkbox"] {
+            margin-top: 10px;
+        }
+    </style>
+}
+<div class="row col-md-12">
+    <div class="col-md-3">
+        course tree
+    </div>
+    <div class="col-md-9">
+        <div class="form-group row col-md-12">
+            <div class="col-md-offset-6">
+                <a href="#" data-val="addCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal" class="btn btn-primary pull-right">Add Session &raquo;</a>
+            </div>
+        </div>
+        <div class="form-group row col-md-12">
+            <div class="col-md-12">
+                <div id="LoadingContainer" class="col-md-9">
+                    <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
+                </div>
+                <div id="CourseSessionsContainer">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-center"><input type="checkbox" id="selectAll" /></th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Rolling</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody id="CourseSessions"></tbody>
+                    </table>
+                </div>                
+            </div>
+            <div class="clearfix"><br /></div>
+        </div>
+    </div>
+</div>
+@* -- Add/Edit/Delete course session Modal -- *@
+<div class="modal fade" id="EditCourseSessionModal" tabindex="-1" role="dialog" aria-labelledby="EditCourseSessionModallLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="EditorTitle">Add Course Session</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Start Date</label>
+                        <div class="col-md-10">
+                            <div class="input-group">
+                                <input id="EditStartDate" type="text" class="form-control datepicker start" placeholder="Select date" />
+                                <label for="EditStartDate" class="input-group-addon">
+                                    <i class="input-append glyphicon glyphicon-calendar"></i>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">End Date</label>
+                        <div class="col-md-10">
+                            <div class="input-group">
+                                <input id="EditEndDate" type="text" class="form-control datepicker end" placeholder="Select date" />
+                                <label for="EditEndDate" class="input-group-addon">
+                                    <i class="input-append glyphicon glyphicon-calendar"></i>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10 modal-checkbox">
+                            <label for="IsRolling" class="control-label col-md-2">Rolling</label>
+                            <input type="checkbox" id="IsRolling" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button id="AddCourseSession" type="button" class="btn btn-default btn-primary">Save</button>
+                            <button id="EditCourseSession" type="button" class="btn btn-default btn-primary hidden">Save</button>
+                            <button id="DeleteCourseSession" type="button" class="btn btn-default btn-danger hidden">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+<script src="~/Scripts/bootstrap-datepicker.js"></script>
+<script type="text/javascript">
+    var courseSessionId = -1;
+    // get course session
+    $(function () {
+        $("#CourseSessionsContainer").hide();
+        populateSessionTable();
+
+        $('.datepicker').datepicker({
+            todayHighlight: true,
+            startDate: new Date(),
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+        });
+
+        // add session
+        $("#AddCourseSession").click(function () {
+            $.ajax({
+                url: "@this.GetApiUrl()" + "/CourseSessions/CreateCourseSession/",
+                data: {
+                    CourseId: @Model.CourseId,
+                    StartDate: covertToISODateString($("#EditStartDate").val()),
+                    EndTime: covertToISODateString($("#EditEndDate").val()),
+                    IsRolling: $("#IsRolling").is(':checked') ? true : false,
+                },
+                type: "POST",
+                cache: false,
+                success: function (result) {
+                    $("#EditCourseSessionModal").modal("hide");
+                    showCourseCategorySuccess();
+                    populateSessionTable();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("error");
+                }
+            });
+        });
+
+        // edit session
+        $("#EditCourseSession").click(function () {
+            $.ajax({
+                url: "@this.GetApiUrl()" + "/CourseSessions/UpdateCourseSession/" + courseSessionId,
+                data: {
+                    CourseSessionId: courseSessionId,
+                    CourseId: @Model.CourseId,
+                    StartDate: covertToISODateString($("#EditStartDate").val()),
+                    EndTime: covertToISODateString($("#EditEndDate").val()),
+                    IsRolling: $("#IsRolling").is(':checked') ? true : false,
+                },
+                type: "PUT",
+                cache: false,
+                success: function (result) {
+                    $("#EditCourseSessionModal").modal("hide");
+                    showCourseCategoryUpdate();
+                    populateSessionTable();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("error");
+                }
+            });
+        });
+
+        // delete session
+        $("#DeleteCourseSession").click(function () {
+            $.ajax({
+                url: "@this.GetApiUrl()" + "/CourseSessions/DeleteCourseSession/" + courseSessionId,
+                type: "DELETE",
+                cache: false,
+                success: function (result) {
+                    $("#EditCourseSessionModal").modal("hide");
+                    showCourseCategoryDelete();
+                    populateSessionTable();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("error");
+                }
+            });
+        });
+    });
+
+    // bind to the links which open the session editor (modal window)
+    $("#EditCourseSessionModal").on("show.bs.modal", function (e) {
+        var $invoker = $(e.relatedTarget);
+        courseSessionId = $invoker.parent().attr("data-id");
+
+        switch($invoker.attr("data-val")) {
+            case "addCourseSession":
+                showCourseSessionCreator();
+                break;
+            case "editCourseSession":
+                showCourseSessionEditor($invoker);
+                break;
+            case "deleteCourseSession":
+                showCourseSessionDelete($invoker);
+                break;
+        }
+    });
+
+    function showCourseSessionCreator() {
+        $("#EditorTitle").html("Add Course Session");
+
+        // clear the form for creation
+        $("#EditStartDate")
+            .val("")
+            .prop("readonly", false);
+
+        $("#EditEndDate")
+            .val("")
+            .prop("readonly", false);
+
+        $("#IsRolling")
+            .prop('checked', false)
+            .prop("disabled", false);
+
+        showEditorButton("AddCourseSession");
+    }
+
+    function showCourseSessionEditor($invoker) {
+        $("#EditorTitle").html("Edit Course Session");
+
+        var sessionTableRow = $invoker.parent().parent();
+        var startDate = sessionTableRow.find(".startDate").html();
+        var endDate = sessionTableRow.find(".endDate").html();
+        var isRolling = sessionTableRow.find(".isRolling").html();
+
+        $("#EditStartDate")
+            .val(startDate)
+            .prop("readonly", false);
+
+        $("#EditEndDate")
+            .val(endDate)
+            .prop("readonly", false);
+
+        $("#IsRolling").prop("disabled", false);
+
+        if (isRolling.toLowerCase() == "true") {
+            $("#IsRolling").prop('checked', true);
+        } else {
+            $("#IsRolling").prop('checked', false);
+        }
+
+        showEditorButton("EditCourseSession");
+    }
+
+    function showCourseSessionDelete($invoker) {
+        $("#EditorTitle").html("Are you sure you want to delete this session?");
+
+        var sessionTableRow = $invoker.parent().parent();
+        var startDate = sessionTableRow.find(".startDate").html();
+        var endDate = sessionTableRow.find(".endDate").html();
+        var isRolling = sessionTableRow.find(".isRolling").html();
+
+        $("#EditStartDate").val(startDate);
+        $("#EditEndDate").val(endDate);
+
+        if (isRolling.toLowerCase() == "true") {
+            $("#IsRolling").prop('checked', true);
+        } else {
+            $("#IsRolling").prop('checked', false);
+        }
+
+        // make the form read-only
+        $("#EditStartDate").prop("readonly", true);
+        $("#EditEndDate").prop("readonly", true);
+        $("#IsRolling").prop("disabled", true);
+
+        showEditorButton("DeleteCourseSession");
+    }
+
+    function showEditorButton(elementId) {
+        $("#AddCourseSession").addClass("hidden");
+        $("#EditCourseSession").addClass("hidden");
+        $("#DeleteCourseSession").addClass("hidden");
+        $("#" + elementId).removeClass("hidden");
+    }
+
+    function populateSessionTable() {
+        var table = $("#CourseSessions");
+        table.empty();
+        $.ajax({
+            url: "@this.GetApiUrl()" + "/CourseSessions/GetCourseSessions/" + @Model.CourseId,
+            success: function (courseSessions) {
+                $.each(courseSessions, function (i, item) {
+                    var row = '<tr>';
+                    row += '<td class="text-center"><input type="checkbox" id="' + item.CourseSessionId + '" /></td>';
+                    row += '<td class="startDate">' + formatDate(item.StartDate) + '</td>';
+                    row += '<td class="endDate">' + formatDate(item.EndTime) + '</td>';
+                    row += '<td class="isRolling">' + item.IsRolling + '</td>';
+                    row += '<td data-id="' + item.CourseSessionId + '"><a href="#" data-val="editCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal">Edit</a> | <a href="#" data-val="deleteCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal">Delete</a></td>';
+                    row += '</tr>';
+
+                    table.append(row);
+                });
+
+                $("#LoadingContainer").slideUp(function() {
+                    $("#CourseSessionsContainer").slideDown();
+                });
+            }
+        });
+    }
+
+    function formatDate(dateString) {
+        var formattedDate = new Date(dateString);
+        var d = formattedDate.getDate();
+        var m = formattedDate.getMonth();
+        m += 1;  // JavaScript months are 0-11
+        var y = formattedDate.getFullYear();
+
+        // prepend single day/month with zero
+        d = ('0' + d).slice(-2);
+        m = ('0' + m).slice(-2);
+
+        return d + "/" + m + "/" + y;
+    }
+
+    function covertToISODateString(dateString) {
+        var ISODate = parseDate(dateString);
+        var d = ISODate.getDate();
+        var m =  ISODate.getMonth();
+        m += 1;  // JavaScript months are 0-11
+        var y = ISODate.getFullYear();
+
+        // The .NET framework expecs yyyy-MM-dd
+        return y + "-" + m + "-" + d;
+    }
+
+    // parse a date from dd/mm/yyyy format
+    function parseDate(input) {
+        var parts = input.split('/');
+        // new Date(year, month [, day [, hours[, minutes[, seconds[, ms]]]]])
+        return new Date(parts[2], parts[1] - 1, parts[0]); // Note: months are 0-based
+    }
+
+    function showCourseCategorySuccess() {
+        var msg = "Course session successfully created!";
+
+        $(".alert-success .msg")
+            .html(msg)
+            .parent()
+                .removeClass("hidden")
+                .slideDown();
+    }
+
+    function showCourseCategoryUpdate() {
+        var msg = "Course session successfully updated!";
+
+        $(".alert-success .msg")
+            .html(msg)
+            .parent()
+                .removeClass("hidden")
+                .slideDown();
+    }
+
+    function showCourseCategoryDelete() {
+        var msg = "Course session successfully deleted!";
+
+        $(".alert-success .msg")
+            .html(msg)
+            .parent()
+                .removeClass("hidden")
+                .slideDown();
+    }
+</script>
+}

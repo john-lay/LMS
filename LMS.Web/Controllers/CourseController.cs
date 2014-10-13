@@ -29,6 +29,16 @@ namespace LMS.Web.Controllers
             return View(model);
         }
 
+        public ActionResult Session(int id)
+        {
+            var model = new CourseViewModel
+            {
+                CourseId = id
+            };
+
+            return View(model);
+        }
+
         private IEnumerable<SelectListItem> GetCourseTypeList()
         {
             return new List<SelectListItem>

@@ -18,27 +18,28 @@ namespace LMS.API.Controllers
         private LMSContext db = new LMSContext();
 
         // GET: api/CourseSessions
-        public IQueryable<CourseSession> GetCourseSessions()
+        [HttpGet]
+        public IQueryable<CourseSession> GetCourseSessions(int id)
         {
-            return db.CourseSessions;
+            return db.CourseSessions.Where(s => s.CourseId == id);
         }
 
         // GET: api/CourseSessions/5
-        [ResponseType(typeof(CourseSession))]
-        public IHttpActionResult GetCourseSession(int id)
-        {
-            CourseSession courseSession = db.CourseSessions.Find(id);
-            if (courseSession == null)
-            {
-                return NotFound();
-            }
+        //[ResponseType(typeof(CourseSession))]
+        //public IHttpActionResult GetCourseSession(int id)
+        //{
+        //    CourseSession courseSession = db.CourseSessions.Find(id);
+        //    if (courseSession == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return Ok(courseSession);
-        }
+        //    return Ok(courseSession);
+        //}
 
         // PUT: api/CourseSessions/5
-        [ResponseType(typeof(void))]
-        public IHttpActionResult PutCourseSession(int id, CourseSession courseSession)
+        [HttpPut]
+        public IHttpActionResult UpdateCourseSession(int id, CourseSession courseSession)
         {
             if (!ModelState.IsValid)
             {
@@ -72,8 +73,8 @@ namespace LMS.API.Controllers
         }
 
         // POST: api/CourseSessions
-        [ResponseType(typeof(CourseSession))]
-        public IHttpActionResult PostCourseSession(CourseSession courseSession)
+        [HttpPost]
+        public IHttpActionResult CreateCourseSession(CourseSession courseSession)
         {
             if (!ModelState.IsValid)
             {
@@ -83,11 +84,11 @@ namespace LMS.API.Controllers
             db.CourseSessions.Add(courseSession);
             db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = courseSession.CourseSessionId }, courseSession);
+            return Ok(courseSession);
         }
 
         // DELETE: api/CourseSessions/5
-        [ResponseType(typeof(CourseSession))]
+        [HttpDelete]
         public IHttpActionResult DeleteCourseSession(int id)
         {
             CourseSession courseSession = db.CourseSessions.Find(id);
