@@ -1,0 +1,89 @@
+﻿@{
+    ViewBag.Title = "Manage Users";
+    Layout = "~/Views/Shared/_Layout.admin.cshtml";
+}
+@section head {
+
+}
+<div class="row col-md-12">
+    <div class="col-md-3">
+        user tree
+    </div>
+    <div class="col-md-9 form-horizontal">
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="FirstName">First Name</label>
+            <div class="col-md-9">
+                <input class="form-control" id="FirstName" placeholder="First Name" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="LastName">Last Name</label>
+            <div class="col-md-9">
+                <input class="form-control" id="LastName" placeholder="Last Name" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="Password">Password</label>
+            <div class="col-md-9">
+                <input class="form-control" id="Password" placeholder="Password" type="password">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="ConfirmPassword">Confirm Password</label>
+            <div class="col-md-9">
+                <input class="form-control" id="ConfirmPassword" placeholder="Password" type="password">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="Email">Email</label>
+            <div class="col-md-9">
+                <input class="form-control" id="Email" placeholder="example@avemtec.com" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-2 col-md-offset-10">
+                <button id="SaveUser" class="btn btn-primary pull-right">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script type="text/javascript">
+        $(function () {
+            @*$.ajax({
+                url: "@this.GetApiUrl()" + "/Courses/GetCourse/" + @Model.CourseId,
+                success: function (course) {
+                    $("#Name").val(course.Name);
+                    $("#Description").val(course.Description);
+                    $("#CourseType").val(course.CourseType)
+                }
+            });*@
+
+            // TODO: fix hard coded client ID
+            $("#SaveUser").click(function () {
+                $.ajax({
+                    url: "@this.GetApiUrl()" + "/Account/Register/",
+                    data: { ClientId: 1, FirstName: $("#FirstName").val(), LastName: $("#LastName").val(), EmailAddress: $("#Email").val(), Password: $("#Password").val() },
+                    type: "POST",
+                    cache: false,
+                    success: function (result) {
+                        showUserSuccess();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log("error");
+                    }
+                });
+            });
+        });
+
+        function showUserSuccess() {
+            var msg = "User: <b>" + $("#FirstName").val() + " " + $("#LastName").val() + "</b> successfully created!";
+
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
+                    .removeClass("hidden")
+                    .slideDown();
+        }
+    </script>
+}

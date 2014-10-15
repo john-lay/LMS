@@ -30,9 +30,9 @@ namespace LMS.API.Utilities
             db.Clients.Add(client);
 
             // users
-            User user = new User { ClientId = 1, FirstName = "Joe", LastName = "Bloggs", EmailAddress = "joe.bloggs@test.com", Password = "somehash" };
+            User user = new User { ClientId = 1, FirstName = "Joe", LastName = "Bloggs" }; //, EmailAddress = "joe.bloggs@test.com", Password = "somehash" };
             db.Users.Add(user);
-            User user2 = new User { ClientId = 1, FirstName = "Scott", LastName = "Hanselman", EmailAddress = "Scott.Hanselman@test.com", Password = "someotherhash" };
+            User user2 = new User { ClientId = 1, FirstName = "Scott", LastName = "Hanselman" }; //, EmailAddress = "Scott.Hanselman@test.com", Password = "someotherhash" };
             db.Users.Add(user2);
 
             // user group

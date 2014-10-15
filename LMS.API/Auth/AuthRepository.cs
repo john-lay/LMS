@@ -1,12 +1,10 @@
 ﻿using LMS.API.Contexts;
+using LMS.API.Controllers;
 using LMS.API.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace LMS.API.Auth
 {
@@ -29,9 +27,22 @@ namespace LMS.API.Auth
                 UserName = userModel.EmailAddress
             };
 
+            // Save in AspNetUsers
             var result = await _userManager.CreateAsync(user, userModel.Password);
 
+            // Save in User table
+            var repo = new UsersController();
+            userModel.ASPNetUserId = user.Id;
+            userModel.Password = null;
+            User[] users = new User[] { userModel };
+            repo.CreateUser(users);
+
             return result;
+        }
+
+        private object UsersController()
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<IdentityUser> FindUser(string userName, string password)

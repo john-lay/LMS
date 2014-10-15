@@ -14,6 +14,9 @@ namespace LMS.API.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserId { get; set; }
 
+        //[ForeignKey("ASPNetUsers")]
+        public string ASPNetUserId { get; set; }
+
         [StringLength(50)]
         public string FirstName { get; set; }
 
