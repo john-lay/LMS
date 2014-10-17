@@ -838,7 +838,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Views\Shared\_Layout.entry.cshtml" />
     <Content Include="Views\Shared\_Layout.admin.cshtml" />
-    <Content Include="Views\Client\Index.cshtml" />
+    <Content Include="Views\Home\Welcome.cshtml" />
     <Content Include="Views\Client\Manage.cshtml" />
     <Content Include="Views\Client\Logo.cshtml" />
     <Content Include="Scripts\kendo-js\jquery.min.map" />
@@ -910,6 +910,7 @@
     <Content Include="Views\Shared\_alert.cshtml" />
     <Content Include="Views\Course\Session.cshtml" />
     <Content Include="Views\User\Manage.cshtml" />
+    <Content Include="Views\User\Group.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -919,7 +920,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Account\" />
     <Folder Include="Views\LMSBase\" />
   </ItemGroup>
   <PropertyGroup>

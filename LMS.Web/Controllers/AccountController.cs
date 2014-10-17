@@ -34,7 +34,7 @@ namespace LMS.Web.Controllers
                     // add the token to the session, and initialize the Api base URL
                     SetTokenForApplication(token);
                     user.ClientId = 1; // TODO: set this properly
-                    return RedirectToAction("Index", "Client");
+                    return RedirectToAction("Welcome", "Home");
                 }
             }
 

@@ -1,0 +1,351 @@
+﻿@{
+    ViewBag.Title = "Manage User Groups";
+    Layout = "~/Views/Shared/_Layout.admin.cshtml";
+}
+@section head {
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.common.min.css" rel="stylesheet" />
+    <link href="~/Content/kendo-styles/kendo.silver.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.default.min.css" rel="stylesheet" />
+    <style>
+        /*.k-sprite.group {
+            background-color: #e7e7e7 !important;
+        }*/
+    </style>
+}
+<div class="row col-md-12">
+    <div class="col-md-3">
+        <div id="treeview" data-role="treeview" class="k-widget k-treeview" tabindex="0" role="tree" aria-activedescendant="treeview_tv_active">
+            <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
+        </div>
+        <div id="result"></div><br />
+        <button id="UpdateGroupOrder" class="btn btn-primary pull-right">Save Changes</button>
+    </div>
+    <div class="col-md-9 form-horizontal">
+        <div class="form-group">
+            <label class="col-md-2 control-label" for="Email">Group Name:</label>
+            <div class="col-md-10">
+                <input class="form-control" id="GroupName" placeholder="new group name..." type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-2 col-md-offset-10">
+                <button id="SaveGroup" class="btn btn-primary pull-right">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* -- Update User Group Modal -- *@
+<div class="modal fade" id="UpdateUserGroupModal" tabindex="-1" role="dialog" aria-labelledby="UpdateUserGroupModallLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Update User Group</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Group Name</label>
+                        <div class="col-md-10">
+                            <input id="UpdateGroupName" class="form-control text-box single-line" type="text" />
+                        </div>
+                    </div>                    
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button id="SaveUpdatedGroup" type="button" class="btn btn-default btn-primary">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
+    <script type="text/javascript">
+    $("#treeview-left").kendoTreeView({
+        dragAndDrop: true,
+        drop: function (e) {
+            var sourceNode = $("#treeview-left").data('kendoTreeView').dataItem(e.sourceNode);
+            var destinationNode = $("#treeview-left").data('kendoTreeView').dataItem(e.destinationNode);
+            var sourceRootNode = $(e.sourceNode).parent().parent();
+            var destinationRootNode = $(e.destinationNode).parent().parent();
+
+            // do not allow root nodes to be dropped levels
+            if (sourceNode.IsParent != destinationNode.IsParent && e.dropPosition != "over") {
+                e.setValid(false);
+            }
+            // do not allow adding to children
+            if (!destinationNode.IsParent && e.dropPosition == "over") {
+                // destination is anything but a root node, do not add as child
+                if (destinationRootNode.attr("id") != $("#treeview-left").attr("id")) {
+                    e.setValid(false);
+                }
+                // both source and destination are root nodes
+                //if (sourceRootNode.attr("id") == $("#treeview-left").attr("id")
+                //    && destinationRootNode.attr("id") == $("#treeview-left").attr("id")) {
+                //    e.setValid(false);
+                //}
+            }
+        },
+        dataSource: [
+            {
+                id: 1, text: "Furniture", expanded: true, spriteCssClass: "group", items: [
+                    { id: 1, text: "Tables & Chairs" },
+                    { id: 2, text: "Sofas" },
+                    { id: 3, text: "Occasional Furniture" }
+                ]
+            },
+            {
+                id: 2, text: "Decor", spriteCssClass: "group", items: [
+                    { id: 4, text: "Bed Linen" },
+                    { id: 5, text: "Curtains & Blinds" },
+                    { id: 6, text: "Carpets" }
+                ]
+            }
+        ]
+    });
+
+    //var tree = $("#treeview-left").data("kendoTreeView").dataSource.view();
+
+    //function writeTree() {
+    //    $.each(tree, function (index, treeNode) {
+    //        console.log("root node...");
+    //        console.log("id: [" + treeNode.id + "], text: [" + treeNode.text + "], uid: [" + treeNode.uid + "], css: [" + treeNode.spriteCssClass + "], has children: [" + treeNode.hasChildren + "]");
+    //        $.each(treeNode.items, function (userIndex, user) {
+    //            console.log("inner node...");
+    //            console.log("id: [" + user.id + "], text: [" + user.text + "], uid: [" + user.uid + "], css: [" + user.spriteCssClass + "], has children: [" + user.hasChildren + "]");
+    //        });
+    //    });
+    //}
+    </script>
+<script type="text/javascript">
+    var clientId = 1; // TODO: Make this dynamic on a per client basis
+    var UserGroups;
+    var CurrentUserGroup;
+    @*function loadUserGroupTree() {
+        $.ajax({
+            url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/" + clientId,
+                success: function (userGroups) {
+                    UserGroups = JSON.parse(userGroups);
+                    //console.log(userGroups);
+                    $("#treeview").kendoTreeView({
+                        dragAndDrop: true,
+                        drop: function (e) {
+                            var sourceNode = $("#treeview").data('kendoTreeView').dataItem(e.sourceNode);
+                            var destinationNode = $("#treeview").data('kendoTreeView').dataItem(e.destinationNode);
+                            var sourceIsGroup = $(e.sourceNode).find(".group").length != 0;
+                            var destinationIsGroup = $(e.destinationNode).find(".group").length != 0;
+
+                            // do not allow root nodes to be dropped levels
+                            if (sourceNode.IsParent != destinationNode.IsParent && e.dropPosition != "over") {
+                                e.setValid(false);
+                            }
+                            // do not allow adding to children
+                            if (!destinationNode.IsParent && e.dropPosition == "over") {
+                                if (sourceIsGroup) {
+                                    e.setValid(false);
+                                }
+                                if (!sourceIsGroup && !destinationIsGroup) {
+                                    e.setValid(false);
+                                }
+                            }
+                        },
+                        dataSource: JSON.parse(userGroups)
+                    });
+
+                    console.log("finished");
+
+                    // style the group elements
+                    $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+                }
+            });
+        }*@
+
+    function updateTree() {
+        $("#treeview").slideUp();
+        $.ajax({
+            url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/" + clientId,
+            success: function (userGroups) {  
+                var treeview = $("#treeview").data("kendoTreeView");
+                treeview.setDataSource(new kendo.data.HierarchicalDataSource({
+                    data: JSON.parse(userGroups)
+                }));
+
+                // style the group elements
+                $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+
+                $("#treeview").slideDown();
+            }
+        });
+    }
+
+    $(function () {
+        // initialise tree
+        $.ajax({
+            url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/" + clientId,
+            success: function (userGroups) {
+                UserGroups = JSON.parse(userGroups);
+                //console.log(userGroups);
+                $("#treeview").kendoTreeView({
+                    dragAndDrop: true,
+                    drop: function (e) {
+                        var sourceNode = $("#treeview").data('kendoTreeView').dataItem(e.sourceNode);
+                        var destinationNode = $("#treeview").data('kendoTreeView').dataItem(e.destinationNode);
+                        var sourceIsGroup = $(e.sourceNode).find(".group").length != 0;
+                        var destinationIsGroup = $(e.destinationNode).find(".group").length != 0;
+
+                        // do not allow root nodes to be dropped levels
+                        if (sourceNode.IsParent != destinationNode.IsParent && e.dropPosition != "over") {
+                            e.setValid(false);
+                        }
+                        // do not allow adding to children
+                        if (!destinationNode.IsParent && e.dropPosition == "over") {
+                            if (sourceIsGroup) {
+                                e.setValid(false);
+                            }
+                            if (!sourceIsGroup && !destinationIsGroup) {
+                                e.setValid(false);
+                            }
+                        }
+                    },
+                    dataSource: JSON.parse(userGroups)
+                });
+
+                console.log("finished");
+
+                // style the group elements
+                $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+            }
+        });
+        
+
+        // TODO: fix hard coded client ID
+        $("#SaveGroup").click(function () {
+            $.ajax({
+                url: "@this.GetApiUrl()" + "/UserGroups/CreateGroup/",
+                data: { ClientId: 1, Name: $("#GroupName").val(), ParentId: -1 },
+                type: "POST",
+                cache: false,
+                success: function (result) {
+                    showGroupSuccess();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("error");
+                }
+            });
+        });
+
+        $("#SaveUpdatedGroup").click(function () {
+            $.ajax({
+                url: "@this.GetApiUrl()" + "/UserGroups/UpdateGroup/" + CurrentUserGroup.id,
+                data: { ClientId: 1, Name: $("#UpdateGroupName").val(), UserGroupId: CurrentUserGroup.id },
+                type: "PUT",
+                cache: false,
+                success: function (result) {
+                    $("#UpdateUserGroupModal").modal("hide");
+                    showGroupUpdate();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("error");
+                }
+            });
+        });
+
+        // bind to ajax created elements (clicking on categories in tree)
+        $(document).on('click', '.k-in', function () {
+            var isGroup = $(this).find(".group").length != 0;
+            var Name = $(this).html();
+            Name = Name.split("</span>")[1];
+            console.log(Name);
+            if (isGroup) {
+                $.each(UserGroups, function () {
+                    if (this.text == Name) {
+                        CurrentUserGroup = this;
+
+                        // show editor
+                        $("#UpdateGroupName").val(this.text);
+                        $("#UpdateUserGroupModal").modal("show");
+                    }
+                });
+            }
+        });
+    });
+
+    function showGroupSuccess() {
+        var msg = "Group: <b>" + $("#GroupName").val() + "</b> successfully created!";
+
+        $(".alert-success .msg")
+            .html(msg)
+            .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+        updateTree();
+    }
+
+    $("#UpdateGroupOrder").click(function () {
+        $.ajax({
+            url: "@this.GetApiUrl()" + "/UsersInUserGroups/UpdateUsersInGroup/",
+            data: { '': getUserGroupsJSON() },
+            type: "PUT",
+            cache: false,
+            success: function (result) {
+                showGroupOrderUpdate();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log("error");
+            }
+        });
+
+    });
+
+    function getUserGroupsJSON() {
+        var tree = $("#treeview").data("kendoTreeView").dataSource.view();
+        var list = [];
+
+        $.each(tree, function (groupIndex, group) {
+            // loop on items only if they are a group type item (don't want to interact with the ungrouped users)
+            if (group.hasOwnProperty('items')) {
+                $.each(group.items, function (userIndex, user) {
+                    console.log("updating...");
+                    var userGroup = { "UserGroupId": group.id, "UserId": user.id }
+                    list.push(userGroup);
+                });
+            }
+        });
+
+        return list;
+    }
+
+    function showGroupOrderUpdate() {
+        var msg = "User Group order successfully updated!";
+
+        $(".alert-success .msg")
+            .html(msg)
+            .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+        updateTree();
+    }
+
+    function showGroupUpdate() {
+        var msg = "User Group: <b>" + $("#UpdateGroupName").val() + "</b> successfully updated!";
+
+        $(".alert-success .msg")
+            .html(msg)
+            .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+        updateTree();
+    }
+</script>
+}

@@ -76,26 +76,23 @@ namespace LMS.API.Controllers
 
         // POST: api/Groups
         [HttpPost]
-        public HttpResponseMessage CreateGroup(UserGroup group)
+        public IHttpActionResult CreateGroup(UserGroup group)
         {
-            HttpResponseMessage msg;
-
             if (!ModelState.IsValid)
             {
-                msg = Request.CreateResponse(HttpStatusCode.NotFound, "Error creating group");
-                return msg;
+                return BadRequest(ModelState);
             }
 
             //generate group id
             group.UserGroupId = db.UserGroups.Count();
 
+            //set parent id to root. i.e. -1
+            group.ParentId = -1;
+
             db.UserGroups.Add(group);
             db.SaveChanges();
 
-            msg = Request.CreateResponse(HttpStatusCode.Created);
-            msg.Headers.Location = new Uri(Request.RequestUri + group.UserGroupId.ToString());
-
-            return msg;
+            return Ok(group);
         }
 
         // DELETE: api/Groups/5

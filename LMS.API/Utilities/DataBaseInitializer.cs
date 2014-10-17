@@ -36,7 +36,7 @@ namespace LMS.API.Utilities
             db.Users.Add(user2);
 
             // user group
-            UserGroup group = new UserGroup {  UserGroupId = 1, Name = "cohorts", ParentId = -1 };
+            UserGroup group = new UserGroup {  UserGroupId = 1, Name = "cohorts", ParentId = -1, ClientId = 1 };
             db.UserGroups.Add(group);
             UsersInUserGroup ug = new UsersInUserGroup { UserGroupId = 1, UserId = 1 };
             db.UsersInUserGroups.Add(ug);

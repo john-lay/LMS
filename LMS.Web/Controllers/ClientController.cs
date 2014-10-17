@@ -14,11 +14,6 @@ namespace LMS.Web.Controllers
 {
     public class ClientController : LMSBaseController
     {
-        public ActionResult Index()
-        {
-            return View();
-        }
-
         public ActionResult Manage()
         {
             var model = new ClientViewModel();

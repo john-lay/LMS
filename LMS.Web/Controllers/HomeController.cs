@@ -14,5 +14,10 @@ namespace LMS.Web.Controllers
         {
             return View();
         }
+
+        public ActionResult Welcome()
+        {
+            return View();
+        }
     }
 }
