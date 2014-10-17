@@ -44,7 +44,8 @@
     <div id="CourseContainer" class="col-md-9 hidden">
         <p class="lead">Click below to add content, create sessions, and manage <span style="text-decoration: underline" class="courseName"></span>.</p>
         <a href="#" data-toggle="modal" data-target="#DeleteCourseModal" class="btn btn-danger pull-right" style="margin-left: 1em">Delete</a>
-        <a href="#" id="EditCourse" class="btn btn-primary pull-right">Manage Course »</a>
+        <a href="#" id="EditCourse" class="btn btn-primary pull-right" style="margin-left: 1em">Manage Course &raquo;</a>
+        <a href="#" id="ManageSessions" class="btn btn-primary pull-right">Manage Session &raquo;</a>
     </div>
 </div>
 
@@ -379,119 +380,117 @@
         }        
     </script>
     <script type="text/javascript" title="Manage Course">
-        $(function () {
-            $("#CreateCourse").click(function () {
-                $.ajax({
-                    url: "@this.GetApiUrl()" + "/Courses/CreateCourse/",
-                    data: { Name: $("#CourseName").val(), Description: $("#CourseDescription").val(), ClientId: 1 }, // TODO: fix hard coded course ID
-                    type: "POST",
-                    cache: false,
-                    success: function (result) {
-                        addCourseToCourseCategory(result);
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log("error");
-                    }
-                });
-            });
-        });
-
-        function addCourseToCourseCategory(course) {
-            var courseId = course.CourseId;
-            var courseName = course.Name;
-
+    $(function () {
+        $("#CreateCourse").click(function () {
             $.ajax({
-                url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/AddCourseToCourseCategory/",
-                data: { CourseCategoryId: categoryId, CourseId: courseId },
+                url: "@this.GetApiUrl()" + "/Courses/CreateCourse/",
+                data: { Name: $("#CourseName").val(), Description: $("#CourseDescription").val(), ClientId: 1 }, // TODO: fix hard coded course ID
                 type: "POST",
                 cache: false,
                 success: function (result) {
-                    $("#CreateCourseModal").modal("hide");
-                    showCourseSuccess(courseName);
+                    addCourseToCourseCategory(result);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log("error");
                 }
-            });            
-        }
+            });
+        });
+    });
 
-        function showCourseSuccess(courseName) {
-            var msg = "Course: <b>" + courseName + "</b> successfully added to category: <b>" + categoryName + "</b>.";
+    function addCourseToCourseCategory(course) {
+        var courseId = course.CourseId;
+        var courseName = course.Name;
 
-            $(".alert-success .msg")
-                .html(msg)
-                .parent()
-                    .removeClass("hidden")
-                    .slideDown();
+        $.ajax({
+            url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/AddCourseToCourseCategory/",
+            data: { CourseCategoryId: categoryId, CourseId: courseId },
+            type: "POST",
+            cache: false,
+            success: function (result) {
+                $("#CreateCourseModal").modal("hide");
+                showCourseSuccess(courseName);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log("error");
+            }
+        });
+    }
 
-            $('#treeview').slideUp();
-            loadCategories();
-            $('#treeview').slideDown();
-        }
+    function showCourseSuccess(courseName) {
+        var msg = "Course: <b>" + courseName + "</b> successfully added to category: <b>" + categoryName + "</b>.";
 
-        // Delete
-        $(function () {
-            $("#DeleteCourse").click(function () {
-                $.ajax({
-                    url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/DeleteCourseInCourseCategory/",
-                    data: { CourseCategoryId: categoryId, CourseId: course.id },
-                    type: "DELETE",
-                    cache: false,
-                    success: function (result) {
-                        $("#DeleteCourseModal").modal("hide");
-                        showCourseDelete();
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log("error");
-                    }
-                });
+        $(".alert-success .msg")
+            .html(msg)
+            .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+        $('#treeview').slideUp();
+        loadCategories();
+        $('#treeview').slideDown();
+    }
+
+    // Delete
+    $(function () {
+        $("#DeleteCourse").click(function () {
+            $.ajax({
+                url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/DeleteCourseInCourseCategory/",
+                data: { CourseCategoryId: categoryId, CourseId: course.id },
+                type: "DELETE",
+                cache: false,
+                success: function (result) {
+                    $("#DeleteCourseModal").modal("hide");
+                    showCourseDelete();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("error");
+                }
+            });
+        });
+    });
+
+    function showCourseDelete() {
+        var msg = "Course: <b>" + course.text + "</b> successfully deleted!";
+
+        $(".alert-success .msg")
+            .html(msg)
+            .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+        $('#treeview').slideUp();
+        loadCategories();
+        $('#treeview').slideDown();
+        loadCategoryCreator();
+    }
+
+    function loadCourseEditor(courseName) {
+        var course = getCourseByName(courseName);
+        var editUrl = "@Url.Action("Edit", "Course")" + "/" + course.id;
+        var sessionUrl = "@Url.Action("Session", "Course")" + "/" + course.id;
+
+        // hide editor and show loading
+        $("#EditorContainer").hide();
+        $("#CourseContainer").slideDown(function () {
+            $(".courseName").html(courseName);
+            $("#EditCourse").attr("href", editUrl);
+            $("#ManageSessions").attr("href", sessionUrl);
+            $(this).removeClass("hidden");
+        });
+    }
+
+    function getCourseByName(courseName) {
+        var ret;
+        $.each(courseCategories, function (categoryIndex, category) {
+            $.each(category.items, function (courseIndex, course) {
+                if (course.text == courseName) {
+                    ret = course;
+                    categoryId = category.id;
+                }
             });
         });
 
-        function showCourseDelete() {
-            var msg = "Course: <b>" + course.text + "</b> successfully deleted!";
-
-            $(".alert-success .msg")
-                .html(msg)
-                .parent()
-                    .removeClass("hidden")
-                    .slideDown();
-
-            $('#treeview').slideUp();
-            loadCategories();
-            $('#treeview').slideDown();
-            loadCategoryCreator();
-        }
-
-        function loadCourseEditor(courseName) {
-            // hide editor and show loading
-            $("#EditorContainer").hide();
-            $("#CourseContainer").slideDown(function () {
-                $(".courseName").html(courseName);                
-                $("#EditCourse").attr("href", getEditCourseUrl(courseName));
-                $(this).removeClass("hidden");
-            });
-        }
-
-        function getCourseByName(courseName) {
-            var ret;
-            $.each(courseCategories, function (categoryIndex, category) {
-                $.each(category.items, function (courseIndex, course) {
-                    if (course.text == courseName) {                        
-                        ret = course;
-                        categoryId = category.id;
-                    }
-                });
-            });
-
-            return ret;
-        }
-
-        function getEditCourseUrl(courseName) {
-            var url = "@Url.Action("Edit", "Course")";
-            var editableCourse = getCourseByName(courseName);
-
-            return url + "/" + editableCourse.id;
-        }
+        return ret;
+    }
     </script>
     }

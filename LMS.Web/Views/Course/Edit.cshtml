@@ -2,8 +2,7 @@
 @{
     ViewBag.Title = "Edit Course";
     Layout = "~/Views/Shared/_Layout.admin.cshtml";
-    string formActionUrl = this.GetApiUrl() + "/Contents/UploadContent/" + Model.CourseId;
-    string sessionUrl = Url.Action("Session", "Course") + "/" + Model.CourseId;
+    string formActionUrl = this.GetApiUrl() + "/Contents/UploadContent/" + Model.CourseId;    
 }
 @section head {
 
@@ -11,10 +10,8 @@
 @using (Html.BeginForm("Content", "Course", FormMethod.Post, new { enctype = "multipart/form-data", role = "form", autocomplete = "off" }))
 {
     <div class="row col-md-12">
-        <div class="col-md-3">
-            course tree
-            <br />
-            <a href="@sessionUrl" class="btn btn-primary">Manage Session &raquo;</a>
+        <div class="col-md-3">            
+            <a href="#" data-toggle="modal" data-target="#UploadContentModal" class="btn btn-sm btn-primary">Upload Content &raquo;</a>
         </div>
         <div class="col-md-9">
             <div class="form-group row col-md-12">
@@ -36,22 +33,6 @@
                     @Html.LabelFor(m => m.Description, new { @class = "control-label" })
                     @Html.TextAreaFor(m => m.Description, new { @class = "form-control", cols = "55", rows = "5" })
                     @Html.ValidationMessageFor(m => m.Description)
-                </div>
-                <div class="clearfix"><br /></div>
-                @*<div class="col-md-12">
-                    @Html.LabelFor(m => m.Objectives, new { @class = "control-label" })
-                    @Html.TextBoxFor(m => m.Objectives, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.Objectives)
-                </div>
-                <div class="clearfix"><br /></div>
-                <div class="col-md-12">
-                    @Html.LabelFor(m => m.Notes, new { @class = "control-label" })
-                    @Html.TextBoxFor(m => m.Notes, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.Notes)
-                </div>
-                <div class="clearfix"><br /></div>*@
-                <div class="col-md-12">
-                    <a href="#" data-toggle="modal" data-target="#UploadContentModal" class="btn btn-default">Upload Content &raquo;</a>
                 </div>
             </div>
         </div>

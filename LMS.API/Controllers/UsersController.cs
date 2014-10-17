@@ -33,7 +33,7 @@ namespace LMS.API.Controllers
                 return NotFound();
             }
 
-            return Ok(user);
+            return Ok(new { FirstName = user.FirstName, LastName = user.LastName});
         }
 
         //[HttpGet]
