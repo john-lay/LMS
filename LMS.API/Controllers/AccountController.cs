@@ -12,7 +12,7 @@ using System.Web.Http;
 namespace LMS.API.Controllers
 {
     [RoutePrefix("api/Account")]
-    public class AccountController : ApiController
+    public class AccountController : ApiBaseController
     {
         private AuthRepository _repo = null;
 

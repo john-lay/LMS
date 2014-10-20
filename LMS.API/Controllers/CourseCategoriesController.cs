@@ -1,22 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using LMS.API.Contexts;
+using LMS.API.Models;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
-using System.Web.Http.Description;
-using LMS.API.Models;
-using LMS.API.Contexts;
-using System.Web.Http.Cors;
 using System.Web.Script.Serialization;
 
 namespace LMS.API.Controllers
 {
-    [EnableCors(origins: "http://localhost:58733", headers: "*", methods: "*")]
-    public class CourseCategoriesController : ApiController
+    public class CourseCategoriesController : ApiBaseController
     {
         private LMSContext db = new LMSContext();
 

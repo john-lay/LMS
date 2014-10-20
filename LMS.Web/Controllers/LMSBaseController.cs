@@ -19,7 +19,13 @@ namespace LMS.Web.Controllers
 
         private void InitResources()
         {
-            ViewBag.Token = HttpContext.Session.GetUserToken();
+            //ViewBag.Token = HttpContext.Session.GetUserToken();
+            var tokenCookie = Request.Cookies["AvemtecLMS"] as HttpCookie;
+            if (tokenCookie != null)
+            { 
+                ViewBag.Token = tokenCookie.Value;
+            }                
+
             ViewBag.ApiUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
         }
     }

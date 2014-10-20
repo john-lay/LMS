@@ -1,27 +1,18 @@
-﻿using System;
+﻿using LMS.API.Contexts;
+using LMS.API.Models;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
+using System.Web;
 using System.Web.Http;
-using System.Web.Http.Description;
-using LMS.API.Models;
-using LMS.API.Contexts;
 
 namespace LMS.API.Controllers
 {
-    public class UsersController : ApiController
+    public class UsersController : ApiBaseController
     {
         private LMSContext db = new LMSContext();
-
-        // GET: api/Users
-        //public IQueryable<User> GetUsers()
-        //{
-        //    return db.Users;
-        //}
 
         // GET: api/Users/5
         [HttpGet]
@@ -34,6 +25,35 @@ namespace LMS.API.Controllers
             }
 
             return Ok(new { FirstName = user.FirstName, LastName = user.LastName});
+        }
+
+        [HttpPost]
+        public IHttpActionResult GetUserProfileByEmail()
+        {
+            string emailAddress = HttpContext.Current.Request.Form[0];
+
+            var query = (from u in db.Users
+                        join c in db.Clients on u.ClientId equals c.ClientId
+                         where u.EmailAddress == emailAddress
+                        select new 
+                        {
+                            c.ClientId,
+                            c.Name,
+                            u.UserId,
+                            u.FirstName,
+                            u.LastName
+                        }).ToArray();
+
+            var result = query.Select(x => new 
+            {
+                ClientId = x.ClientId,
+                ClientName = x.Name,
+                UserId = x.UserId,
+                FirstName = x.FirstName,
+                LastName = x.LastName
+            }).ToArray();
+
+            return Ok(result);
         }
 
         //[HttpGet]
@@ -110,12 +130,19 @@ namespace LMS.API.Controllers
 
             foreach (User user in users)
             {
-                db.Users.Add(user);
-                db.SaveChanges();
+                // prevent the creation of users with an already registered email address
+                if (UserExists(user.EmailAddress))
+                {
+                    return BadRequest(ModelState);
+                }
+                else
+                { 
+                    db.Users.Add(user);
+                    db.SaveChanges();
+                }                
             }
 
             return Ok(users);
-            //return CreatedAtRoute("DefaultApi", new { id = user.UserId }, user);
         }
 
         // DELETE: api/Users/5
@@ -146,6 +173,11 @@ namespace LMS.API.Controllers
         private bool UserExists(int id)
         {
             return db.Users.Count(e => e.UserId == id) > 0;
+        }
+
+        private bool UserExists(string email)
+        {
+            return db.Users.Count(e => e.EmailAddress == email) > 0;
         }
     }
 }

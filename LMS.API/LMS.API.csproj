@@ -129,6 +129,7 @@
     <Compile Include="Contexts\AuthContext.cs" />
     <Compile Include="Contexts\LMSContext.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ApiBaseController.cs" />
     <Compile Include="Controllers\ClientsController.cs" />
     <Compile Include="Controllers\ContentsController.cs" />
     <Compile Include="Controllers\CourseCategoriesController.cs" />
@@ -139,6 +140,7 @@
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Controllers\UsersInCourseSessionsController.cs" />
     <Compile Include="Controllers\UsersInUserGroupsController.cs" />
+    <Compile Include="Infrastructure\LMSAuthorizeAttribute.cs" />
     <Compile Include="Models\Client.cs" />
     <Compile Include="Models\Content.cs" />
     <Compile Include="Models\Course.cs" />

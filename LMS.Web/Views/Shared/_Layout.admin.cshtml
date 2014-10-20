@@ -1,4 +1,5 @@
 ﻿@using System.Web.Optimization
+@using LMS.Web.Infrastructure;
 @{
     // set the navigation to active for the current page
     string controllerName = HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
@@ -7,6 +8,7 @@
     string clientCssClass = controllerName == "Client" ? "active" : string.Empty;
     string courseCssClass = controllerName == "Course" ? "active" : string.Empty;
     string userCssClass = controllerName == "User" ? "active" : string.Empty;
+    UserProfile profile = Session["UserInfo"] as UserProfile;
 }
 <!DOCTYPE html>
 <html>
@@ -33,7 +35,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Project name</a>
+                <a class="navbar-brand" href="#">@profile.ClientName</a>
             </div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">

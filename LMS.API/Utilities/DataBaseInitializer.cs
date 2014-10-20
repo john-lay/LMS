@@ -12,28 +12,62 @@ namespace LMS.API.Utilities
 {
     public class DatabaseInitializer : CreateDatabaseIfNotExists<LMSContext>
     {
-        private AuthContext _ctx;
+        private AuthContext context;
 
-        private UserManager<IdentityUser> _userManager;
+        private UserManager<IdentityUser> userManager;
 
         protected override void Seed(LMSContext db)
         {
-            _ctx = new AuthContext();
-            _userManager = new UserManager<IdentityUser>(new UserStore<IdentityUser>(_ctx));
+            context = new AuthContext();
+            userManager = new UserManager<IdentityUser>(new UserStore<IdentityUser>(context));
 
-            // admin
+            // create admin in AspNetUsers table
             IdentityUser adminUser = new IdentityUser { UserName = "admin@avemtec.com" };
-            _userManager.CreateAsync(adminUser, "SuperPass");
+            userManager.Create(adminUser, "SuperPass");
+            
+            // create admin role
+            context.Roles.Add(new IdentityRole { Name = "SuperAdmin" });
+            context.Roles.Add(new IdentityRole { Name = "Admin" });
+            context.Roles.Add(new IdentityRole { Name = "User" });
+            context.SaveChanges();
+
+            // add user to role
+            userManager.AddToRole(adminUser.Id, "SuperAdmin");
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // seed db with dummy data
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             // client
-            Client client = new Client { ClientId = 1, Name="Apple", LogoTitle = "Apple Logo", LogoResource = "/path/to/resource"};
+            Client client = new Client { ClientId = 1, Name = "Avemtec" };
             db.Clients.Add(client);
+            Client client1 = new Client { ClientId = 2, Name = "Apple", LogoTitle = "Apple Logo", LogoResource = "/path/to/resource" };
+            db.Clients.Add(client1);
+
+            // create admin in User table
+            User admin = new User { ClientId = 1, FirstName = "Super", LastName = "Admin", ASPNetUserId = adminUser.Id, EmailAddress = "admin@avemtec.com" };
+            db.Users.Add(admin);
 
             // users
-            User user = new User { ClientId = 1, FirstName = "Joe", LastName = "Bloggs" }; //, EmailAddress = "joe.bloggs@test.com", Password = "somehash" };
-            db.Users.Add(user);
-            User user2 = new User { ClientId = 1, FirstName = "Scott", LastName = "Hanselman" }; //, EmailAddress = "Scott.Hanselman@test.com", Password = "someotherhash" };
+            IdentityUser aspuser = new IdentityUser { UserName = "steve.jobs@apple.com" };
+            userManager.Create(aspuser, "password");
+            User user = new User { ClientId = 2, FirstName = "Steve", LastName = "jobs", ASPNetUserId = aspuser.Id, EmailAddress = "steve.jobs@apple.com" };
+            db.Users.Add(user);            
+
+            IdentityUser aspuser2 = new IdentityUser { UserName = "Scott.Hanselman@test.com" };
+            userManager.Create(aspuser2, "password");
+            User user2 = new User { ClientId = 2, FirstName = "Scott", LastName = "Hanselman", ASPNetUserId = aspuser2.Id, EmailAddress = "Scott.Hanselman@test.com" };
             db.Users.Add(user2);
+
+            IdentityUser aspuser3 = new IdentityUser { UserName = "joe.bloggs@test.com" };
+            userManager.Create(aspuser3, "password");
+            User user3 = new User { ClientId = 2, FirstName = "Joe", LastName = "Bloggs", ASPNetUserId = aspuser3.Id, EmailAddress = "joe.bloggs@test.com" };
+            db.Users.Add(user3);
+
+            // add user to role
+            userManager.AddToRole(aspuser.Id, "Admin");
+            userManager.AddToRole(aspuser2.Id, "User");
+            userManager.AddToRole(aspuser3.Id, "User");
 
             // user group
             UserGroup group = new UserGroup {  UserGroupId = 1, Name = "cohorts", ParentId = -1, ClientId = 1 };
@@ -65,5 +99,7 @@ namespace LMS.API.Utilities
 
             db.SaveChanges();
         }
+
+        public AuthContext _context { get; set; }
     }
 }

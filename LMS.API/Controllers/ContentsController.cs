@@ -1,21 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Web.Http.Description;
+﻿using LMS.API.Contexts;
 using LMS.API.Models;
-using LMS.API.Contexts;
-using System.Threading;
-using System.Web;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Http;
 
 namespace LMS.API.Controllers
 {
-    public class ContentsController : ApiController
+    public class ContentsController : ApiBaseController
     {
         private LMSContext db = new LMSContext();
 

@@ -1,23 +1,22 @@
-﻿using System;
+﻿using LMS.API.Contexts;
+using LMS.API.Infrastructure;
+using LMS.API.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Web.Http.Description;
-using LMS.API.Models;
-using LMS.API.Contexts;
-using System.Web.Http.Cors;
-using System.Web;
+using System.Security.Claims;
 using System.Threading;
+using System.Web;
+using System.Web.Http;
 
 namespace LMS.API.Controllers
 {
-    [EnableCors(origins: "http://localhost:58733", headers: "*", methods: "*")]
-    public class ClientsController : ApiController
+    
+    public class ClientsController : ApiBaseController
     {
         private LMSContext db = new LMSContext();
 
@@ -25,7 +24,6 @@ namespace LMS.API.Controllers
         [Authorize]
         public IQueryable<Client> GetClients()
         {
-            var identity = Thread.CurrentPrincipal.Identity;
             return db.Clients;
         }
 
@@ -79,6 +77,7 @@ namespace LMS.API.Controllers
 
         // POST: api/Clients
         [HttpPost]
+        [LMSAuthorize(Role="SuperAdmin")]
         public IHttpActionResult CreateClient([FromBody]Client client)
         {
             if (!ModelState.IsValid)

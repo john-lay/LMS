@@ -1,23 +1,16 @@
-﻿using System;
+﻿using LMS.API.Contexts;
+using LMS.API.Models;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Web.Http.Description;
-using LMS.API.Models;
-using LMS.API.Contexts;
-using System.Web.Http.Cors;
 using System.Threading;
-using System.Web;
+using System.Web.Http;
 
 namespace LMS.API.Controllers
 {
-    [EnableCors(origins: "http://localhost:58733", headers: "*", methods: "*")]
-    public class CoursesController : ApiController
+    public class CoursesController : ApiBaseController
     {
         private LMSContext db = new LMSContext();
 
@@ -93,7 +86,6 @@ namespace LMS.API.Controllers
         [HttpPut]
         public IHttpActionResult UpdateCourse(int id, Course course)
         {
-            var identity = Thread.CurrentPrincipal.Identity;
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

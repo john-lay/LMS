@@ -31,20 +31,20 @@ namespace LMS.Web.Controllers
                 if(token.access_token != null)
                 {
                     FormsAuthentication.SetAuthCookie(model.Username, false);
-                    // add the token to the session, and initialize the Api base URL
-                    SetTokenForApplication(token);
-                    user.ClientId = 1; // TODO: set this properly
+                    // create a cookie based on the token
+                    var tokenCookie = new HttpCookie("AvemtecLMS", token.access_token);
+                    tokenCookie.Expires.AddDays(1);
+                    HttpContext.Response.Cookies.Add(tokenCookie);
+
+                    //initialise the user profile
+                    this.Session.SetUserProfile(InitUserProfile(model.Username));
+
                     return RedirectToAction("Welcome", "Home");
                 }
             }
 
             ModelState.AddModelError(string.Empty, "There was an error logging you in, please try again.");
             return View("../Home/Index", model);
-        }
-
-        private void SetTokenForApplication(Token token)
-        {
-            HttpContext.Session.SetUserToken(token.access_token);
         }
 
         private Token GetToken(LoginViewModel model)
@@ -72,6 +72,30 @@ namespace LMS.Web.Controllers
             Token token = JsonConvert.DeserializeObject<Token>(resultContent);
 
             return token;
+        }
+
+        private UserProfile InitUserProfile(string emailAddress)
+        {
+            HttpResponseMessage result;
+
+            // make a POST request to the token generator 
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(ConfigurationManager.AppSettings["ApiBaseUrl"]);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var content = new FormUrlEncodedContent(new[] 
+                {
+                    new KeyValuePair<string, string>("emailAddress", emailAddress)
+                });
+
+                result = client.PostAsync("/api/users/GetUserProfileByEmail", content).Result;
+            }
+
+            string resultContent = result.Content.ReadAsStringAsync().Result;
+            UserProfile[] userProfiles = JsonConvert.DeserializeObject<UserProfile[]>(resultContent);
+            return userProfiles[0];
         }
     }
 }

@@ -112,7 +112,8 @@
 
     var clientId = -1;
     var clientName = "";
-
+    var token = "@this.GetToken()";
+    
     $(function () {
         // list existing clients
         loadClients();
@@ -121,6 +122,9 @@
         $("#Create").click(function () {
             $.ajax({
                 url: "@this.GetApiUrl()" + "/clients/CreateClient/",
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + token);
+                },
                 data: { Name: $("#Name").val() },
                 type: "POST",
                 cache: false,
@@ -232,8 +236,7 @@
     }
 
     function loadClients() {
-        var table = $("#clients");
-        var token = "@this.GetToken()";
+        var table = $("#clients");        
 
         $.ajax({
             url: "@this.GetApiUrl()" + "/clients/GetClients/",
