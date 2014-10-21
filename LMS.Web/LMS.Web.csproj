@@ -911,6 +911,7 @@
     <Content Include="Views\Course\Session.cshtml" />
     <Content Include="Views\User\Manage.cshtml" />
     <Content Include="Views\User\Group.cshtml" />
+    <Content Include="Views\User\ManageAdmin.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -920,7 +921,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\LMSBase\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

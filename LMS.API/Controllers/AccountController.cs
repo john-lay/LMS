@@ -39,7 +39,32 @@ namespace LMS.API.Controllers
 
             if (errorResult != null)
             {
-                return errorResult;
+                return Ok(result.Errors.ElementAt(0));
+            }
+
+            return Ok();
+        }
+
+        // POST api/Account/RegisterAdmin
+        [AllowAnonymous]
+        [Route("RegisterAdmin")]
+        public async Task<IHttpActionResult> RegisterAdmin(User userModel)
+        {
+            // client id comes from the web application
+            //userModel.ClientId = this.ClientId;
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            IdentityResult result = await _repo.RegisterAdmin(userModel);
+
+            IHttpActionResult errorResult = GetErrorResult(result);
+
+            if (errorResult != null)
+            {
+                return Ok(result.Errors.ElementAt(0));
             }
 
             return Ok();

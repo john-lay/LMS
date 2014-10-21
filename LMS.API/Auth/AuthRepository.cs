@@ -10,14 +10,14 @@ namespace LMS.API.Auth
 {
     public class AuthRepository : IDisposable
     {
-        private AuthContext _ctx;
+        private AuthContext context;
 
-        private UserManager<IdentityUser> _userManager;
+        private UserManager<IdentityUser> userManager;
 
         public AuthRepository()
         {
-            _ctx = new AuthContext();
-            _userManager = new UserManager<IdentityUser>(new UserStore<IdentityUser>(_ctx));
+            context = new AuthContext();
+            userManager = new UserManager<IdentityUser>(new UserStore<IdentityUser>(context));
         }
 
         public async Task<IdentityResult> RegisterUser(User userModel)
@@ -28,7 +28,43 @@ namespace LMS.API.Auth
             };
 
             // Save in AspNetUsers
-            var result = await _userManager.CreateAsync(user, userModel.Password);
+            var result = await userManager.CreateAsync(user, userModel.Password);
+
+            if (!result.Succeeded)
+            {
+                return result;
+            }
+
+            // Add to user role
+            userManager.AddToRole(user.Id, "User");
+
+            // Save in User table
+            var repo = new UsersController();
+            userModel.ASPNetUserId = user.Id;
+            userModel.Password = null;
+            User[] users = new User[] { userModel };
+            repo.CreateUser(users);
+
+            return result;
+        }
+
+        public async Task<IdentityResult> RegisterAdmin(User userModel)
+        {
+            IdentityUser user = new IdentityUser
+            {
+                UserName = userModel.EmailAddress
+            };
+
+            // Save in AspNetUsers
+            var result = await userManager.CreateAsync(user, userModel.Password);
+
+            if (!result.Succeeded)
+            {
+                return result;
+            }
+
+            // Add to user role
+            userManager.AddToRole(user.Id, "Admin");
 
             // Save in User table
             var repo = new UsersController();
@@ -47,15 +83,15 @@ namespace LMS.API.Auth
 
         public async Task<IdentityUser> FindUser(string userName, string password)
         {
-            IdentityUser user = await _userManager.FindAsync(userName, password);
+            IdentityUser user = await userManager.FindAsync(userName, password);
 
             return user;
         }
 
         public void Dispose()
         {
-            _ctx.Dispose();
-            _userManager.Dispose();
+            context.Dispose();
+            userManager.Dispose();
         }
     }
 }

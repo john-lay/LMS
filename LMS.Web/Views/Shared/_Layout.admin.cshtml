@@ -9,6 +9,13 @@
     string courseCssClass = controllerName == "Course" ? "active" : string.Empty;
     string userCssClass = controllerName == "User" ? "active" : string.Empty;
     UserProfile profile = Session["UserInfo"] as UserProfile;
+    if (profile == null)
+    {
+        profile = new UserProfile 
+        {
+            ClientName = "LMS"
+        };
+    }
 }
 <!DOCTYPE html>
 <html>

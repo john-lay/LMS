@@ -45,6 +45,7 @@ namespace LMS.API.Utilities
             db.Clients.Add(client1);
 
             // create admin in User table
+            // DO NOT DELETE ----------------------------------------------------------------------------------------------------
             User admin = new User { ClientId = 1, FirstName = "Super", LastName = "Admin", ASPNetUserId = adminUser.Id, EmailAddress = "admin@avemtec.com" };
             db.Users.Add(admin);
 
@@ -70,15 +71,19 @@ namespace LMS.API.Utilities
             userManager.AddToRole(aspuser3.Id, "User");
 
             // user group
-            UserGroup group = new UserGroup {  UserGroupId = 1, Name = "cohorts", ParentId = -1, ClientId = 1 };
+            // DO NOT DELETE ----------------------------------------------------------------------------------------------------
+            UserGroup adminGroup = new UserGroup { UserGroupId = 1, Name = "Administrators", ParentId = -1, ClientId = 1 };
+            db.UserGroups.Add(adminGroup);
+
+            UserGroup group = new UserGroup {  UserGroupId = 2, Name = "cohorts", ParentId = -1, ClientId = 2 };
             db.UserGroups.Add(group);
-            UsersInUserGroup ug = new UsersInUserGroup { UserGroupId = 1, UserId = 1 };
+            UsersInUserGroup ug = new UsersInUserGroup { UserGroupId = 2, UserId = 1 };
             db.UsersInUserGroups.Add(ug);
-            UsersInUserGroup ug2 = new UsersInUserGroup { UserGroupId = 1, UserId = 2 };
+            UsersInUserGroup ug2 = new UsersInUserGroup { UserGroupId = 2, UserId = 2 };
             db.UsersInUserGroups.Add(ug2);
 
             // courses / course content
-            Course course = new Course { CourseId = 1, ClientId = 1, Name = "HTML Fundamentals", Description = "introduction to HTML description" };
+            Course course = new Course { CourseId = 1, ClientId = 2, Name = "HTML Fundamentals", Description = "introduction to HTML description" };
             db.Courses.Add(course);
             Content content = new Content { CourseId = 1, Name = "My PDF", Description = "Please read this pdf", Resource = "/path/to/resource" };
             db.Contents.Add(content);

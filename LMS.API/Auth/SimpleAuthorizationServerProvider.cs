@@ -1,4 +1,5 @@
-﻿using LMS.API.Models;
+﻿using LMS.API.Contexts;
+using LMS.API.Models;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security.OAuth;
 using System.Linq;
@@ -45,7 +46,7 @@ namespace LMS.API.Auth
         {
             string clientId = string.Empty;
 
-            using (var db = new LMS.API.Contexts.LMSContext())
+            using (var db = new LMSContext())
             {
                 var user = db.Users
                     .First(u => u.ASPNetUserId == identityUser.Id);
@@ -62,7 +63,7 @@ namespace LMS.API.Auth
 
             if (user.Roles.Count == 1)
             {
-                using (var db = new LMS.API.Contexts.AuthContext())
+                using (var db = new AuthContext())
                 {
                     var allRoles = db.Roles;
                     foreach (var role in user.Roles)

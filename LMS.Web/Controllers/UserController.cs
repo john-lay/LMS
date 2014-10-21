@@ -14,6 +14,11 @@ namespace LMS.Web.Controllers
             return View();
         }
 
+        public ActionResult ManageAdmin()
+        {
+            return View();
+        }
+
         public ActionResult Group()
         {
             return View();

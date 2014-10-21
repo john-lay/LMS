@@ -15,7 +15,6 @@ namespace LMS.API.Controllers
         /// <summary>
         /// GET: api/CoursesInCourseCategories
         /// </summary>
-        /// <param name="idjohn">Client ID</param>
         /// <returns></returns>
         public string GetCourseCategoriesAndCourses()
         {

@@ -79,6 +79,7 @@
                     <div class="form-group">
                         <div class="col-md-offset-3 col-md-9">
                             <button id="SaveUpdatedUser" type="button" class="btn btn-default btn-primary">Save</button>
+                            <button id="DeleteUser" type="button" class="btn btn-default btn-danger">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -179,6 +180,7 @@
             }
         });
 
+        // create user
         $("#SaveUser").click(function () {
             $.ajax({
                 url: "@this.GetApiUrl()" + "/Account/Register/",
@@ -189,7 +191,11 @@
                 type: "POST",
                 cache: false,
                 success: function (result) {
-                    showUserSuccess();
+                    if (result.length > 0) {
+                        showUserFailure(result);
+                    } else {
+                        showUserSuccess();
+                    }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log("error");
@@ -197,6 +203,7 @@
             });
         });
 
+        // update user
         $("#SaveUpdatedUser").click(function () {
             $.ajax({
                 url: "@this.GetApiUrl()" + "/Users/UpdateUser/" + CurrentUser.id,
@@ -204,11 +211,32 @@
                     request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
                 },
                 data: { FirstName: $("#UpdateFirstName").val(), LastName: $("#UpdateLastName").val(), UserId: CurrentUser.id },
-                type: "PUT",
+                type: "PATCH",
                 cache: false,
                 success: function (result) {
                     $("#UpdateUserModal").modal("hide");
                     showUserUpdate();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("error");
+                }
+            });
+        });
+
+        // delete user
+        $("#DeleteUser").click(function () {
+
+            var userName = $("#UpdateFirstName").val() + $("#UpdateLastName").val();
+            $.ajax({
+                url: "@this.GetApiUrl()" + "/Users/DeleteUser/" + CurrentUser.id,
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
+                type: "DELETE",
+                cache: false,
+                success: function (result) {
+                    $("#UpdateUserModal").modal("hide");
+                    showUserDelete(userName);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log("error");
@@ -251,10 +279,35 @@
         updateTree();
     }
 
+    function showUserFailure(msg) {
+
+        $(".alert-danger .msg")
+            .html(msg)
+            .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+        // update tree
+        updateTree();
+    }
+
     function showUserUpdate() {
         var msg = "User: <b>" + $("#UpdateFirstName").val() + " " + $("#UpdateLastName").val() + "</b> successfully updated!";
 
         $(".alert-success .msg")
+            .html(msg)
+            .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+        // update tree
+        updateTree();
+    }
+
+    function showUserDelete(userName) {
+        var msg = "User: <b>" + userName + "</b> successfully deleted!";
+
+        $(".alert-danger .msg")
             .html(msg)
             .parent()
                 .removeClass("hidden")

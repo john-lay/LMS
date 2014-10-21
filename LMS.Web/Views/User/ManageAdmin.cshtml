@@ -1,0 +1,375 @@
+﻿@{
+    ViewBag.Title = "Manage Administrators";
+    Layout = "~/Views/Shared/_Layout.admin.cshtml";
+}
+@section head {
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.common.min.css" rel="stylesheet" />
+    <link href="~/Content/kendo-styles/kendo.silver.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.default.min.css" rel="stylesheet" />
+}
+<div class="row col-md-12">
+    <div class="col-md-3">
+        <div class="lead">Edit Admin Users</div>
+        <div id="treeview" data-role="treeview" class="k-widget k-treeview" tabindex="0" role="tree" aria-activedescendant="treeview_tv_active">
+            <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
+        </div>
+    </div>
+    <div class="col-md-9 form-horizontal">
+        
+        <div class="lead">Create new Admin</div>
+        <div class="form-group">
+            <label class="col-md-3 control-label">New user for client:</label>
+            <div class="col-md-9">
+                <select id="Clients" class="form-control"></select>
+            </div>
+        </div>        
+        <div class="form-group">
+            <div class="col-md-2 col-md-offset-10">
+                <a href="#" data-toggle="modal" data-target="#CreateUserModal" class="btn btn-primary pull-right">Create new admin &raquo;</a>
+            </div>
+        </div>
+    </div>
+</div>
+@* -- Create admin Modal -- *@
+<div class="modal fade" id="CreateUserModal" tabindex="-1" role="dialog" aria-labelledby="CreateUserModallLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Create admin</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-md-3 control-label" for="FirstName">First Name</label>
+                        <div class="col-md-9">
+                            <input class="form-control" id="FirstName" placeholder="First Name" type="text">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label" for="LastName">Last Name</label>
+                        <div class="col-md-9">
+                            <input class="form-control" id="LastName" placeholder="Last Name" type="text">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label" for="Password">Password</label>
+                        <div class="col-md-9">
+                            <input class="form-control" id="Password" placeholder="Password" type="password">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label" for="ConfirmPassword">Confirm Password</label>
+                        <div class="col-md-9">
+                            <input class="form-control" id="ConfirmPassword" placeholder="Password" type="password">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label" for="Email">Email</label>
+                        <div class="col-md-9">
+                            <input class="form-control" id="Email" placeholder="example@avemtec.com" type="text">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-3 col-md-9">
+                            <button id="SaveUser" type="button" class="btn btn-default btn-primary">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+@* -- Update User Modal -- *@
+<div class="modal fade" id="UpdateUserModal" tabindex="-1" role="dialog" aria-labelledby="UpdateUserModallLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Update admin</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-md-3">First Name</label>
+                        <div class="col-md-9">
+                            <input id="UpdateFirstName" class="form-control text-box single-line" type="text" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Last Name</label>
+                        <div class="col-md-9">
+                            <input id="UpdateLastName" class="form-control text-box single-line" type="text" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-3 col-md-9">
+                            <button id="SaveUpdatedUser" type="button" class="btn btn-default btn-primary">Save</button>
+                            <button id="DeleteUser" type="button" class="btn btn-default btn-danger">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+<script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
+<script type="text/javascript">
+    var UserGroups;
+    var CurrentUser;
+
+    $(function () {
+        // load clients
+        $.ajax({
+            url: "@this.GetApiUrl()" + "/clients/GetClients/",
+            beforeSend: function (request) {
+                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+            },
+            type: "GET",
+            cache: false,
+            success: function (clients) {
+                $.each(clients, function () {
+                    $("#Clients").append($("<option />").val(this.ClientId).text(this.Name));
+                });
+            }
+        });
+
+        // create user
+        $("#SaveUser").click(function () {
+            $.ajax({
+                url: "@this.GetApiUrl()" + "/Account/RegisterAdmin/",
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
+                data: { ClientId: $("#Clients").val(), FirstName: $("#FirstName").val(), LastName: $("#LastName").val(), EmailAddress: $("#Email").val(), Password: $("#Password").val() },
+                type: "POST",
+                cache: false,
+                success: function (result) {
+                    $("#CreateUserModal").modal('hide');
+                    if (result.length > 0) {
+                        showUserFailure(result);
+                    } else {
+                        showUserSuccess();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("error");
+                }
+            });
+        });
+
+        // update user
+        $("#SaveUpdatedUser").click(function () {
+            $.ajax({
+                url: "@this.GetApiUrl()" + "/Users/UpdateUser/" + CurrentUser.id,
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
+                data: { FirstName: $("#UpdateFirstName").val(), LastName: $("#UpdateLastName").val(), UserId: CurrentUser.id },
+                type: "PATCH",
+                cache: false,
+                success: function (result) {
+                    $("#UpdateUserModal").modal("hide");
+                    showUserUpdate();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("error");
+                }
+            });
+        });
+
+        // delete user
+        $("#DeleteUser").click(function () {
+
+            var userName = $("#UpdateFirstName").val() + $("#UpdateLastName").val();
+            $.ajax({
+                url: "@this.GetApiUrl()" + "/Users/DeleteUser/" + CurrentUser.id,
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
+                type: "DELETE",
+                cache: false,
+                success: function (result) {
+                    $("#UpdateUserModal").modal("hide");
+                    showUserDelete(userName);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("error");
+                }
+            });
+        });
+
+        // initialise tree
+        $.ajax({
+            url: "@this.GetApiUrl()" + "/Users/GetAdmins/",
+            beforeSend: function (request) {
+                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+            },
+            success: function (userGroups) {
+                UserGroups = addIdToUsersInTree(JSON.parse(userGroups));
+                var treeview = $("#treeview").data("kendoTreeView");
+                $("#treeview").kendoTreeView({
+                    dataSource: UserGroups
+                });
+
+                // style the group elements
+                $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+            }
+        });
+
+        // bind to ajax created elements (clicking on categories in tree)
+        $(document).on('click', '.k-in', function () {
+            var isUser = $(this).find(".group").length == 0;
+            var userId = $(this).find("span").attr("class");
+            var name = $(this).html().split("</span>")[1];
+            userId = userId.split("k-sprite ")[1];
+
+            if (isUser) {
+                $.each(UserGroups, function (i, outerNode) {
+                    if (outerNode.hasOwnProperty('items')) {
+                        $.each(outerNode.items, function (j, innerNode) {
+                            if (innerNode.id == userId) {
+                                CurrentUser = innerNode;
+                            }
+                        });
+                    }
+                    // look for user not in group
+                    if (outerNode.spriteCssClass != "group" && outerNode.id == userId) {
+                        CurrentUser = outerNode;
+                    }
+                });
+                showUserEditor(userId);
+            }
+            else {
+                // update client selected in drop down
+                $("#Clients option").each(function () {
+                    if ($(this).text() == name) {
+                        $(this).attr('selected', 'selected');
+                    }
+                });
+            }
+        });
+    });
+
+    function showUserSuccess() {
+        var msg = "Admin user: <b>" + $("#FirstName").val() + " " + $("#LastName").val() + "</b> successfully created!";
+
+        $(".alert-success .msg")
+            .html(msg)
+            .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+        // reset form
+        $("#FirstName").val("");
+        $("#LastName").val("");
+        $("#Password").val("");
+        $("#ConfirmPassword").val("");
+        $("#Email").val("");
+
+        // update tree
+        updateTree();
+    }
+
+    function showUserFailure(msg) {
+
+        $(".alert-danger .msg")
+            .html(msg)
+            .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+        // update tree
+        updateTree();
+    }
+
+    function showUserEditor(userId) {
+        $.ajax({
+            url: "@this.GetApiUrl()" + "/Users/GetUser/" + userId,
+            beforeSend: function (request) {
+                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+            },
+            success: function (user) {
+                $("#UpdateFirstName").val(user.FirstName);
+                $("#UpdateLastName").val(user.LastName);
+                $("#UpdateUserModal").modal("show");
+            }
+        });
+    }
+
+    function showUserUpdate() {
+        var msg = "Admin User: <b>" + $("#UpdateFirstName").val() + " " + $("#UpdateLastName").val() + "</b> successfully updated!";
+
+        $(".alert-success .msg")
+            .html(msg)
+            .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+        // update tree
+        updateTree();
+    }
+
+    function showUserDelete(userName) {
+        var msg = "Admin User: <b>" + userName + "</b> successfully deleted!";
+
+        $(".alert-danger .msg")
+            .html(msg)
+            .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+        // update tree
+        updateTree();
+    }
+
+    function updateTree() {
+        $("#treeview").slideUp();
+        $.ajax({
+            url: "@this.GetApiUrl()" + "/Users/GetAdmins/",
+            beforeSend: function (request) {
+                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+            },
+            success: function (userGroups) {
+                UserGroups = addIdToUsersInTree(JSON.parse(userGroups));
+                var treeview = $("#treeview").data("kendoTreeView");
+                treeview.setDataSource(new kendo.data.HierarchicalDataSource({
+                    data: UserGroups
+                }));
+
+                // style the group elements
+                $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+
+                $("#treeview").slideDown();
+            }
+        });
+    }
+
+    function addIdToUsersInTree(userTree) {
+        $.each(userTree, function (i, outerNode) {
+            if (outerNode.hasOwnProperty('items')) {
+                $.each(outerNode.items, function (j, innerNode) {
+                    // add user id to user node
+                    if (!innerNode.hasOwnProperty('spriteCssClass')) {
+                        innerNode["spriteCssClass"] = innerNode.id;
+                    }
+                });
+            }
+            // add user id to ungrouped user node
+            if (!outerNode.hasOwnProperty('spriteCssClass')) {
+                outerNode["spriteCssClass"] = outerNode.id;
+            }
+        });
+
+        return userTree;
+    }
+</script>
+}
