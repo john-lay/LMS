@@ -72,42 +72,47 @@
 }
 @section scripts {
     <script type="text/javascript">
-        // get current course details
-        $(function () {
-            $.ajax({
-                url: "@this.GetApiUrl()" + "/Courses/GetCourse/" + @Model.CourseId,
-                success: function (course) {
-                    $("#Name").val(course.Name);
-                    $("#Description").val(course.Description);
-                    $("#CourseType").val(course.CourseType)
-                }
-            });
-
-            // TODO: fix hard coded client ID
-            $("#SaveCourse").click(function () {
-                $.ajax({
-                    url: "@this.GetApiUrl()" + "/Courses/UpdateCourse/" + @Model.CourseId,
-                    data: { ClientId: 1, CourseId: @Model.CourseId, Name: $("#Name").val(), Description: $("#Description").val(), CourseType: $("#CourseType").val() },
-                    type: "PUT",
-                    cache: false,
-                    success: function (result) {
-                        showCourseUpdate();
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log("error");
-                    }
-                });
-            });
+    // get current course details
+    $(function () {
+        $.ajax({
+            url: "@this.GetApiUrl()" + "/Courses/GetCourse/" + @Model.CourseId,
+            beforeSend: function (request) {
+                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+            },
+            success: function (course) {
+                $("#Name").val(course.Name);
+                $("#Description").val(course.Description);
+                $("#CourseType").val(course.CourseType);
+            }
         });
 
-        function showCourseUpdate() {
-            var msg = "Course: <b>" + $("#Name").val() + "</b> successfully updated!";
+        $("#SaveCourse").click(function () {
+            $.ajax({
+                url: "@this.GetApiUrl()" + "/Courses/UpdateCourse/" + @Model.CourseId,
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
+                data: {CourseId: @Model.CourseId, Name: $("#Name").val(), Description: $("#Description").val(), CourseType: $("#CourseType").val() },
+                type: "PUT",
+                cache: false,
+                success: function (result) {
+                    showCourseUpdate();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("error");
+                }
+            });
+        });
+    });
 
-            $(".alert-success .msg")
-                .html(msg)
-                .parent()
-                    .removeClass("hidden")
-                    .slideDown();
-        }
-    </script>
+    function showCourseUpdate() {
+        var msg = "Course: <b>" + $("#Name").val() + "</b> successfully updated!";
+
+        $(".alert-success .msg")
+            .html(msg)
+            .parent()
+                .removeClass("hidden")
+                .slideDown();
+    }
+</script>
 }

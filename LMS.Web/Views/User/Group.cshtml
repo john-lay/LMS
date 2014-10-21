@@ -19,7 +19,7 @@
     <div class="col-md-9 form-horizontal">
         <div class="form-group">
             <div class="col-md-offset-1">
-                <p class="lead">To manage your users in the groups, simply drag and re-order your users in the left hand panel.</p>
+                <p class="lead">To add/remove users from groups, simply drag and re-order the list in the left hand panel.</p>
                 <p class="lead">When you're done hit the <u>Save Groups</u> button below.</p>
             </div>
         </div>
@@ -91,14 +91,16 @@
 @section scripts {
 <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>    
 <script type="text/javascript">
-    var clientId = 1; // TODO: Make this dynamic on a per client basis
     var UserGroups;
     var CurrentUserGroup;    
 
     function updateTree() {
         $("#treeview").slideUp();
         $.ajax({
-            url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/" + clientId,
+            url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/",
+            beforeSend: function (request) {
+                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+            },
             success: function (userGroups) {
                 UserGroups = JSON.parse(userGroups);
                 var treeview = $("#treeview").data("kendoTreeView");
@@ -117,7 +119,10 @@
     $(function () {
         // initialise tree
         $.ajax({
-            url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/" + clientId,
+            url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/",
+            beforeSend: function (request) {
+                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+            },
             success: function (userGroups) {
                 UserGroups = JSON.parse(userGroups);
                 //console.log(userGroups);
@@ -153,12 +158,13 @@
             }
         });
         
-
-        // TODO: fix hard coded client ID
         $("#SaveGroup").click(function () {
             $.ajax({
                 url: "@this.GetApiUrl()" + "/UserGroups/CreateGroup/",
-                data: { ClientId: 1, Name: $("#GroupName").val(), ParentId: -1 },
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
+                data: { Name: $("#GroupName").val(), ParentId: -1 },
                 type: "POST",
                 cache: false,
                 success: function (result) {
@@ -174,7 +180,10 @@
         $("#SaveUpdatedGroup").click(function () {
             $.ajax({
                 url: "@this.GetApiUrl()" + "/UserGroups/UpdateGroup/" + CurrentUserGroup.id,
-                data: { ClientId: 1, Name: $("#UpdateGroupName").val(), UserGroupId: CurrentUserGroup.id },
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
+                data: { Name: $("#UpdateGroupName").val(), UserGroupId: CurrentUserGroup.id },
                 type: "PUT",
                 cache: false,
                 success: function (result) {

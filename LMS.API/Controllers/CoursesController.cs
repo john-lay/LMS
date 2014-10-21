@@ -86,14 +86,11 @@ namespace LMS.API.Controllers
         [HttpPut]
         public IHttpActionResult UpdateCourse(int id, Course course)
         {
+            course.ClientId = this.ClientId;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }
-
-            if (id != course.CourseId)
-            {
-                return BadRequest();
             }
 
             db.Entry(course).State = EntityState.Modified;
@@ -121,6 +118,8 @@ namespace LMS.API.Controllers
         [HttpPost]
         public IHttpActionResult CreateCourse(Course course)
         {
+            course.ClientId = this.ClientId;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

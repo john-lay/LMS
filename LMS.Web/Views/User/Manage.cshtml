@@ -92,14 +92,16 @@
 @section scripts {
 <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>  
 <script type="text/javascript">
-    var clientId = 1; // TODO: Make this dynamic on a per client basis
     var UserGroups;
     var CurrentUser;
 
     function updateTree() {
         $("#treeview").slideUp();
         $.ajax({
-            url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/" + clientId,
+            url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/",
+            beforeSend: function (request) {
+                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+            },
             success: function (userGroups) {
                 UserGroups = addIdToUsersInTree(JSON.parse(userGroups));
                 var treeview = $("#treeview").data("kendoTreeView");
@@ -137,7 +139,10 @@
     $(function () {
         // initialise tree
         $.ajax({
-            url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/" + clientId,
+            url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/",
+            beforeSend: function (request) {
+                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+            },
             success: function (userGroups) {
                 UserGroups = addIdToUsersInTree(JSON.parse(userGroups));
                 var treeview = $("#treeview").data("kendoTreeView");
@@ -174,11 +179,13 @@
             }
         });
 
-        // TODO: fix hard coded client ID
         $("#SaveUser").click(function () {
             $.ajax({
                 url: "@this.GetApiUrl()" + "/Account/Register/",
-                data: { ClientId: 1, FirstName: $("#FirstName").val(), LastName: $("#LastName").val(), EmailAddress: $("#Email").val(), Password: $("#Password").val() },
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
+                data: { FirstName: $("#FirstName").val(), LastName: $("#LastName").val(), EmailAddress: $("#Email").val(), Password: $("#Password").val() },
                 type: "POST",
                 cache: false,
                 success: function (result) {
@@ -193,7 +200,10 @@
         $("#SaveUpdatedUser").click(function () {
             $.ajax({
                 url: "@this.GetApiUrl()" + "/Users/UpdateUser/" + CurrentUser.id,
-                data: { ClientId: 1, FirstName: $("#UpdateFirstName").val(), LastName: $("#UpdateLastName").val(), UserId: CurrentUser.id },
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
+                data: { FirstName: $("#UpdateFirstName").val(), LastName: $("#UpdateLastName").val(), UserId: CurrentUser.id },
                 type: "PUT",
                 cache: false,
                 success: function (result) {
@@ -210,6 +220,9 @@
     function showUserEditor(userId) {
         $.ajax({
             url: "@this.GetApiUrl()" + "/Users/GetUser/" + userId,
+            beforeSend: function (request) {
+                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+            },
             success: function (user) {
                 $("#UpdateFirstName").val(user.FirstName);
                 $("#UpdateLastName").val(user.LastName);

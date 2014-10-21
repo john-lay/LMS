@@ -39,6 +39,8 @@ namespace LMS.API.Controllers
         [HttpPut]
         public IHttpActionResult UpdateGroup(int id, UserGroup group)
         {
+            group.ClientId = this.ClientId;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -74,6 +76,8 @@ namespace LMS.API.Controllers
         [HttpPost]
         public IHttpActionResult CreateGroup(UserGroup group)
         {
+            group.ClientId = this.ClientId;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

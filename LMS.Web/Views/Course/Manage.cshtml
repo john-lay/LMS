@@ -142,13 +142,15 @@
 @section scripts {
     <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
     <script type="text/javascript" title="Kendo UI tree">
-        var clientId = 1; // TODO: Make this dynamic on a per client basis
         var course;
         var courseCategories;
         
         $(function () {
             $.ajax({
-                url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/GetCourseCategoriesAndCourses/" + clientId,
+                url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/GetCourseCategoriesAndCourses/",
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
                 success: function (categories) {
                     $("#treeview").kendoTreeView({
                         checkboxes: {
@@ -192,9 +194,11 @@
         }
 
         function loadCategories() {
-            var clientId = 1; // TODO: Make this dynamic on a per client basis
             $.ajax({
-                url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/GetCourseCategoriesAndCourses/" + clientId,
+                url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/GetCourseCategoriesAndCourses/",
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
                 success: function (categories) {
                     populateTree(JSON.parse(categories));
                     courseCategories = JSON.parse(categories);
@@ -240,6 +244,9 @@
             $("#CreateCategory").click(function () {
                 $.ajax({
                     url: "@this.GetApiUrl()" + "/CourseCategories/CreateCourseCategory/",
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    },
                     data: { Name: $("#CategoryName").val(), Notes: $("#CategoryNotes").val() },
                     type: "POST",
                     cache: false,
@@ -280,6 +287,9 @@
 
                 $.ajax({
                     url: "@this.GetApiUrl()" + "/CourseCategories/UpdateCourseCategory/" + categoryId,
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    },
                     data: { CourseCategoryId: categoryId, Name: categoryName, Notes: categoryNotes },
                     type: "PUT",
                     cache: false,
@@ -311,6 +321,9 @@
         $("#DeleteCategory").click(function () {
             $.ajax({
                 url: "@this.GetApiUrl()" + "/CourseCategories/DeleteCourseCategory/" + categoryId,
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
                 type: "DELETE",
                 cache: false,
                 success: function (result) {
@@ -347,6 +360,9 @@
                 //get the data
                 $.ajax({
                     url: "@this.GetApiUrl()" + "/CourseCategories/GetCourseCategory/" + categoryId,
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    },
                     success: function (category) {
                         $("#CategoryName").val(category.Name);
                         $("#CategoryNotes").val(category.Notes);
@@ -384,7 +400,10 @@
         $("#CreateCourse").click(function () {
             $.ajax({
                 url: "@this.GetApiUrl()" + "/Courses/CreateCourse/",
-                data: { Name: $("#CourseName").val(), Description: $("#CourseDescription").val(), ClientId: 1 }, // TODO: fix hard coded course ID
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
+                data: { Name: $("#CourseName").val(), Description: $("#CourseDescription").val() },
                 type: "POST",
                 cache: false,
                 success: function (result) {
@@ -403,6 +422,9 @@
 
         $.ajax({
             url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/AddCourseToCourseCategory/",
+            beforeSend: function (request) {
+                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+            },
             data: { CourseCategoryId: categoryId, CourseId: courseId },
             type: "POST",
             cache: false,
@@ -435,6 +457,9 @@
         $("#DeleteCourse").click(function () {
             $.ajax({
                 url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/DeleteCourseInCourseCategory/",
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
                 data: { CourseCategoryId: categoryId, CourseId: course.id },
                 type: "DELETE",
                 cache: false,
@@ -493,4 +518,4 @@
         return ret;
     }
     </script>
-    }
+}

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using LMS.API.Models;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security.OAuth;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -14,7 +16,7 @@ namespace LMS.API.Auth
 
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
-            string roleName = string.Empty;
+            string clientId, roleName = string.Empty;
             context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
 
             using (AuthRepository _repo = new AuthRepository())
@@ -27,14 +29,31 @@ namespace LMS.API.Auth
                     return;
                 }
 
+                clientId = GetClientIdFromIdentityUser(user);
                 roleName = GetRoleNameFromIdentityUser(user);
             }
             var identity = new ClaimsIdentity(context.Options.AuthenticationType);
             identity.AddClaim(new Claim("username", context.UserName));
             identity.AddClaim(new Claim("role", roleName));
+            identity.AddClaim(new Claim("clientId", clientId));
 
             context.Validated(identity);
 
+        }
+
+        private string GetClientIdFromIdentityUser(IdentityUser identityUser)
+        {
+            string clientId = string.Empty;
+
+            using (var db = new LMS.API.Contexts.LMSContext())
+            {
+                var user = db.Users
+                    .First(u => u.ASPNetUserId == identityUser.Id);
+
+                clientId = user.ClientId.ToString();
+            }
+
+            return clientId;
         }
 
         private string GetRoleNameFromIdentityUser(IdentityUser user)

@@ -21,9 +21,9 @@ namespace LMS.API.Controllers
         /// <summary>
         /// GET: api/GetUserGroupsAndUsers
         /// </summary>
-        /// <param name="id">Client ID</param>
+        /// <param name="ijohnd">Client ID</param>
         /// <returns></returns>
-        public string GetUserGroupsAndUsers(int id)
+        public string GetUserGroupsAndUsers()
         {
             List<UserGroupNode> userGroupTree = new List<UserGroupNode>();
             List<int> userIdList = new List<int>();
@@ -34,7 +34,7 @@ namespace LMS.API.Controllers
             {
                 var query = from usersInUserGroups in db.UsersInUserGroups
                             join user in db.Users on usersInUserGroups.UserId equals user.UserId
-                            where usersInUserGroups.UserGroupId == grp.UserGroupId && user.ClientId == id
+                            where usersInUserGroups.UserGroupId == grp.UserGroupId && user.ClientId == this.ClientId
                             select user;
 
                 userGroupTree.Add(new UserGroupNode
@@ -59,7 +59,7 @@ namespace LMS.API.Controllers
 
             // grab users for this client, who are not in a group and add them to the end of the tree
             var usersNotInGroup = db.Users
-                .Where(x => x.ClientId == id)
+                .Where(x => x.ClientId == this.ClientId)
                 .ToArray()
                 .Where(x => userIdList.IndexOf(x.UserId) == -1)
                 .Select(u => new { id = u.UserId, text = u.FirstName + " " + u.LastName })  // normalize usersNotInGroup for Kendo Tree

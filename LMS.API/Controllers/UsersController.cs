@@ -88,6 +88,8 @@ namespace LMS.API.Controllers
         [HttpPut]
         public IHttpActionResult UpdateUser(int id, [FromBody]User user)
         {
+            user.ClientId = this.ClientId;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

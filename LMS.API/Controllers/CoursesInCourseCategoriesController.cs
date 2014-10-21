@@ -15,9 +15,9 @@ namespace LMS.API.Controllers
         /// <summary>
         /// GET: api/CoursesInCourseCategories
         /// </summary>
-        /// <param name="id">Client ID</param>
+        /// <param name="idjohn">Client ID</param>
         /// <returns></returns>
-        public string GetCourseCategoriesAndCourses(int id)
+        public string GetCourseCategoriesAndCourses()
         {
             List<CourseCategoryNode> courseCategoryTree = new List<CourseCategoryNode>();
             var categories = db.CourseCategories;
@@ -26,7 +26,7 @@ namespace LMS.API.Controllers
             {
                 var query = from coursesInCourseCat in db.CoursesInCourseCategories
                         join course in db.Courses on coursesInCourseCat.CourseId equals course.CourseId
-                        where coursesInCourseCat.CourseCategoryId == cat.CourseCategoryId && course.ClientId == id
+                        where coursesInCourseCat.CourseCategoryId == cat.CourseCategoryId && course.ClientId == this.ClientId
                         select course;
 
                 courseCategoryTree.Add(new CourseCategoryNode

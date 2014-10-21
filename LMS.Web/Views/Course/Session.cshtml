@@ -18,10 +18,7 @@
     </style>
 }
 <div class="row col-md-12">
-    <div class="col-md-3">
-        course tree
-    </div>
-    <div class="col-md-9">
+    <div class="col-md-12">
         <div class="form-group row col-md-12">
             <div class="col-md-offset-6">
                 <a href="#" data-val="addCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal" class="btn btn-primary pull-right">Add Session &raquo;</a>
@@ -124,6 +121,9 @@
         $("#AddCourseSession").click(function () {
             $.ajax({
                 url: "@this.GetApiUrl()" + "/CourseSessions/CreateCourseSession/",
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
                 data: {
                     CourseId: @Model.CourseId,
                     StartDate: covertToISODateString($("#EditStartDate").val()),
@@ -147,6 +147,9 @@
         $("#EditCourseSession").click(function () {
             $.ajax({
                 url: "@this.GetApiUrl()" + "/CourseSessions/UpdateCourseSession/" + courseSessionId,
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
                 data: {
                     CourseSessionId: courseSessionId,
                     CourseId: @Model.CourseId,
@@ -286,6 +289,9 @@
         table.empty();
         $.ajax({
             url: "@this.GetApiUrl()" + "/CourseSessions/GetCourseSessions/" + @Model.CourseId,
+            beforeSend: function (request) {
+                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+            },
             success: function (courseSessions) {
                 $.each(courseSessions, function (i, item) {
                     var row = '<tr>';

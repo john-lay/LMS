@@ -26,6 +26,8 @@ namespace LMS.API.Controllers
         [Route("Register")]
         public async Task<IHttpActionResult> Register(User userModel)
         {
+            userModel.ClientId = this.ClientId;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
