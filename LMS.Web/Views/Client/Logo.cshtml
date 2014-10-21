@@ -2,9 +2,7 @@
 
 @{
     ViewBag.Title = "Create";
-    Layout = "~/Views/Shared/_Layout.admin.cshtml";
 }
-
 
 <form name="form1" method="post" action="http://localhost:58021/clients/UploadLogo/" enctype="multipart/form-data">
     @Html.AntiForgeryToken()

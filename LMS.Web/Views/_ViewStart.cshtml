@@ -1,3 +1,19 @@
-﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+﻿@using LMS.Web.Infrastructure;
+@{
+    Layout = "~/Views/Shared/_Layout.user.cshtml";
+    UserProfile profile = Session["UserInfo"] as UserProfile;
+    
+    if (profile != null)
+    {
+        switch (profile.Role.ToLower()) 
+        {
+            case "superadmin":
+                Layout = "~/Views/Shared/_Layout.super.admin.cshtml";
+                break;
+
+            case "admin":
+                Layout = "~/Views/Shared/_Layout.admin.cshtml";
+                break;
+        }
+    }
 }

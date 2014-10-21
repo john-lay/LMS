@@ -8,6 +8,7 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Web;
 using System.Web.Http;
 using System.Web.Script.Serialization;
@@ -44,9 +45,14 @@ namespace LMS.API.Controllers
                             c.ClientId,
                             c.Name,
                             u.UserId,
+                            u.ASPNetUserId,
                             u.FirstName,
                             u.LastName
                         }).ToArray();
+
+            // get user role
+            var userManager = new UserManager<IdentityUser>(new UserStore<IdentityUser>(new AuthContext()));              
+            string role = userManager.GetRoles(query.First().ASPNetUserId)[0];
 
             var result = query.Select(x => new 
             {
@@ -54,7 +60,8 @@ namespace LMS.API.Controllers
                 ClientName = x.Name,
                 UserId = x.UserId,
                 FirstName = x.FirstName,
-                LastName = x.LastName
+                LastName = x.LastName,
+                Role = role
             }).ToArray();
 
             return Ok(result);

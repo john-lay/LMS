@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 
 namespace LMS.Web.Controllers
 {
@@ -18,6 +19,15 @@ namespace LMS.Web.Controllers
         public ActionResult Welcome()
         {
             return View();
+        }
+
+        public ActionResult Logout()
+        {
+            Session.Clear();
+            Session.Abandon();
+            FormsAuthentication.SignOut();
+
+            return View("Index");
         }
     }
 }
