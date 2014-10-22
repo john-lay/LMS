@@ -9,7 +9,7 @@
 }
 <div class="row col-md-12">
     <div class="col-md-3">
-        <a href="#" id="ShowCategoryCreator" class="btn btn-sm btn-primary">Add new category »</a>
+        <a href="#" id="ShowCategoryCreator" class="btn btn-sm btn-primary">Add new category &raquo;</a>
         <br /><br />
         <div id="treeview" data-role="treeview" class="k-widget k-treeview" tabindex="0" role="tree" aria-activedescendant="treeview_tv_active">
             <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
@@ -152,45 +152,12 @@
                 },
                 success: function (categories) {
                     $("#treeview").kendoTreeView({
-                        checkboxes: {
-                            checkChildren: true
-                        },
-                        check: onCheck,
                         dataSource: JSON.parse(categories)
                     });
                     courseCategories = JSON.parse(categories);
                 }
             });
-        });
-        // function that gathers IDs of checked nodes
-        function checkedNodeIds(nodes, checkedNodes) {
-            for (var i = 0; i < nodes.length; i++) {
-                if (nodes[i].checked) {
-                    checkedNodes.push(nodes[i].id);
-                }
-
-                if (nodes[i].hasChildren) {
-                    checkedNodeIds(nodes[i].children.view(), checkedNodes);
-                }
-            }
-        }
-
-        // show checked node IDs on datasource change
-        function onCheck() {
-            var checkedNodes = [],
-                treeView = $("#treeview").data("kendoTreeView"),
-                message;
-
-            checkedNodeIds(treeView.dataSource.view(), checkedNodes);
-
-            if (checkedNodes.length > 0) {
-                message = "IDs of checked nodes: " + checkedNodes.join(",");
-            } else {
-                message = "No nodes checked.";
-            }
-
-            $("#result").html(message);
-        }
+        });      
 
         function loadCategories() {
             $.ajax({

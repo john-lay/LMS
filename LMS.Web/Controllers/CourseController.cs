@@ -29,6 +29,11 @@ namespace LMS.Web.Controllers
             return View(model);
         }
 
+        public ActionResult SessionChooseCourse()
+        {
+            return View();
+        }
+
         public ActionResult Session(int id)
         {
             var model = new CourseViewModel

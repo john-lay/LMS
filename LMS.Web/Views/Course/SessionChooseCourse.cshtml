@@ -1,0 +1,72 @@
+﻿@{
+    ViewBag.Title = "Manage Course Sessions";
+}
+@section head {
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.common.min.css" rel="stylesheet" />
+    <link href="~/Content/kendo-styles/kendo.silver.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.default.min.css" rel="stylesheet" />
+}
+<div class="row col-md-12">
+    <div class="col-md-3">
+        <div id="treeview" data-role="treeview" class="k-widget k-treeview" tabindex="0" role="tree" aria-activedescendant="treeview_tv_active">
+            <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
+        </div>
+    </div>
+    <div class="col-md-9 form-horizontal">
+        <div class="form-group">
+            <div class="col-md-offset-1">
+                <p class="lead">Choose your course from the list in the left hand panel.</p>
+                <p class="lead">When you're done hit the <u>Manage Course Session</u> button below.</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-2 col-md-offset-10">
+                <a href="#" id="ManageCourseSession" class="btn btn-primary pull-right">Manage Course Session &raquo;</a>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
+    <script type="text/javascript" title="Kendo UI tree">
+        var courseId;
+        var courseCategories;
+        var sessionLink = "@Url.Action("Session", "Course")" + "/";
+
+        $(function () {
+            $("#ManageCourseSession").addClass("disabled");
+
+            $.ajax({
+                url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/GetCourseCategoriesAndCourses/",
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
+                success: function (categories) {
+                    $("#treeview").kendoTreeView({
+                        dataSource: JSON.parse(categories)
+                    });
+                    courseCategories = JSON.parse(categories);
+                }
+            });
+        });
+
+        // bind to ajax created elements (clicking on categories in tree)
+        $(document).on('click', '.k-in', function () {
+            $("#ManageCourseSession").addClass("disabled");
+            var nodeName = $(this).html();
+
+            $.each(courseCategories, function (i, category) {
+                if (category.hasOwnProperty('items')) {
+                    $.each(category.items, function (j, course) {
+                        if (course.text == nodeName) {
+                            $("#ManageCourseSession")
+                                .removeClass("disabled")
+                                .attr("href", sessionLink + course.id);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

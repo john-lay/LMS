@@ -914,6 +914,7 @@
     <Content Include="Views\User\ManageAdmin.cshtml" />
     <Content Include="Views\Shared\_Layout.super.admin.cshtml" />
     <Content Include="Views\Shared\_Layout.user.cshtml" />
+    <Content Include="Views\Course\SessionChooseCourse.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

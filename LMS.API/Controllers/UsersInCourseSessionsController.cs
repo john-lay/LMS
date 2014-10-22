@@ -33,8 +33,8 @@ namespace LMS.API.Controllers
         }
 
         // PUT: api/UsersInCourseSessions/5
-        [ResponseType(typeof(void))]
-        public IHttpActionResult PutUsersInCourseSession(int id, UsersInCourseSession usersInCourseSession)
+        [HttpPut]
+        public IHttpActionResult UpdateUsersInCourseSession(int id, UsersInCourseSession usersInCourseSession)
         {
             if (!ModelState.IsValid)
             {
@@ -54,47 +54,43 @@ namespace LMS.API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UsersInCourseSessionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                //if (!UsersInCourseSessionExists(id))
+                //{
+                //    return NotFound();
+                //}
+                //else
+                //{
+                //    throw;
+                //}
             }
 
             return StatusCode(HttpStatusCode.NoContent);
         }
 
         // POST: api/UsersInCourseSessions
-        [ResponseType(typeof(UsersInCourseSession))]
-        public IHttpActionResult PostUsersInCourseSession(UsersInCourseSession usersInCourseSession)
+        [HttpPost]
+        public IHttpActionResult AddUsersToCourseSession(int id, [FromBody]User[] users)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.UsersInCourseSessions.Add(usersInCourseSession);
-
-            try
+            foreach (User user in users)
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateException)
-            {
-                if (UsersInCourseSessionExists(usersInCourseSession.CourseSessionId))
+                // prevent the creation of users with an already registered email address
+                if (UsersInCourseSessionExists(id, user.UserId))
                 {
-                    return Conflict();
+                    return BadRequest(ModelState);
                 }
                 else
                 {
-                    throw;
+                    db.UsersInCourseSessions.Add(new UsersInCourseSession { CourseSessionId = id, UserId = user.UserId});
+                    db.SaveChanges();
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = usersInCourseSession.CourseSessionId }, usersInCourseSession);
+            return Ok();
         }
 
         // DELETE: api/UsersInCourseSessions/5
@@ -122,9 +118,9 @@ namespace LMS.API.Controllers
             base.Dispose(disposing);
         }
 
-        private bool UsersInCourseSessionExists(int id)
+        private bool UsersInCourseSessionExists(int courseSessionId, int userId)
         {
-            return db.UsersInCourseSessions.Count(e => e.CourseSessionId == id) > 0;
+            return db.UsersInCourseSessions.Count(e => e.CourseSessionId == courseSessionId && e.UserId == userId) > 0;
         }
     }
 }

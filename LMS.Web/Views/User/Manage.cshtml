@@ -145,7 +145,6 @@
             },
             success: function (userGroups) {
                 UserGroups = addIdToUsersInTree(JSON.parse(userGroups));
-                var treeview = $("#treeview").data("kendoTreeView");
                 $("#treeview").kendoTreeView({
                     dataSource: UserGroups
                 });

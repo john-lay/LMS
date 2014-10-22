@@ -3,7 +3,10 @@
     ViewBag.Title = "Course Session";
 }
 @section head {
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.common.min.css" rel="stylesheet" />
     <link href="~/Content/kendo-styles/kendo.silver.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.default.min.css" rel="stylesheet" />
     <style type="text/css">
         .datepicker {
             z-index: 2000 !important; /* Bootstrap model has z-index of 1050 */
@@ -17,7 +20,14 @@
     </style>
 }
 <div class="row col-md-12">
-    <div class="col-md-12">
+    <div class="col-md-3">
+        <a href="#" id="Enrol" data-toggle="modal" data-target="#EnrolUsersModal" class="btn btn-sm btn-primary">Enrol Selected Users &raquo;</a>
+        <br /><br />
+        <div id="treeview" data-role="treeview" class="k-widget k-treeview" tabindex="0" role="tree" aria-activedescendant="treeview_tv_active">
+            <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
+        </div>
+    </div>
+    <div class="col-md-9 form-horizontal">
         <div class="form-group row col-md-12">
             <div class="col-md-offset-6">
                 <a href="#" data-val="addCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal" class="btn btn-primary pull-right">Add Session &raquo;</a>
@@ -32,7 +42,7 @@
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th class="text-center"><input type="checkbox" id="selectAll" /></th>
+                                <th class="text-center">Selected</th>
                                 <th>Start Date</th>
                                 <th>End Date</th>
                                 <th>Rolling</th>
@@ -41,7 +51,7 @@
                         </thead>
                         <tbody id="CourseSessions"></tbody>
                     </table>
-                </div>                
+                </div>
             </div>
             <div class="clearfix"><br /></div>
         </div>
@@ -100,8 +110,159 @@
         </div>
     </div>
 </div>
+@* -- Enrol Users Modal -- *@
+<div class="modal fade" id="EnrolUsersModal" tabindex="-1" role="dialog" aria-labelledby="EnrolUsersModallLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Enrol selected users into session?</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <ul id="SelectedUsersInModal" class="list-group"></ul>
+                    <hr />
+                    <div id="SelectedSessionInModal"></div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <button id="EnrolSelectedUsers" type="button" class="btn btn-default btn-primary pull-right">Enrol</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 @section scripts {
+<script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>  
 <script src="~/Scripts/bootstrap-datepicker.js"></script>
+<script type="text/javascript">
+    var selectedUsers = [];
+    // initialise tree
+    $(function () {
+        $.ajax({
+            url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/",
+            beforeSend: function (request) {
+                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+            },
+            success: function (userGroups) {
+                $("#treeview").kendoTreeView({
+                    checkboxes: {
+                        checkChildren: true
+                    },
+                    check: onCheck,
+                    dataSource: JSON.parse(userGroups)
+                });
+
+                // style the group elements
+                $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+            }
+        });
+
+        // disabled enrol button, unless users have been selected and a session has been selected
+        $("#Enrol").addClass("disabled");
+        $(document).on('change', 'input[name=session]', updateEnrolmentStatus);
+
+        $("#Enrol").click(function() {
+            // add user names to modal
+            var list = $("#SelectedUsersInModal");
+            list.html("");
+            $.each(selectedUsers, function (i, user) {
+                list.append('<li class="list-group-item">' + user.text + '</li>');
+            });
+
+            // add session name to modal
+            var sessionTableRow = $("input[name=session]:checked").parent().parent();
+            var startDate = sessionTableRow.find(".startDate").html();
+            var endDate = sessionTableRow.find(".endDate").html();
+            var isRolling = sessionTableRow.find(".isRolling").html();
+
+            var sessionDetails = "<li><b>Start Date: </b>" + startDate + "</li>";
+            sessionDetails += "<li><b>End Date: </b>" + endDate + "</li>";
+            sessionDetails += "<li><b>Rolling: </b>" + isRolling + "</li>";
+
+            $("#SelectedSessionInModal").html("<ul>" + sessionDetails + "</ul>");
+        });
+
+        $("#EnrolSelectedUsers").click(function() {
+            var sessionId = $("input[name=session]:checked").val();
+            var userData = [];
+
+            $.each(selectedUsers, function(i, user) {
+                userData.push({UserId: user.id });
+            });
+
+            $.ajax({
+                url: "@this.GetApiUrl()" + "/UsersInCourseSessions/AddUsersToCourseSession/" + sessionId,
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
+                data: { '': userData },
+                type: "POST",
+                cache: false,
+                success: function (result) {
+                    $("#EnrolUsersModal").modal("hide");
+                    showEnrolUsersSuccess();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("error");
+                }
+            });
+        });
+    });
+
+    // function that gathers IDs of checked nodes
+    function checkedNodeIds(nodes, checkedNodes) {
+
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].checked) {
+                // ignore user group nodes
+                if(nodes[i].spriteCssClass != "group") {
+                    checkedNodes.push(nodes[i]);
+                }
+            }
+
+            if (nodes[i].hasChildren) {
+                checkedNodeIds(nodes[i].children.view(), checkedNodes);
+            }
+        }
+    }
+
+    // show checked node IDs on datasource change
+    function onCheck() {
+        var treeView = $("#treeview").data("kendoTreeView");
+        selectedUsers = []; // reset array
+        checkedNodeIds(treeView.dataSource.view(), selectedUsers);
+        updateEnrolmentStatus();
+    }
+
+    // at least one user and one session have been checked
+    function updateEnrolmentStatus() {
+        if(selectedUsers.length > 0 && $("input[name=session]:checked").val() != undefined) {
+            $("#Enrol").removeClass("disabled");
+        } else {
+            $("#Enrol").addClass("disabled");
+        }
+    }
+
+    function showEnrolUsersSuccess() {
+        var usersAdded = [];
+
+        $.each(selectedUsers, function(i, user) {
+            usersAdded.push(user.text);
+        });
+        var msg = "Users: <b>" + usersAdded.join(", ") + "</b> successfully added to session!";
+
+        $(".alert-success .msg")
+            .html(msg)
+            .parent()
+                .removeClass("hidden")
+                .slideDown();
+    }
+</script>
 <script type="text/javascript">
     var courseSessionId = -1;
     // get course session
@@ -294,7 +455,7 @@
             success: function (courseSessions) {
                 $.each(courseSessions, function (i, item) {
                     var row = '<tr>';
-                    row += '<td class="text-center"><input type="checkbox" id="' + item.CourseSessionId + '" /></td>';
+                    row += '<td class="text-center"><input type="radio" name="session" value="' + item.CourseSessionId + '" /></td>';
                     row += '<td class="startDate">' + formatDate(item.StartDate) + '</td>';
                     row += '<td class="endDate">' + formatDate(item.EndTime) + '</td>';
                     row += '<td class="isRolling">' + item.IsRolling + '</td>';
@@ -371,6 +532,6 @@
             .parent()
                 .removeClass("hidden")
                 .slideDown();
-    }
+    }    
 </script>
 }

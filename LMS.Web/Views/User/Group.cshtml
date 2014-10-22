@@ -150,8 +150,6 @@
                     dataSource: JSON.parse(userGroups)
                 });
 
-                console.log("finished");
-
                 // style the group elements
                 $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
             }
@@ -200,7 +198,6 @@
             var isGroup = $(this).find(".group").length != 0;
             var Name = $(this).html();
             Name = Name.split("</span>")[1];
-            console.log(Name);
             if (isGroup) {
                 $.each(UserGroups, function () {
                     if (this.text == Name) {
@@ -251,7 +248,6 @@
             // loop on items only if they are a group type item (don't want to interact with the ungrouped users)
             if (group.hasOwnProperty('items')) {
                 $.each(group.items, function (userIndex, user) {
-                    console.log("updating...");
                     var userGroup = { "UserGroupId": group.id, "UserId": user.id }
                     list.push(userGroup);
                 });
