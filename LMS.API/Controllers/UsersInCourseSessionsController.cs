@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.Script.Serialization;
 
 namespace LMS.API.Controllers
 {
@@ -13,61 +14,27 @@ namespace LMS.API.Controllers
     {
         private LMSContext db = new LMSContext();
 
-        // GET: api/UsersInCourseSessions
-        public IQueryable<UsersInCourseSession> GetUsersInCourseSessions()
-        {
-            return db.UsersInCourseSessions;
-        }
-
         // GET: api/UsersInCourseSessions/5
-        [ResponseType(typeof(UsersInCourseSession))]
-        public IHttpActionResult GetUsersInCourseSession(int id)
+        [HttpGet]
+        public string GetUsersInCourseSession(int id)
         {
-            UsersInCourseSession usersInCourseSession = db.UsersInCourseSessions.Find(id);
+            UsersInCourseSession[] usersInCourseSession = db.UsersInCourseSessions.Where(x => x.CourseSessionId == id).ToArray();
             if (usersInCourseSession == null)
             {
-                return NotFound();
+                return "Error: No users in session";
             }
 
-            return Ok(usersInCourseSession);
+            var users = usersInCourseSession.Select(x => new 
+            {
+                UserId = x.UserId,
+                Name = x.User.FirstName + x.User.LastName
+            }).ToArray();
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            return serializer.Serialize(users);
         }
 
-        // PUT: api/UsersInCourseSessions/5
-        [HttpPut]
-        public IHttpActionResult UpdateUsersInCourseSession(int id, UsersInCourseSession usersInCourseSession)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != usersInCourseSession.CourseSessionId)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(usersInCourseSession).State = EntityState.Modified;
-
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                //if (!UsersInCourseSessionExists(id))
-                //{
-                //    return NotFound();
-                //}
-                //else
-                //{
-                //    throw;
-                //}
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-
-        // POST: api/UsersInCourseSessions
+        // POST: api/AddUsersToCourseSession
         [HttpPost]
         public IHttpActionResult AddUsersToCourseSession(int id, [FromBody]User[] users)
         {
@@ -78,7 +45,7 @@ namespace LMS.API.Controllers
 
             foreach (User user in users)
             {
-                // prevent the creation of users with an already registered email address
+                // check user isn't already registered in this session
                 if (UsersInCourseSessionExists(id, user.UserId))
                 {
                     return BadRequest(ModelState);
@@ -93,20 +60,31 @@ namespace LMS.API.Controllers
             return Ok();
         }
 
-        // DELETE: api/UsersInCourseSessions/5
-        [ResponseType(typeof(UsersInCourseSession))]
-        public IHttpActionResult DeleteUsersInCourseSession(int id)
+        // POST: api/RemoveUsersFromCourseSession
+        [HttpPost]
+        public IHttpActionResult RemoveUsersFromCourseSession(int id, [FromBody]User[] users)
         {
-            UsersInCourseSession usersInCourseSession = db.UsersInCourseSessions.Find(id);
-            if (usersInCourseSession == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(ModelState);
             }
 
-            db.UsersInCourseSessions.Remove(usersInCourseSession);
-            db.SaveChanges();
+            foreach (User user in users)
+            {
+                if (!UsersInCourseSessionExists(id, user.UserId))
+                {
+                    return BadRequest(ModelState);
+                }
+                else
+                {
+                    var entityToRemove = new UsersInCourseSession { CourseSessionId = id, UserId = user.UserId };
+                    db.UsersInCourseSessions.Attach(entityToRemove);
+                    db.UsersInCourseSessions.Remove(entityToRemove);
+                    db.SaveChanges();
+                }
+            }
 
-            return Ok(usersInCourseSession);
+            return Ok();
         }
 
         protected override void Dispose(bool disposing)
