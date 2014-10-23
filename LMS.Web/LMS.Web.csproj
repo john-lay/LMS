@@ -800,6 +800,8 @@
     <Content Include="Scripts\kendo-js\kendo.view.min.js" />
     <Content Include="Scripts\kendo-js\kendo.window.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\Site\DateLib.js" />
+    <Content Include="Scripts\Site\Home\WelcomeUser.js" />
     <Content Include="Web.config" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\Shared\_Html5shiv.cshtml" />
@@ -831,7 +833,6 @@
     <Content Include="Views\web.config" />
     <Content Include="packages.config" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
@@ -907,7 +908,7 @@
     <Content Include="Scripts\kendo-js\kendo.window.min.js.map" />
     <Content Include="Views\Course\Manage.cshtml" />
     <Content Include="Views\Course\Edit.cshtml" />
-    <Content Include="Views\Shared\_alert.cshtml" />
+    <Content Include="Views\Shared\_Alert.cshtml" />
     <Content Include="Views\Course\Session.cshtml" />
     <Content Include="Views\User\Manage.cshtml" />
     <Content Include="Views\User\Group.cshtml" />
@@ -915,6 +916,9 @@
     <Content Include="Views\Shared\_Layout.super.admin.cshtml" />
     <Content Include="Views\Shared\_Layout.user.cshtml" />
     <Content Include="Views\Course\SessionChooseCourse.cshtml" />
+    <Content Include="Views\Home\_SuperAdmin.cshtml" />
+    <Content Include="Views\Home\_Admin.cshtml" />
+    <Content Include="Views\Home\_User.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

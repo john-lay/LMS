@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Web.Http;
+using System.Web.Script.Serialization;
 
 namespace LMS.API.Controllers
 {
@@ -47,6 +48,31 @@ namespace LMS.API.Controllers
                 });
 
             return Ok(courses);
+        }
+
+        [HttpGet]
+        public string GetCoursesByUser(int id)
+        { 
+            // courses, session, content
+            var query = (from usersInCourseSession in db.UsersInCourseSessions
+                        join courseSession in db.CourseSessions on usersInCourseSession.CourseSessionId equals courseSession.CourseSessionId
+                        join course in db.Courses on courseSession.CourseId equals course.CourseId
+                        join content in db.Contents on course.CourseId equals content.CourseId
+                        where usersInCourseSession.UserId == id
+                        select new 
+                        {
+                            CourseName = course.Name,
+                            CourseDescription = course.Description,
+                            CourseContentName = content.Name,
+                            CourseContentDescription = content.Description,
+                            CourseContentResource = content.Resource,
+                            CourseSessionId = courseSession.CourseSessionId,
+                            CourseSessionStartDate = courseSession.StartDate,
+                            CourseSessionEndDate = courseSession.EndDate
+                        }).ToArray();
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            return serializer.Serialize(query);
         }
 
         //// PUT: api/Courses/5

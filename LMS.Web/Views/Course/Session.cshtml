@@ -176,6 +176,7 @@
 @section scripts {
 <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>  
 <script src="~/Scripts/bootstrap-datepicker.js"></script>
+<script src="~/Scripts/Site/DateLib.js"></script>
 <script type="text/javascript" title="Enrolment">
     var selectedUsers = [];
     var courseSessionId = -1;
@@ -408,7 +409,7 @@
                 data: {
                     CourseId: @Model.CourseId,
                     StartDate: covertToISODateString($("#EditStartDate").val()),
-                    EndTime: covertToISODateString($("#EditEndDate").val()),
+                    EndDate: covertToISODateString($("#EditEndDate").val()),
                     IsRolling: $("#IsRolling").is(':checked') ? true : false,
                 },
                 type: "POST",
@@ -435,7 +436,7 @@
                     CourseSessionId: courseSessionId,
                     CourseId: @Model.CourseId,
                     StartDate: covertToISODateString($("#EditStartDate").val()),
-                    EndTime: covertToISODateString($("#EditEndDate").val()),
+                    EndDate: covertToISODateString($("#EditEndDate").val()),
                     IsRolling: $("#IsRolling").is(':checked') ? true : false,
                 },
                 type: "PUT",
@@ -578,7 +579,7 @@
                     var row = '<tr>';
                     row += '<td class="text-center"><input type="radio" name="session" value="' + item.CourseSessionId + '" /></td>';
                     row += '<td class="startDate">' + formatDate(item.StartDate) + '</td>';
-                    row += '<td class="endDate">' + formatDate(item.EndTime) + '</td>';
+                    row += '<td class="endDate">' + formatDate(item.EndDate) + '</td>';
                     row += '<td class="isRolling">' + item.IsRolling + '</td>';
                     row += '<td data-id="' + item.CourseSessionId + '">';
                     row += '<a href="#" data-val="editCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal">Edit</a> | ';
@@ -594,38 +595,6 @@
                 });
             }
         });
-    }
-
-    function formatDate(dateString) {
-        var formattedDate = new Date(dateString);
-        var d = formattedDate.getDate();
-        var m = formattedDate.getMonth();
-        m += 1;  // JavaScript months are 0-11
-        var y = formattedDate.getFullYear();
-
-        // prepend single day/month with zero
-        d = ('0' + d).slice(-2);
-        m = ('0' + m).slice(-2);
-
-        return d + "/" + m + "/" + y;
-    }
-
-    function covertToISODateString(dateString) {
-        var ISODate = parseDate(dateString);
-        var d = ISODate.getDate();
-        var m =  ISODate.getMonth();
-        m += 1;  // JavaScript months are 0-11
-        var y = ISODate.getFullYear();
-
-        // The .NET framework expecs yyyy-MM-dd
-        return y + "-" + m + "-" + d;
-    }
-
-    // parse a date from dd/mm/yyyy format
-    function parseDate(input) {
-        var parts = input.split('/');
-        // new Date(year, month [, day [, hours[, minutes[, seconds[, ms]]]]])
-        return new Date(parts[2], parts[1] - 1, parts[0]); // Note: months are 0-based
     }
 
     function showCourseCategorySuccess() {

@@ -95,7 +95,7 @@ namespace LMS.API.Utilities
             db.CoursesInCourseCategories.Add(ccg);
 
             // course session
-            CourseSession cs = new CourseSession { CourseId = 1, IsRolling = false, StartDate = new DateTime(2014, 09, 01), EndTime = new DateTime(2014, 11, 01) };
+            CourseSession cs = new CourseSession { CourseId = 1, IsRolling = false, StartDate = new DateTime(2014, 09, 01), EndDate = new DateTime(2014, 11, 01) };
             db.CourseSessions.Add(cs);
             UsersInCourseSession ucs = new UsersInCourseSession { CourseSessionId = 1, UserId = 1 };
             db.UsersInCourseSessions.Add(ucs);
