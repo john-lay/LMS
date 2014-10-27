@@ -15,7 +15,6 @@ using System.Web.Http;
 
 namespace LMS.API.Controllers
 {
-    
     public class ClientsController : ApiBaseController
     {
         private LMSContext db = new LMSContext();

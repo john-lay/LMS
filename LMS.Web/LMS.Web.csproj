@@ -109,6 +109,7 @@
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Mvc">
       <HintPath>..\packages\Microsoft.AspNet.Mvc.5.1.2\lib\net45\System.Web.Mvc.dll</HintPath>
@@ -368,6 +369,7 @@
     <Content Include="Content\site\sticky-footer-navbar.less" />
     <Content Include="Content\kendo-styles\images\kendoui.ttf" />
     <Content Include="Content\kendo-styles\images\kendoui.woff" />
+    <None Include="Properties\PublishProfiles\somee.LMS.Web.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\html5shiv.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
