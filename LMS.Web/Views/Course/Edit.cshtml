@@ -93,12 +93,11 @@
                 },
                 data: {CourseId: @Model.CourseId, Name: $("#Name").val(), Description: $("#Description").val(), CourseType: $("#CourseType").val() },
                 type: "PUT",
-                cache: false,
                 success: function (result) {
                     showCourseUpdate();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error");
+                    console.log(errorThrown);
                 }
             });
         });

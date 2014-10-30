@@ -215,12 +215,11 @@
                     },
                     data: { Name: $("#CategoryName").val(), Notes: $("#CategoryNotes").val() },
                     type: "POST",
-                    cache: false,
                     success: function (result) {
                         showCategorySuccess(result);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                        console.log("error");
+                        console.log(errorThrown);
                     }
                 });
             });            
@@ -258,12 +257,11 @@
                     },
                     data: { CourseCategoryId: categoryId, Name: categoryName, Notes: categoryNotes },
                     type: "PUT",
-                    cache: false,
                     success: function (result) {
                         showCategoryUpdated();
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                        console.log("error");
+                        console.log(errorThrown);
                     }
                 });
             });
@@ -291,13 +289,12 @@
                     request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
                 },
                 type: "DELETE",
-                cache: false,
                 success: function (result) {
                     $("#DeleteCategoryModal").modal("hide");
                     showCategoryDelete();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error");
+                    console.log(errorThrown);
                 }
             });
         });
@@ -371,12 +368,11 @@
                 },
                 data: { Name: $("#CourseName").val(), Description: $("#CourseDescription").val() },
                 type: "POST",
-                cache: false,
                 success: function (result) {
                     addCourseToCourseCategory(result);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error");
+                    console.log(errorThrown);
                 }
             });
         });
@@ -393,13 +389,12 @@
             },
             data: { CourseCategoryId: categoryId, CourseId: courseId },
             type: "POST",
-            cache: false,
             success: function (result) {
                 $("#CreateCourseModal").modal("hide");
                 showCourseSuccess(courseName);
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log("error");
+                console.log(errorThrown);
             }
         });
     }
@@ -428,13 +423,12 @@
                 },
                 data: { CourseCategoryId: categoryId, CourseId: course.id },
                 type: "DELETE",
-                cache: false,
                 success: function (result) {
                     $("#DeleteCourseModal").modal("hide");
                     showCourseDelete();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error");
+                    console.log(errorThrown);
                 }
             });
         });

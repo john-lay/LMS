@@ -44,12 +44,11 @@
                     type: "POST",
                     //dataType: "json",
                     //contentType: "application/json",
-                    cache: false,
                     success: function (result) {
                         console.log(result);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                        console.log("error");
+                        console.log(errorThrown);
                     }
                 });
             });

@@ -241,13 +241,12 @@
                 },
                 data: { '': userData },
                 type: "POST",
-                cache: false,
                 success: function (result) {
                     $("#EnrolUsersModal").modal("hide");
                     showEnrolUsersSuccess();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error");
+                    console.log(errorThrown);
                 }
             });
         });
@@ -275,13 +274,12 @@
                 },
                 data: { '': userData },
                 type: "POST",
-                cache: false,
                 success: function (result) {
                     $("#EditUsersInSessionModal").modal("hide");
                     showEnrolUsersUpdate(removedUsers);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error");
+                    console.log(errorThrown);
                 }
             });
         });
@@ -413,14 +411,13 @@
                     IsRolling: $("#IsRolling").is(':checked') ? true : false,
                 },
                 type: "POST",
-                cache: false,
                 success: function (result) {
                     $("#EditCourseSessionModal").modal("hide");
                     showCourseCategorySuccess();
                     populateSessionTable();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error");
+                    console.log(errorThrown);
                 }
             });
         });
@@ -440,14 +437,13 @@
                     IsRolling: $("#IsRolling").is(':checked') ? true : false,
                 },
                 type: "PUT",
-                cache: false,
                 success: function (result) {
                     $("#EditCourseSessionModal").modal("hide");
                     showCourseCategoryUpdate();
                     populateSessionTable();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error");
+                    console.log(errorThrown);
                 }
             });
         });
@@ -457,14 +453,13 @@
             $.ajax({
                 url: "@this.GetApiUrl()" + "/CourseSessions/DeleteCourseSession/" + courseSessionId,
                 type: "DELETE",
-                cache: false,
                 success: function (result) {
                     $("#EditCourseSessionModal").modal("hide");
                     showCourseCategoryDelete();
                     populateSessionTable();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error");
+                    console.log(errorThrown);
                 }
             });
         });        

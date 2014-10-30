@@ -163,13 +163,12 @@
                 },
                 data: { Name: $("#GroupName").val(), ParentId: -1 },
                 type: "POST",
-                cache: false,
                 success: function (result) {
                     $("#CreateUserGroupModal").modal("hide");
                     showGroupSuccess();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error");
+                    console.log(errorThrown);
                 }
             });
         });
@@ -182,13 +181,12 @@
                 },
                 data: { Name: $("#UpdateGroupName").val(), UserGroupId: CurrentUserGroup.id },
                 type: "PUT",
-                cache: false,
                 success: function (result) {
                     $("#UpdateUserGroupModal").modal("hide");
                     showGroupUpdate();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error");
+                    console.log(errorThrown);
                 }
             });
         });
@@ -229,12 +227,11 @@
             url: "@this.GetApiUrl()" + "/UsersInUserGroups/UpdateUsersInGroup/",
             data: { '': getUserGroupsJSON() },
             type: "PUT",
-            cache: false,
             success: function (result) {
                 showGroupOrderUpdate();
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log("error");
+                console.log(errorThrown);
             }
         });
 

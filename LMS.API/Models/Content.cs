@@ -20,7 +20,7 @@ namespace LMS.API.Models
         [StringLength(500)]
         public string Description { get; set; }
 
-        [StringLength(50)]
+        [StringLength(512)]
         public string Resource { get; set; }
 
         [ForeignKey("Course")]

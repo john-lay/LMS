@@ -125,13 +125,12 @@
                 },
                 data: { Name: $("#Name").val() },
                 type: "POST",
-                cache: false,
                 success: function (result) {
                     $("#CreateModal").modal("hide");
                     showClientSuccess(result);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error");
+                    console.log(errorThrown);
                 }
             });
         });
@@ -152,14 +151,13 @@
                 },
                 data: { ClientId: clientId, Name: $("#EditName").val() },
                 type: "PUT",
-                cache: false,
                 success: function (result) {
                     $("#EditModal").modal("hide");
                     clientName = $("#EditName").val();
                     showClientUpdate();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error");
+                    console.log(errorThrown);
                 }
             });
         });
@@ -179,13 +177,12 @@
                     request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
                 },
                 type: "DELETE",
-                cache: false,
                 success: function (result) {
                     $("#DeleteModal").modal("hide");
                     showClientDelete();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error");
+                    console.log(errorThrown);
                 }
             });
         });
@@ -248,7 +245,6 @@
                 request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
             },
             type: "GET",
-            cache: false,
             success: function (clients) {
                 table.html("<tr></tr>");
                 var row = '';
@@ -263,6 +259,9 @@
                     row += '</tr>';
                     table.append(row);
                 })
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown);
             }
         });
     }

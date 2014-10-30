@@ -187,7 +187,6 @@
                 },
                 data: { FirstName: $("#FirstName").val(), LastName: $("#LastName").val(), EmailAddress: $("#Email").val(), Password: $("#Password").val() },
                 type: "POST",
-                cache: false,
                 success: function (result) {
                     if (result.length > 0) {
                         showUserFailure(result);
@@ -196,7 +195,7 @@
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error");
+                    console.log(errorThrown);
                 }
             });
         });
@@ -210,13 +209,12 @@
                 },
                 data: { FirstName: $("#UpdateFirstName").val(), LastName: $("#UpdateLastName").val(), UserId: CurrentUser.id },
                 type: "PATCH",
-                cache: false,
                 success: function (result) {
                     $("#UpdateUserModal").modal("hide");
                     showUserUpdate();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error");
+                    console.log(errorThrown);
                 }
             });
         });
@@ -231,13 +229,12 @@
                     request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
                 },
                 type: "DELETE",
-                cache: false,
                 success: function (result) {
                     $("#UpdateUserModal").modal("hide");
                     showUserDelete(userName);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error");
+                    console.log(errorThrown);
                 }
             });
         });

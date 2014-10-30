@@ -15,7 +15,7 @@
             <a class="navbar-brand" href="#">LMS</a>
         </div>
         <div class="navbar-collapse collapse">
-            @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "navbar-form navbar-right", role = "form", autocomplete = "off" }))
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "navbar-form navbar-right", role = "form" }))
             {
                 @Html.AntiForgeryToken()
                 <div class="form-group">

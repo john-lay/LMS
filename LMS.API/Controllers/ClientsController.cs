@@ -20,7 +20,7 @@ namespace LMS.API.Controllers
         private LMSContext db = new LMSContext();
 
         // GET: api/Clients
-        [Authorize]
+        [HttpGet]
         public IQueryable<Client> GetClients()
         {
             return db.Clients;
