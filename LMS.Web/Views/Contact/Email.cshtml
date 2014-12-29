@@ -1,0 +1,127 @@
+﻿
+@{
+    ViewBag.Title = "Email";
+}
+@section head {
+<link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.common.min.css" rel="stylesheet" />
+<link href="~/Content/kendo-styles/kendo.silver.min.css" rel="stylesheet" />
+<link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.min.css" rel="stylesheet" />
+<link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.default.min.css" rel="stylesheet" />
+    <style>
+    .sidepane {
+        position: absolute;
+        left: 200px;
+        top: 0;
+    }
+</style>
+}
+<div kendo-window="errorWindow" k-title="'Error'" k-visible="false" k-modal="true">
+    There was a {{errorStatus}} error loading {{errorURL}}.<br />
+    <pre>{{errorData}}</pre>
+</div>
+<div data-ng-controller="EmailController" class="row col-md-12">
+    <form name="emailForm" ng-submit="send()">
+        <div class="col-md-3">
+            <div class="lead">Recipients</div>
+            <div>
+                <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
+            </div>
+            <div class="tree-view" kendo-tree-view="tree" k-data-source="treeData" k-template="itemTemplate" k-on-change="selectedItem=dataItem"></div>
+            @*<div class="sidepane" ng-show="selectedItem">
+                Selected: {{selectedItem.text}}
+                <br /><br />
+                <button class="k-button" ng-click="addAfter(selectedItem)">Add after</button>
+                <button class="k-button" ng-click="addBelow(selectedItem)">Add below</button>
+                <button class="k-button" ng-click="remove(selectedItem)">Delete</button>
+            </div>*@
+        </div>
+        <div class="col-md-9 form-horizontal">
+            <div class="lead">Email users</div>
+            <div class="form-group">
+                <label class="col-md-3 control-label" for="FirstName">To</label>
+                <div class="col-md-9">
+                    <input class="form-control" data-ng-model="Recipients" required readonly="readonly" placeholder="recipients..." type="text" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label" for="LastName">Message</label>
+                <div class="col-md-9">
+                    <textarea class="form-control" rows="8" data-ng-model="Message"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-2 col-md-offset-10">
+                    <input type="submit" id="SaveUser" class="btn btn-primary pull-right" value="Send &raquo;" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section scripts {
+    <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>  
+    <script src="~/Scripts/Library/kendo-js/kendo.angular.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            var app = angular.module("LMS", ["kendo.directives"]);
+
+            var EmailController = function ($scope, $http) {
+
+                    @* removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope *@
+                    emailScope = $scope;
+
+                    emailScope.RecipientsList = [];
+                    emailScope.Recipients = "";
+                    emailScope.Message = "Avemtec LMS test message";
+
+                    emailScope.init = function() {
+                        emailScope.loadData("@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/");
+                    }
+
+                    emailScope.send = function() {
+                        //
+                    }
+
+                    emailScope.itemTemplate = "<span ng-click='addRecipient(dataItem)'>{{dataItem.text}}</span>";
+
+                    emailScope.addRecipient = function(dataItem) {
+                        if (!alreadyAdded(dataItem.text)) {
+                            emailScope.RecipientsList.push(dataItem.text);
+                            emailScope.Recipients = emailScope.RecipientsList.join();
+                        }
+                    };
+
+                    function alreadyAdded(email) {
+                        return emailScope.RecipientsList.indexOf(email) !== -1;
+                    }
+
+
+                    emailScope.treeData = [{ text: "" }];
+
+                    emailScope.loadData = function(file) {
+                        $http({ method: "GET", url: file })
+                            .success(function(data) {
+                                $(".tree-view").hide();
+                                $scope.treeData = JSON.parse(data);
+                                $(".k-loading").parent().slideUp(function() {
+                                    $(".tree-view").slideDown();
+                                });
+                            })
+                            .error(function(data, status) {
+                                $scope.errorStatus = status;
+                                $scope.errorData = data;
+                                $scope.errorURL = file;
+                                setTimeout(function() {
+                                    $scope.errorWindow.center().open();
+                                });
+                            });
+                    };
+
+                // run the initialize method
+                emailScope.init();
+
+            }
+            app.controller("EmailController", ["$scope", "$http", EmailController]);
+        }());
+    </script>
+}
