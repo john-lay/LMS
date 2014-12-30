@@ -90,6 +90,10 @@
             <p class="text-muted">&#169; Avemtec 2014</p>
         </div>
     </div>
+    <script type="text/javascript">
+        var API_URL = "@this.GetApiUrl()";
+        var TOKEN = "@this.GetToken()";
+    </script>
     @Scripts.Render("~/js")
     @RenderSection("Scripts", required: false)
 </body>

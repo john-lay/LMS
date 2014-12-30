@@ -67,7 +67,7 @@
 
             var EmailController = function($scope, $http) {
 
-                @* removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope *@
+                // removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope
                 emailScope = $scope;
 
                 emailScope.RecipientsList = [];
@@ -75,21 +75,21 @@
                 emailScope.Body = "";
 
                 emailScope.init = function() {
-                    emailScope.loadData("@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUserEmails/");
+                    emailScope.loadData(API_URL + "/UsersInUserGroups/GetUserGroupsAndUserEmails/");
                 }
 
                 emailScope.send = function() {
                     if (emailScope.RecipientsList.length > 0) {
                         $http({
                                 method: "POST",
-                                url: "@this.GetApiUrl()" + "/Contact/SendEmail/",
+                                url: API_URL + "/Contact/SendEmail/",
                                 data: {
                                     "recipients": emailScope.RecipientsList,
                                     "subject": emailScope.Subject,
                                     "body": emailScope.Body
                                 },
                                 headers: {
-                                    "Authorization": "Bearer " + "@this.GetToken()"
+                                    "Authorization": "Bearer " + TOKEN
                                 }
                             })
                             .success(function(data) {
@@ -133,7 +133,7 @@
                             method: "GET",
                             url: file,
                             headers: {
-                                "Authorization": "Bearer " + "@this.GetToken()"
+                                "Authorization": "Bearer " + TOKEN
                             }
                         })
                         .success(function(data) {
