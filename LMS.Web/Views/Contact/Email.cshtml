@@ -1,19 +1,11 @@
-﻿
-@{
-    ViewBag.Title = "Email";
+﻿@{
+    ViewBag.Title = "Contact";
 }
 @section head {
 <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.common.min.css" rel="stylesheet" />
 <link href="~/Content/kendo-styles/kendo.silver.min.css" rel="stylesheet" />
 <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.min.css" rel="stylesheet" />
 <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.default.min.css" rel="stylesheet" />
-    <style>
-    .sidepane {
-        position: absolute;
-        left: 200px;
-        top: 0;
-    }
-</style>
 }
 <div kendo-window="errorWindow" k-title="'Error'" k-visible="false" k-modal="true">
     There was a {{errorStatus}} error loading {{errorURL}}.<br />
@@ -27,31 +19,39 @@
                 <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
             </div>
             <div class="tree-view" kendo-tree-view="tree" k-data-source="treeData" k-template="itemTemplate" k-on-change="selectedItem=dataItem"></div>
-            @*<div class="sidepane" ng-show="selectedItem">
-                Selected: {{selectedItem.text}}
-                <br /><br />
-                <button class="k-button" ng-click="addAfter(selectedItem)">Add after</button>
-                <button class="k-button" ng-click="addBelow(selectedItem)">Add below</button>
-                <button class="k-button" ng-click="remove(selectedItem)">Delete</button>
-            </div>*@
         </div>
         <div class="col-md-9 form-horizontal">
             <div class="lead">Email users</div>
             <div class="form-group">
                 <label class="col-md-3 control-label" for="FirstName">To</label>
                 <div class="col-md-9">
-                    <input class="form-control" data-ng-model="Recipients" required readonly="readonly" placeholder="recipients..." type="text" />
+                    <div class="alert alert-warning" role="alert" ng-show="RecipientsList.length === 0">
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                        Please select at least one email recipient...
+                    </div>
+                    <ul class="email-recipients form-control" ng-show="RecipientsList.length !== 0">
+                        <li data-ng-repeat="recipient in RecipientsList">
+                            <span class="label label-primary">{{recipient}} <a class="remove-recipient" href="#" ng-click="removeRecipient($index)">x</a></span>
+                            {{ !$last ? ', ' : '' }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label" for="LastName">Subject</label>
+                <div class="col-md-9">
+                    <input class="form-control" rows="8" data-ng-model="Subject" required />
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-md-3 control-label" for="LastName">Message</label>
                 <div class="col-md-9">
-                    <textarea class="form-control" rows="8" data-ng-model="Message"></textarea>
+                    <textarea class="form-control" rows="8" data-ng-model="Body" required></textarea>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-md-2 col-md-offset-10">
-                    <input type="submit" id="SaveUser" class="btn btn-primary pull-right" value="Send &raquo;" />
+                    <input type="submit" class="btn btn-primary pull-right" value="Send &raquo;" />
                 </div>
             </div>
         </div>
@@ -62,60 +62,120 @@
     <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>  
     <script src="~/Scripts/Library/kendo-js/kendo.angular.min.js"></script>
     <script type="text/javascript">
-        (function () {
+        (function() {
             var app = angular.module("LMS", ["kendo.directives"]);
 
-            var EmailController = function ($scope, $http) {
+            var EmailController = function($scope, $http) {
 
-                    @* removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope *@
-                    emailScope = $scope;
+                @* removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope *@
+                emailScope = $scope;
 
-                    emailScope.RecipientsList = [];
-                    emailScope.Recipients = "";
-                    emailScope.Message = "Avemtec LMS test message";
+                emailScope.RecipientsList = [];
+                emailScope.Subject = "";
+                emailScope.Body = "";
 
-                    emailScope.init = function() {
-                        emailScope.loadData("@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/");
-                    }
+                emailScope.init = function() {
+                    emailScope.loadData("@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUserEmails/");
+                }
 
-                    emailScope.send = function() {
-                        //
-                    }
-
-                    emailScope.itemTemplate = "<span ng-click='addRecipient(dataItem)'>{{dataItem.text}}</span>";
-
-                    emailScope.addRecipient = function(dataItem) {
-                        if (!alreadyAdded(dataItem.text)) {
-                            emailScope.RecipientsList.push(dataItem.text);
-                            emailScope.Recipients = emailScope.RecipientsList.join();
-                        }
-                    };
-
-                    function alreadyAdded(email) {
-                        return emailScope.RecipientsList.indexOf(email) !== -1;
-                    }
-
-
-                    emailScope.treeData = [{ text: "" }];
-
-                    emailScope.loadData = function(file) {
-                        $http({ method: "GET", url: file })
+                emailScope.send = function() {
+                    if (emailScope.RecipientsList.length > 0) {
+                        $http({
+                                method: "POST",
+                                url: "@this.GetApiUrl()" + "/Contact/SendEmail/",
+                                data: {
+                                    "recipients": emailScope.RecipientsList,
+                                    "subject": emailScope.Subject,
+                                    "body": emailScope.Body
+                                },
+                                headers: {
+                                    "Authorization": "Bearer " + "@this.GetToken()"
+                                }
+                            })
                             .success(function(data) {
-                                $(".tree-view").hide();
-                                $scope.treeData = JSON.parse(data);
-                                $(".k-loading").parent().slideUp(function() {
-                                    $(".tree-view").slideDown();
-                                });
+                                showEmailSuccess();
                             })
                             .error(function(data, status) {
                                 $scope.errorStatus = status;
                                 $scope.errorData = data;
-                                $scope.errorURL = file;
-                                setTimeout(function() {
-                                    $scope.errorWindow.center().open();
-                                });
+
+                                showEmailFailure(data);
+                        });
+                    }
+                }
+
+                emailScope.itemTemplate = "<span ng-click='addRecipient(dataItem)'>{{dataItem.text}}</span>";
+
+                emailScope.addRecipient = function(dataItem) {
+                    // check the recipient hasn't already been added to the recipient list and validate the email address to prevent email groups being added to the list
+                    if (!alreadyAdded(dataItem.text) && isValidEmail(dataItem.text)) {
+                        emailScope.RecipientsList.push(dataItem.text);
+                    }
+                };
+
+                emailScope.removeRecipient = function(index) {
+                    emailScope.RecipientsList.splice(index, 1);
+                }
+
+                function alreadyAdded(email) {
+                    return emailScope.RecipientsList.indexOf(email) !== -1;
+                }
+
+                function isValidEmail(email) {
+                    // regex taken from angular library. EMAIL_REGEXP
+                    return /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i.test(email);
+                }
+
+                emailScope.treeData = [{ text: "" }];
+
+                emailScope.loadData = function(file) {
+                    $http({
+                            method: "GET",
+                            url: file,
+                            headers: {
+                                "Authorization": "Bearer " + "@this.GetToken()"
+                            }
+                        })
+                        .success(function(data) {
+                            $(".tree-view").hide();
+                            $scope.treeData = JSON.parse(data);
+                            $(".k-loading").parent().slideUp(function() {
+                                $(".tree-view").slideDown();
                             });
-                    };
+                        })
+                        .error(function(data, status) {
+                            $scope.errorStatus = status;
+                            $scope.errorData = data;
+                            $scope.errorURL = file;
+                            setTimeout(function() {
+                                $scope.errorWindow.center().open();
+                            });
+                        });
+                };
+
+                function showEmailSuccess() {
+                    var msg = "Email to: <b>" + emailScope.RecipientsList.join(", ") + "</b> successfully send!";
+
+                    $(".alert-success .msg")
+                        .html(msg)
+                        .parent()
+                            .removeClass("hidden")
+                            .slideDown();
+
+                    // reset form
+                    emailScope.RecipientsList = [];
+                    emailScope.Subject = "";
+                    emailScope.Body = "";
+                }
+
+                function showEmailFailure(msg) {
+
+                    $(".alert-danger .msg")
+                        .html(msg.ExceptionMessage)
+                        .parent()
+                            .removeClass("hidden")
+                            .slideDown();
+                }
 
                 // run the initialize method
                 emailScope.init();

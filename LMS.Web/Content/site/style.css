@@ -4,11 +4,11 @@ html {
   position: relative;
   min-height: 100%;
 }
-body {
+html body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
 }
-.footer {
+html body .footer {
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -19,32 +19,31 @@ body {
 /* Custom page CSS
 -------------------------------------------------- */
 /* Not required for template or sticky footer method. */
-body .container.main {
+.container.main {
   padding: 60px 15px 0;
 }
-/*
-.container 
-{
-    .container 
-    {
-        padding: 60px 15px 0;
-    }
-}
-
-.footer
-{
-    .container 
-    {
-        padding: 60px 15px 0;
-    }
-}
-
-code 
-{
-    font-size: 80%;
-}*/
 .field-validation-error {
   color: #c7254e;
   font-size: 0.9em;
 }
-/*# sourceMappingURL=sticky-footer-navbar.css.map */
+.email-recipients {
+  height: 100%;
+  padding-top: 10px;
+}
+.email-recipients li {
+  list-style: none;
+  display: inline-block;
+  margin-bottom: 6px;
+  margin-left: 3px;
+}
+.email-recipients li .label {
+  font-size: 14px;
+}
+.email-recipients li .remove-recipient {
+  color: #555555;
+}
+.email-recipients li .remove-recipient:hover {
+  text-decoration: none;
+  color: #333333;
+}
+/*# sourceMappingURL=style.css.map */

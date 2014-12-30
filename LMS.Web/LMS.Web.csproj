@@ -287,11 +287,11 @@
     <Content Include="Content\kendo-styles\Uniform\slider-v.gif" />
     <Content Include="Content\kendo-styles\Uniform\sprite.png" />
     <Content Include="Content\kendo-styles\Uniform\sprite_2x.png" />
-    <Content Include="Content\site\sticky-footer-navbar.css">
-      <DependentUpon>sticky-footer-navbar.less</DependentUpon>
+    <Content Include="Content\site\style.css">
+      <DependentUpon>style.less</DependentUpon>
     </Content>
-    <Content Include="Content\site\sticky-footer-navbar.min.css">
-      <DependentUpon>sticky-footer-navbar.css</DependentUpon>
+    <Content Include="Content\site\style.min.css">
+      <DependentUpon>style.css</DependentUpon>
     </Content>
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -397,11 +397,11 @@
     <None Include="BundleTransformer.Configuration.xsd">
       <SubType>Designer</SubType>
     </None>
-    <Content Include="Content\site\sticky-footer-navbar.less" />
+    <Content Include="Content\site\style.less" />
     <Content Include="Content\kendo-styles\images\kendoui.ttf" />
     <Content Include="Content\kendo-styles\images\kendoui.woff" />
-    <Content Include="Content\site\sticky-footer-navbar.css.map">
-      <DependentUpon>sticky-footer-navbar.css</DependentUpon>
+    <Content Include="Content\site\style.css.map">
+      <DependentUpon>style.css</DependentUpon>
     </Content>
     <None Include="Properties\PublishProfiles\somee.LMS.Web.pubxml" />
     <Content Include="Scripts\Library\angular\errors.json" />
