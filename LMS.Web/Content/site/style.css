@@ -1,0 +1,49 @@
+﻿/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+html body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+html body .footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+}
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+.container.main {
+  padding: 60px 15px 0;
+}
+.field-validation-error {
+  color: #c7254e;
+  font-size: 0.9em;
+}
+.email-recipients {
+  height: 100%;
+  padding-top: 10px;
+}
+.email-recipients li {
+  list-style: none;
+  display: inline-block;
+  margin-bottom: 6px;
+  margin-left: 3px;
+}
+.email-recipients li .label {
+  font-size: 14px;
+}
+.email-recipients li .remove-recipient {
+  color: #555555;
+}
+.email-recipients li .remove-recipient:hover {
+  text-decoration: none;
+  color: #333333;
+}
+/*# sourceMappingURL=style.css.map */

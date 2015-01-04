@@ -1,0 +1,74 @@
+﻿// Core variables and mixins
+@import "../bootstrap/variables.less";
+@import "../bootstrap/mixins.less";
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html 
+{
+    position: relative;
+    min-height: 100%;
+
+    body 
+    {
+        /* Margin bottom by footer height */
+        margin-bottom: 60px;
+
+        .footer 
+        {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            /* Set the fixed height of the footer here */
+            height: 60px;
+            background-color: #f5f5f5;
+        }
+    }    
+}
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+.container.main
+{
+    padding: 60px 15px 0;
+}
+
+.field-validation-error 
+{
+    color: #c7254e;
+    font-size: 0.9em;
+}
+
+.email-recipients 
+{
+    height: 100%;
+    padding-top: 10px;
+
+    li 
+    {
+        list-style: none;
+        display: inline-block;
+        margin-bottom: 6px;
+        margin-left: 3px;
+
+        .label 
+        {
+            font-size: @font-size-h5;
+        }
+
+        .remove-recipient
+        {
+            color: @gray;
+
+            &:hover
+            {
+                text-decoration: none;
+                color: @gray-dark;
+            }
+        }
+    }    
+}
+
+

@@ -26,12 +26,12 @@
     <meta name="author" content="">
     <title>@ViewBag.Title</title>
     @Styles.Render(BundleConfig.BootstrapPath)
-    <link rel="stylesheet" href="@Url.Content("~/Content/site/sticky-footer-navbar.less")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/site/style.less")" />
     @RenderSection("head", required: false)
     @Html.Partial("_html5shiv")
     @* favicons and touch icons go here *@    
 </head>
-<body>
+<body data-ng-app="LMS">
     <!-- Fixed navbar -->
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container">
@@ -49,27 +49,27 @@
                     <li class="@homeCssClass"><a href="@Url.Action("Welcome", "Home")">My Dashboard</a></li>
                     <li class="@clientCssClass"><a href="@Url.Action("Manage", "Client")">Clients</a></li>
                     <li class="@clientCssClass"><a href="@Url.Action("ManageAdmin", "User")">Admin Users</a></li>
-                    
+
                     @*<li class="@courseCssClass"><a href="@Url.Action("Manage", "Course")">Courses</a></li>*@
                     @*<li class="dropdown @userCssClass">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Users <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="@Url.Action("Manage", "User")">Manage Users</a></li>
-                            <li><a href="@Url.Action("Group", "User")">Group Users</a></li>
-                        </ul>
-                    </li>*@
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Users <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="@Url.Action("Manage", "User")">Manage Users</a></li>
+                                <li><a href="@Url.Action("Group", "User")">Group Users</a></li>
+                            </ul>
+                        </li>*@
                     @*<li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="#">Action</a></li>
-                            <li><a href="#">Another action</a></li>
-                            <li><a href="#">Something else here</a></li>
-                            <li class="divider"></li>
-                            <li class="dropdown-header">Nav header</li>
-                            <li><a href="#">Separated link</a></li>
-                            <li><a href="#">One more separated link</a></li>
-                        </ul>
-                    </li>*@
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">Action</a></li>
+                                <li><a href="#">Another action</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li class="divider"></li>
+                                <li class="dropdown-header">Nav header</li>
+                                <li><a href="#">Separated link</a></li>
+                                <li><a href="#">One more separated link</a></li>
+                            </ul>
+                        </li>*@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="@Url.Action("Logout", "Home")">Logout</a></li>
@@ -78,7 +78,7 @@
         </div>
     </div>
     <!-- Begin page content -->
-    <div class="container">
+    <div class="container main">
         @Html.Partial("_Alert")
         <div class="page-header">
             <h1>@ViewBag.Title</h1>
@@ -87,9 +87,13 @@
     </div>
     <div class="footer">
         <div class="container">
-            <p class="text-muted"><p class="text-muted">&#169; Avemtec 2014</p></p>
+            <p class="text-muted">&#169; Avemtec 2014</p>
         </div>
     </div>
+    <script type="text/javascript">
+        var API_URL = "@this.GetApiUrl()";
+        var TOKEN = "@this.GetToken()";
+    </script>
     @Scripts.Render("~/js")
     @RenderSection("Scripts", required: false)
 </body>

@@ -26,12 +26,12 @@
     <meta name="author" content="">
     <title>@ViewBag.Title</title>
     @Styles.Render(BundleConfig.BootstrapPath)
-    <link rel="stylesheet" href="@Url.Content("~/Content/site/sticky-footer-navbar.less")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/site/style.less")" />
     @RenderSection("head", required: false)
     @Html.Partial("_html5shiv")
     @* favicons and touch icons go here *@    
 </head>
-<body>
+<body data-ng-app="LMS">
     <!-- Fixed navbar -->
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container">
@@ -44,7 +44,7 @@
                 </button>
                 <a class="navbar-brand" href="#">@profile.ClientName</a>
             </div>
-            <div class="collapse navbar-collapse">                
+            <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="@Url.Action("Logout", "Home")">Logout</a></li>
                 </ul>
@@ -52,7 +52,7 @@
         </div>
     </div>
     <!-- Begin page content -->
-    <div class="container">
+    <div class="container main">
         @Html.Partial("_Alert")
         <div class="page-header">
             <h1>@ViewBag.Title</h1>
@@ -61,9 +61,13 @@
     </div>
     <div class="footer">
         <div class="container">
-            <p class="text-muted"><p class="text-muted">&#169; Avemtec 2014</p></p>
+            <p class="text-muted">&#169; Avemtec 2014</p>
         </div>
     </div>
+    <script type="text/javascript">
+        var API_URL = "@this.GetApiUrl()";
+        var TOKEN = "@this.GetToken()";
+    </script>
     @Scripts.Render("~/js")
     @RenderSection("Scripts", required: false)
 </body>

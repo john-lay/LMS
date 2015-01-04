@@ -14,12 +14,17 @@ namespace LMS.Web
 
         public static void RegisterBundles(BundleCollection bundles)
         {
+            //bundles.Add(new ScriptBundle("~/js").Include(
+            //    "~/Scripts/jquery-{version}.js",
+            //    "~/Scripts/bootstrap.js",
+            //    "~/Scripts/jquery.validate.js",
+            //    "~/scripts/jquery.validate.unobtrusive.js",
+            //    "~/Scripts/jquery.validate.unobtrusive-custom-for-bootstrap.js"));
+
             bundles.Add(new ScriptBundle("~/js").Include(
-                "~/Scripts/jquery-{version}.js",
-                "~/Scripts/bootstrap.js",
-                "~/Scripts/jquery.validate.js",
-                "~/scripts/jquery.validate.unobtrusive.js",
-                "~/Scripts/jquery.validate.unobtrusive-custom-for-bootstrap.js"));
+                "~/Scripts/Library/jquery-1.11.1.min.js",
+                "~/Scripts/Library/angular/angular.min.js",
+                "~/Scripts/Library/bootstrap/bootstrap.js"));
 
             var commonStylesBundle = new CustomStyleBundle(BootstrapPath);
             commonStylesBundle.Orderer = new NullOrderer();
