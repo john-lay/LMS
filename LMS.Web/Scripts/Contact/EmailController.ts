@@ -1,5 +1,6 @@
 ﻿/// <reference path="../typings/angularjs/angular.d.ts" />
-/// <reference path="../typings/kendo/kendo.all.d.ts" />
+/// <reference path="../typings/kendo/kendo.simplified.d.ts" />
+/// <reference path="iemailscope.ts" />
 
 module EmailModule {
     'use strict';
@@ -7,29 +8,6 @@ module EmailModule {
     /*** GLOBAL VARIABLES ***/
     declare var API_URL: string;
     declare var TOKEN: string;
-
-    /*** ANGULAR SCOPE ***/
-    export interface IEmailScope extends ng.IScope {
-        
-        // PROPERTIES
-        httpService: ng.IHttpService;
-        RecipientsList: string[];
-        Subject: string;
-        Body: string;
-        itemTemplate: string;
-        treeData: kendo.data.DataSource<kendo.data.Model>;
-        
-
-        // PUBLIC METHODS
-        loadData(file: string): void;
-        send(): void;
-        addRecipient(dataItem: kendo.data.DataSource<kendo.data.Model>): void;
-        removeRecipient(index: number): void;
-        alreadyAdded(email: string): boolean;
-        isValidEmail(email: string): boolean;
-        showEmailSuccess(): void;
-        showEmailFailure(error: any): void;
-    }
 
     // Expose outide of the controller
     export var emailScope: IEmailScope;
@@ -43,57 +21,29 @@ module EmailModule {
             emailScope.RecipientsList = [];
             emailScope.Subject = "";
             emailScope.Body = "";
-            emailScope.treeData = [{ text: "" }];
+            emailScope.treeData = [{ id: -1, text: "" }];
             emailScope.itemTemplate = "<span ng-click='addRecipient(dataItem)'>{{dataItem.text}}</span>";
-
-            // initialize data
-            emailScope.loadData(API_URL + "/UsersInUserGroups/GetUserGroupsAndUserEmails/");
-
-            emailScope.loadData = (file) => {
-                emailScope.httpService({
-                    method: "GET",
-                    url: file,
-                    headers: {
-                        "Authorization": "Bearer " + TOKEN
-                    }
-                })
-                .success((data: string) => {
-                    $(".tree-view").hide();
-                    emailScope.treeData = JSON.parse(data);
-                    $(".k-loading").parent().slideUp(function() {
-                        $(".tree-view").slideDown();
-                    });
-                })
-                .error((data, status) => {
-                    //emailScope.errorStatus = status;
-                    //emailScope.errorData = data;
-                    //emailScope.errorURL = file;
-                    //setTimeout(function () {
-                    //    emailScope.errorWindow.center().open();
-                    //});
-                });
-            };
 
             emailScope.send = () => {
                 if (emailScope.RecipientsList.length > 0) {
                     $http({
-                            method: "POST",
-                            url: API_URL + "/Contact/SendEmail/",
-                            data: {
-                                "recipients": emailScope.RecipientsList,
-                                "subject": emailScope.Subject,
-                                "body": emailScope.Body
-                            },
-                            headers: {
-                                "Authorization": "Bearer " + TOKEN
-                            }
-                        })
-                        .success(data => {
-                            emailScope.showEmailSuccess();
-                        })
-                        .error((data: any, status) => {
-                        //emailScope.errorStatus = status;
-                        //emailScope.errorData = data;
+                        method: "POST",
+                        url: API_URL + "/Contact/SendEmail/",
+                        data: {
+                            "recipients": emailScope.RecipientsList,
+                            "subject": emailScope.Subject,
+                            "body": emailScope.Body
+                        },
+                        headers: {
+                            "Authorization": "Bearer " + TOKEN
+                        }
+                    })
+                    .success(data => {
+                        emailScope.showEmailSuccess();
+                    })
+                    .error((data: IErrorData, status: number) => {
+                        emailScope.errorStatus = status;
+                        emailScope.errorData = data;
 
                         emailScope.showEmailFailure(data);
                     });
@@ -117,35 +67,33 @@ module EmailModule {
 
             emailScope.isValidEmail = (email) => {
                 // regex taken from angular library. EMAIL_REGEXP
-                return /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i.test(email);
+                return /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i.test(email);
             }
 
-            
-
-            //emailScope.loadData = function (file) {
-            //    $http({
-            //        method: "GET",
-            //        url: file,
-            //        headers: {
-            //            "Authorization": "Bearer " + TOKEN
-            //        }
-            //    })
-            //    .success(function (data) {
-            //        $(".tree-view").hide();
-            //        $scope.treeData = JSON.parse(data);
-            //        $(".k-loading").parent().slideUp(function () {
-            //            $(".tree-view").slideDown();
-            //        });
-            //    })
-            //    .error(function (data, status) {
-            //        $scope.errorStatus = status;
-            //        $scope.errorData = data;
-            //        $scope.errorURL = file;
-            //        setTimeout(function () {
-            //            $scope.errorWindow.center().open();
-            //        });
-            //    });
-            //};
+            emailScope.loadData = (file) => {
+                emailScope.httpService({
+                    method: "GET",
+                    url: file,
+                    headers: {
+                        "Authorization": "Bearer " + TOKEN
+                    }
+                })
+                    .success((data: string) => {
+                        $(".tree-view").hide();
+                        emailScope.treeData = JSON.parse(data);
+                        $(".k-loading").parent().slideUp(() => {
+                            $(".tree-view").slideDown();
+                        });
+                    })
+                    .error((data: IErrorData, status: number) => {
+                        emailScope.errorStatus = status;
+                        emailScope.errorData = data;
+                        emailScope.errorURL = file;
+                        //setTimeout(function () {
+                        //    emailScope.errorWindow.center().open();
+                        //});
+                    });
+            };
 
             emailScope.showEmailSuccess = () => {
                 var msg = "Email to: <b>" + emailScope.RecipientsList.join(", ") + "</b> successfully send!";
@@ -162,7 +110,7 @@ module EmailModule {
                 emailScope.Body = "";
             }
 
-            emailScope.showEmailFailure = (msg) => {
+            emailScope.showEmailFailure = (msg: IErrorData) => {
 
                 $(".alert-danger .msg")
                     .html(msg.ExceptionMessage)
@@ -170,9 +118,13 @@ module EmailModule {
                     .removeClass("hidden")
                     .slideDown();
             }
+
+            // initialize data
+            emailScope.loadData(API_URL + "/UsersInUserGroups/GetUserGroupsAndUserEmails/");
         }
     }
 }
 
 // Attach the controller to the app
+var app = angular.module("LMS", ["kendo.directives"]);
 app.controller("EmailController", ["$scope", "$http", EmailModule.EmailController]);

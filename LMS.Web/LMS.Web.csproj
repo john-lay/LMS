@@ -295,6 +295,8 @@
     </Content>
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
+    <Content Include="Scripts\Contact\EmailController.js" />
+    <Content Include="Scripts\Contact\IEmailScope.js" />
     <Content Include="Scripts\Library\angular\angular-animate.js" />
     <Content Include="Scripts\Library\angular\angular-animate.min.js" />
     <Content Include="Scripts\Library\angular\angular-aria.js" />
@@ -1702,6 +1704,8 @@
     <Content Include="Views\Home\_User.cshtml" />
     <Content Include="Scripts\Library\angular\version.json" />
     <Content Include="Views\Contact\Email.cshtml" />
+    <Content Include="Scripts\Contact\EmailController.js.map" />
+    <Content Include="Scripts\Contact\IEmailScope.js.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -1726,7 +1730,7 @@
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-scenario.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
-    <TypeScriptCompile Include="Scripts\typings\kendo\kendo.all.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\kendo\kendo.simplified.d.ts" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
