@@ -13,257 +13,183 @@
 <p class="lead">
     <table id="clients" class="table"><tr><td><div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...</td></tr></table>
 </p>
-@* -- Create Modal -- *@
-<div class="modal fade" id="CreateModal" tabindex="-1" role="dialog" aria-labelledby="CreateModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="CreateModal">Add new client</h4>
-            </div>
-            <div class="modal-body">
-                @using (Html.BeginForm())
-                {
-                    @Html.AntiForgeryToken()
-                    <div class="form-horizontal">                        
-                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-md-offset-2 col-md-10">
-                                <button id="Create" type="button" class="btn btn-default">Create</button>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@* -- Edit Modal -- *@
-<div class="modal fade" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="EditModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="EditModal">Edit</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Name</label>
-                        <div class="col-md-10">
-                            <input id="EditName" class="form-control text-box single-line" type="text" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-10">
-                            <button id="Update" type="button" class="btn btn-default">Update</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@* -- Delete Modal -- *@
-<div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="DeleteModal">Delete</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <label class="control-label col-md-offset-1">Are you sure you want to delete client <span style="text-decoration: underline" id="DeleteName"></span>?</label>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-offset-1">
-                            <button id="Delete" type="button" class="btn btn-danger">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
+@Html.Partial("_Manage.create")
+@Html.Partial("_Manage.edit")
+@Html.Partial("_Manage.delete")
 
 @section scripts {
     <script type="text/javascript">
 
-    var clientId = -1;
-    var clientName = "";
+        var clientId = -1;
+        var clientName = "";
 
-    $(function () {
-        // list existing clients
-        loadClients();
+        $(function () {
+            // list existing clients
+            loadClients();
 
-        // add client
-        $("#Create").click(function () {
+            // add client
+            $("#Create").click(function () {
+                $.ajax({
+                    url: API_URL + "/clients/CreateClient/",
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+                    },
+                    data: { Name: $("#Name").val() },
+                    type: "POST",
+                    success: function (result) {
+                        $("#CreateModal").modal("hide");
+                        showClientSuccess(result);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(errorThrown);
+                    }
+                });
+            });
+
+            // edit client
+            $("#EditModal").on("show.bs.modal", function (e) {
+                var $invoker = $(e.relatedTarget);
+                clientId = $invoker.attr("data-val");
+                clientName = $invoker.attr("data-name");
+                $("#EditName").val(clientName);
+            });
+
+            $("#Update").click(function () {
+                $.ajax({
+                    url: API_URL + "/clients/UpdateClient/" + clientId,
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+                    },
+                    data: { ClientId: clientId, Name: $("#EditName").val() },
+                    type: "PUT",
+                    success: function (result) {
+                        $("#EditModal").modal("hide");
+                        clientName = $("#EditName").val();
+                        showClientUpdate();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(errorThrown);
+                    }
+                });
+            });
+
+            // delete client
+            $("#DeleteModal").on("show.bs.modal", function (e) {
+                var $invoker = $(e.relatedTarget);
+                clientId = $invoker.attr("data-val");
+                clientName = $invoker.attr("data-name");
+                $("#DeleteName").html(clientName);
+            });
+
+            $("#Delete").click(function () {
+                $.ajax({
+                    url: API_URL + "/clients/DeleteClient/" + clientId,
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+                    },
+                    type: "DELETE",
+                    success: function (result) {
+                        $("#DeleteModal").modal("hide");
+                        showClientDelete();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(errorThrown);
+                    }
+                });
+            });
+        });
+
+        function showClientSuccess(result) {
+            var msg = "Client: <b>" + result.Name + "</b> successfully created!";
+
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+            $("#Name").val("");
+
+            $('#clients').slideUp();
+            loadClients()
+            $('#clients').slideDown();
+        }
+
+        function showClientUpdate() {
+            var msg = "Client: <b>" + clientName + "</b> successfully updated!";
+
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+            $("#Name").val("");
+
+            $('#clients').slideUp();
+            loadClients()
+            $('#clients').slideDown();
+        }
+
+        function showClientDelete() {
+            var msg = "Client: <b>" + clientName + "</b> successfully deleted!";
+
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+            $("#Name").val("");
+
+            $('#clients').slideUp();
+            loadClients()
+            $('#clients').slideDown();
+        }
+
+        function loadClients() {
+            var table = $("#clients");
+
             $.ajax({
-                url: "@this.GetApiUrl()" + "/clients/CreateClient/",
+                url: API_URL + "/clients/GetClients/",
                 beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    request.setRequestHeader("Authorization", "Bearer " + TOKEN);
                 },
-                data: { Name: $("#Name").val() },
-                type: "POST",
-                success: function (result) {
-                    $("#CreateModal").modal("hide");
-                    showClientSuccess(result);
+                type: "GET",
+                success: function (clients) {
+                    table.html("<tr></tr>");
+                    var row = '';
+                    $.each(clients, function () {
+                        row = '<tr>';
+                        row += '<td>' + this.Name + '</td>';
+                        row += '<td width="15%">';
+                        row += '<a href="#" data-toggle="modal" data-target="#EditModal" class="edit" data-val="' + this.ClientId + '" data-name="' + this.Name + '">Edit</a> | ';
+                        //row += '<a href="#" data-toggle="modal" data-target="#DetailsModal" class="details" data-val="' + this.ClientId + '" data-name="' + this.Name + '">Details</a> | ';
+                        row += '<a href="#" data-toggle="modal" data-target="#DeleteModal" class="delete" data-val="' + this.ClientId + '" data-name="' + this.Name + '">Delete</a>';
+                        row += '</td>';
+                        row += '</tr>';
+                        table.append(row);
+                    })
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log(errorThrown);
                 }
             });
-        });
+        }
+    </script>
+<script type="text/javascript">
+    (function () {
+        //var app = angular.module("LMS", ["kendo.directives"]);
+        var app = angular.module("LMS", []);
 
-        // edit client
-        $("#EditModal").on("show.bs.modal", function (e) {
-            var $invoker = $(e.relatedTarget);
-            clientId = $invoker.attr("data-val");
-            clientName = $invoker.attr("data-name");
-            $("#EditName").val(clientName);
-        });
+        var EmailController = function ($scope, $http) {
 
-        $("#Update").click(function () {
-            $.ajax({
-                url: "@this.GetApiUrl()" + "/clients/UpdateClient/" + clientId,
-                beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-                },
-                data: { ClientId: clientId, Name: $("#EditName").val() },
-                type: "PUT",
-                success: function (result) {
-                    $("#EditModal").modal("hide");
-                    clientName = $("#EditName").val();
-                    showClientUpdate();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                }
-            });
-        });
+            // removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope
+            emailScope = $scope;
 
-        // delete client
-        $("#DeleteModal").on("show.bs.modal", function (e) {
-            var $invoker = $(e.relatedTarget);
-            clientId = $invoker.attr("data-val");
-            clientName = $invoker.attr("data-name");
-            $("#DeleteName").html(clientName);
-        });
-
-        $("#Delete").click(function () {
-            $.ajax({
-                url: "@this.GetApiUrl()" + "/clients/DeleteClient/" + clientId,
-                beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-                },
-                type: "DELETE",
-                success: function (result) {
-                    $("#DeleteModal").modal("hide");
-                    showClientDelete();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                }
-            });
-        });
-    });
-
-    function showClientSuccess(result) {
-        var msg = "Client: <b>" + result.Name + "</b> successfully created!";
-
-        $(".alert-success .msg")
-            .html(msg)
-            .parent()
-                .removeClass("hidden")
-                .slideDown();
-
-        $("#Name").val("");
-
-        $('#clients').slideUp();
-        loadClients()
-        $('#clients').slideDown();
-    }
-
-    function showClientUpdate() {
-        var msg = "Client: <b>" + clientName + "</b> successfully updated!";
-
-        $(".alert-success .msg")
-            .html(msg)
-            .parent()
-                .removeClass("hidden")
-                .slideDown();
-
-        $("#Name").val("");
-
-        $('#clients').slideUp();
-        loadClients()
-        $('#clients').slideDown();
-    }
-
-    function showClientDelete() {
-        var msg = "Client: <b>" + clientName + "</b> successfully deleted!";
-
-        $(".alert-success .msg")
-            .html(msg)
-            .parent()
-                .removeClass("hidden")
-                .slideDown();
-
-        $("#Name").val("");
-
-        $('#clients').slideUp();
-        loadClients()
-        $('#clients').slideDown();
-    }
-
-    function loadClients() {
-        var table = $("#clients");
-
-        $.ajax({
-            url: "@this.GetApiUrl()" + "/clients/GetClients/",
-            beforeSend: function (request) {
-                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-            },
-            type: "GET",
-            success: function (clients) {
-                table.html("<tr></tr>");
-                var row = '';
-                $.each(clients, function () {
-                    row = '<tr>';
-                    row += '<td>' + this.Name + '</td>';
-                    row += '<td width="15%">';
-                    row += '<a href="#" data-toggle="modal" data-target="#EditModal" class="edit" data-val="' + this.ClientId + '" data-name="' + this.Name + '">Edit</a> | ';
-                    //row += '<a href="#" data-toggle="modal" data-target="#DetailsModal" class="details" data-val="' + this.ClientId + '" data-name="' + this.Name + '">Details</a> | ';
-                    row += '<a href="#" data-toggle="modal" data-target="#DeleteModal" class="delete" data-val="' + this.ClientId + '" data-name="' + this.Name + '">Delete</a>';
-                    row += '</td>';
-                    row += '</tr>';
-                    table.append(row);
-                })
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-            }
-        });
-    }
+        }
+        app.controller("EmailController", ["$scope", "$http", EmailController]);
+    }());
 </script>
+
 }

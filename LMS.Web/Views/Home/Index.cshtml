@@ -19,7 +19,7 @@
             {
                 @Html.AntiForgeryToken()
                 <div class="form-group">
-                    @Html.TextBoxFor(m => m.Username, new { @class = "form-control", placeholder = "Username", Value = "admin" }) @*, Value = "user" })*@ @*Value = "johntest" })*@ @*Value = "admin@avemtec.com" })*@
+                    @Html.TextBoxFor(m => m.Username, new { @class = "form-control", placeholder = "Username", Value = "admin@avemtec.com" }) @*, Value = "user" })*@ @*Value = "johntest" })*@ @*Value = "admin" })*@
                 </div>
                 <div class="form-group">
                     @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Password", Value = "SuperPass" }) @*, Value = "Password_1" })*@ @*Value = "SuperPass" })*@
