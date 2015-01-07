@@ -6,190 +6,194 @@
 @section head {
     <link href="~/Content/kendo-styles/kendo.silver.min.css" rel="stylesheet" />
 }
-<p class="lead">
-    <a href="#" data-toggle="modal" data-target="#CreateModal" class="btn btn-primary">Add new client »</a>
-</p>
-<hr />
-<p class="lead">
-    <table id="clients" class="table"><tr><td><div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...</td></tr></table>
-</p>
-@Html.Partial("_Manage.create")
-@Html.Partial("_Manage.edit")
-@Html.Partial("_Manage.delete")
-
+<div data-ng-controller="ClientManageController" class="row col-md-12">
+    <p class="lead">
+        <a href="#" data-toggle="modal" data-target="#CreateModal" class="btn btn-primary">Add new client »</a>
+    </p>
+    <hr />
+    <p class="lead">
+        <div>
+            <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
+        </div>
+        <table id="clients" class="table">
+            <tr data-ng-repeat="client in clientsList">
+                <td>{{client.Name}}</td>
+                <td width="15%">
+                    <a href="#" data-toggle="modal" data-target="#EditModal" data-ng-click="setCurrentClient(client)">Edit</a> |
+                    @*<a href="#" data-toggle="modal" data-target="#DetailsModal" class="details" data-val="{{client.ClientId}}" data-name="{{client.Name}}">Details</a> |*@
+                    <a href="#" data-toggle="modal" data-target="#DeleteModal" data-ng-click="setCurrentClient(client)">Delete</a>
+                </td>
+            </tr>
+        </table>
+    </p>
+    @Html.Partial("_Manage.create")
+    @Html.Partial("_Manage.edit")
+    @Html.Partial("_Manage.delete")
+</div>
 @section scripts {
     <script type="text/javascript">
+        (function() {
+            var app = angular.module("LMS", []);
 
-        var clientId = -1;
-        var clientName = "";
+            var ClientManageController = function($scope, $http) {
 
-        $(function () {
-            // list existing clients
-            loadClients();
+                clientManageScope = $scope;
 
-            // add client
-            $("#Create").click(function () {
-                $.ajax({
-                    url: API_URL + "/clients/CreateClient/",
-                    beforeSend: function (request) {
-                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-                    },
-                    data: { Name: $("#Name").val() },
-                    type: "POST",
-                    success: function (result) {
-                        $("#CreateModal").modal("hide");
-                        showClientSuccess(result);
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log(errorThrown);
-                    }
-                });
-            });
+                clientManageScope.clientsList = [];
+                clientManageScope.NewClientName = "";
+                clientManageScope.CurrentClient = {};
 
-            // edit client
-            $("#EditModal").on("show.bs.modal", function (e) {
-                var $invoker = $(e.relatedTarget);
-                clientId = $invoker.attr("data-val");
-                clientName = $invoker.attr("data-name");
-                $("#EditName").val(clientName);
-            });
-
-            $("#Update").click(function () {
-                $.ajax({
-                    url: API_URL + "/clients/UpdateClient/" + clientId,
-                    beforeSend: function (request) {
-                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-                    },
-                    data: { ClientId: clientId, Name: $("#EditName").val() },
-                    type: "PUT",
-                    success: function (result) {
-                        $("#EditModal").modal("hide");
-                        clientName = $("#EditName").val();
-                        showClientUpdate();
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log(errorThrown);
-                    }
-                });
-            });
-
-            // delete client
-            $("#DeleteModal").on("show.bs.modal", function (e) {
-                var $invoker = $(e.relatedTarget);
-                clientId = $invoker.attr("data-val");
-                clientName = $invoker.attr("data-name");
-                $("#DeleteName").html(clientName);
-            });
-
-            $("#Delete").click(function () {
-                $.ajax({
-                    url: API_URL + "/clients/DeleteClient/" + clientId,
-                    beforeSend: function (request) {
-                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-                    },
-                    type: "DELETE",
-                    success: function (result) {
-                        $("#DeleteModal").modal("hide");
-                        showClientDelete();
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log(errorThrown);
-                    }
-                });
-            });
-        });
-
-        function showClientSuccess(result) {
-            var msg = "Client: <b>" + result.Name + "</b> successfully created!";
-
-            $(".alert-success .msg")
-                .html(msg)
-                .parent()
-                .removeClass("hidden")
-                .slideDown();
-
-            $("#Name").val("");
-
-            $('#clients').slideUp();
-            loadClients()
-            $('#clients').slideDown();
-        }
-
-        function showClientUpdate() {
-            var msg = "Client: <b>" + clientName + "</b> successfully updated!";
-
-            $(".alert-success .msg")
-                .html(msg)
-                .parent()
-                .removeClass("hidden")
-                .slideDown();
-
-            $("#Name").val("");
-
-            $('#clients').slideUp();
-            loadClients()
-            $('#clients').slideDown();
-        }
-
-        function showClientDelete() {
-            var msg = "Client: <b>" + clientName + "</b> successfully deleted!";
-
-            $(".alert-success .msg")
-                .html(msg)
-                .parent()
-                .removeClass("hidden")
-                .slideDown();
-
-            $("#Name").val("");
-
-            $('#clients').slideUp();
-            loadClients()
-            $('#clients').slideDown();
-        }
-
-        function loadClients() {
-            var table = $("#clients");
-
-            $.ajax({
-                url: API_URL + "/clients/GetClients/",
-                beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-                },
-                type: "GET",
-                success: function (clients) {
-                    table.html("<tr></tr>");
-                    var row = '';
-                    $.each(clients, function () {
-                        row = '<tr>';
-                        row += '<td>' + this.Name + '</td>';
-                        row += '<td width="15%">';
-                        row += '<a href="#" data-toggle="modal" data-target="#EditModal" class="edit" data-val="' + this.ClientId + '" data-name="' + this.Name + '">Edit</a> | ';
-                        //row += '<a href="#" data-toggle="modal" data-target="#DetailsModal" class="details" data-val="' + this.ClientId + '" data-name="' + this.Name + '">Details</a> | ';
-                        row += '<a href="#" data-toggle="modal" data-target="#DeleteModal" class="delete" data-val="' + this.ClientId + '" data-name="' + this.Name + '">Delete</a>';
-                        row += '</td>';
-                        row += '</tr>';
-                        table.append(row);
-                    })
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
+                clientManageScope.init = function() {
+                    clientManageScope.loadData(API_URL + "/clients/GetClients/");
                 }
-            });
-        }
+
+                clientManageScope.loadData = function(file) {
+                    $http({
+                            method: "GET",
+                            url: file,
+                            headers: {
+                                "Authorization": "Bearer " + TOKEN
+                            }
+                        })
+                        .success(function(data) {
+                            $("#clients").hide();
+                            clientManageScope.clientsList = data;
+                            $(".k-loading").parent().slideUp(function() {
+                                $("#clients").slideDown();
+                            });
+                        })
+                        .error(function(data, status) {
+                            clientManageScope.showClientFailure(data);
+                        });
+                };
+
+                // create new client
+                clientManageScope.create = function() {
+                    $http({
+                            method: "POST",
+                            url: API_URL + "/clients/CreateClient/",
+                            data: {
+                                "Name": clientManageScope.NewClientName
+                            },
+                            headers: {
+                                "Authorization": "Bearer " + TOKEN
+                            }
+                        })
+                        .success(function(data) {
+                            $("#CreateModal").modal("hide");
+                            clientManageScope.showClientSuccess();
+                        })
+                        .error(function(data, status) {
+                            clientManageScope.showClientFailure(data);
+                        });
+                };
+
+                clientManageScope.setCurrentClient = function(client) {
+                    clientManageScope.CurrentClient = client;
+                }
+
+                clientManageScope.update = function() {
+                    $http({
+                        method: "PUT",
+                        url: API_URL + "/clients/UpdateClient/" + clientManageScope.CurrentClient.ClientId,
+                        data: {
+                            "ClientId": clientManageScope.CurrentClient.ClientId,
+                            "Name": clientManageScope.CurrentClient.Name
+                        },
+                        headers: {
+                            "Authorization": "Bearer " + TOKEN
+                        }
+                    })
+                    .success(function(data) {
+                        $("#EditModal").modal("hide");
+                        clientManageScope.showClientUpdate();
+                    })
+                    .error(function(data, status) {
+                        clientManageScope.showClientFailure(data);
+                    });
+                }
+
+                clientManageScope.delete = function () {
+                    $http({
+                        method: "DELETE",
+                        url: API_URL + "/clients/DeleteClient/" + clientManageScope.CurrentClient.ClientId,
+                        headers: {
+                            "Authorization": "Bearer " + TOKEN
+                        }
+                    })
+                    .success(function (data) {
+                        $("#DeleteModal").modal("hide");
+                        clientManageScope.showClientDelete();
+                    })
+                    .error(function (data, status) {
+                        clientManageScope.showClientFailure(data);
+                    });
+                }
+
+                clientManageScope.showClientSuccess = function() {
+                    var msg = "Client: <b>" + clientManageScope.NewClientName + "</b> successfully created!";
+
+                    $(".alert-success .msg")
+                        .html(msg)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+
+                    // reset field
+                    clientManageScope.NewClientName = "";
+
+                    $('#clients').slideUp();
+                    clientManageScope.init();
+                    $('#clients').slideDown();
+                }
+
+                clientManageScope.showClientUpdate = function() {
+                    var msg = "Client: <b>" + clientManageScope.CurrentClient.Name + "</b> successfully updated!";
+
+                    $(".alert-success .msg")
+                        .html(msg)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+
+                    // reset field
+                    clientManageScope.CurrentClient = {};
+
+                    $('#clients').slideUp();
+                    clientManageScope.init();
+                    $('#clients').slideDown();
+                }
+
+                clientManageScope.showClientDelete = function () {
+                    var msg = "Client: <b>" + clientManageScope.CurrentClient.Name + "</b> successfully deleted!";
+
+                    $(".alert-success .msg")
+                        .html(msg)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+
+                    // reset field
+                    clientManageScope.CurrentClient = {};
+
+                    $('#clients').slideUp();
+                    clientManageScope.init();
+                    $('#clients').slideDown();
+                }
+
+                clientManageScope.showClientFailure = function(data) {
+
+                    $(".alert-danger .msg")
+                        .html(data.ExceptionMessage)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+                }
+
+                // run the initialize method
+                clientManageScope.init();
+            }
+            app.controller("ClientManageController", ["$scope", "$http", ClientManageController]);
+        }());
     </script>
-<script type="text/javascript">
-    (function () {
-        //var app = angular.module("LMS", ["kendo.directives"]);
-        var app = angular.module("LMS", []);
-
-        var EmailController = function ($scope, $http) {
-
-            // removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope
-            emailScope = $scope;
-
-        }
-        app.controller("EmailController", ["$scope", "$http", EmailController]);
-    }());
-</script>
-
 }

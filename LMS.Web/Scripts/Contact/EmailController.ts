@@ -42,9 +42,6 @@ module EmailModule {
                         emailScope.showEmailSuccess();
                     })
                     .error((data: IErrorData, status: number) => {
-                        emailScope.errorStatus = status;
-                        emailScope.errorData = data;
-
                         emailScope.showEmailFailure(data);
                     });
                 }
@@ -86,12 +83,7 @@ module EmailModule {
                         });
                     })
                     .error((data: IErrorData, status: number) => {
-                        emailScope.errorStatus = status;
-                        emailScope.errorData = data;
-                        emailScope.errorURL = file;
-                        //setTimeout(function () {
-                        //    emailScope.errorWindow.center().open();
-                        //});
+                        emailScope.showEmailFailure(data);
                     });
             };
 

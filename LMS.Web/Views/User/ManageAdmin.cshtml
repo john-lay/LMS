@@ -7,7 +7,7 @@
     <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.min.css" rel="stylesheet" />
     <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.default.min.css" rel="stylesheet" />
 }
-<div class="row col-md-12">
+<div data-ng-controller="UserManageAdminController" class="row col-md-12">
     <div class="col-md-3">
         <div class="lead">Edit Admin Users</div>
         <div id="treeview" data-role="treeview" class="k-widget k-treeview" tabindex="0" role="tree" aria-activedescendant="treeview_tv_active">
@@ -15,14 +15,14 @@
         </div>
     </div>
     <div class="col-md-9 form-horizontal">
-        
+
         <div class="lead">Create new Admin</div>
         <div class="form-group">
             <label class="col-md-3 control-label">New user for client:</label>
             <div class="col-md-9">
                 <select id="Clients" class="form-control"></select>
             </div>
-        </div>        
+        </div>
         <div class="form-group">
             <div class="col-md-2 col-md-offset-10">
                 <a href="#" data-toggle="modal" data-target="#CreateUserModal" class="btn btn-primary pull-right">Create new admin &raquo;</a>
@@ -121,250 +121,264 @@
 </div>
 @section scripts {
 <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
-<script type="text/javascript">
-    var UserGroups;
-    var CurrentUser;
+    <script type="text/javascript">
+        var UserGroups;
+        var CurrentUser;
 
-    $(function () {
-        // load clients
-        $.ajax({
-            url: "@this.GetApiUrl()" + "/clients/GetClients/",
-            beforeSend: function (request) {
-                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-            },
-            type: "GET",
-            success: function (clients) {
-                $.each(clients, function () {
-                    $("#Clients").append($("<option />").val(this.ClientId).text(this.Name));
-                });
-            }
-        });
-
-        // create user
-        $("#SaveUser").click(function () {
+        $(function () {
+            // load clients
             $.ajax({
-                url: "@this.GetApiUrl()" + "/Account/RegisterAdmin/",
+                url: "@this.GetApiUrl()" + "/clients/GetClients/",
                 beforeSend: function (request) {
                     request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
                 },
-                data: { ClientId: $("#Clients").val(), FirstName: $("#FirstName").val(), LastName: $("#LastName").val(), EmailAddress: $("#Email").val(), Password: $("#Password").val() },
-                type: "POST",
-                success: function (result) {
-                    $("#CreateUserModal").modal('hide');
-                    if (result.length > 0) {
-                        showUserFailure(result);
-                    } else {
-                        showUserSuccess();
+                type: "GET",
+                success: function (clients) {
+                    $.each(clients, function () {
+                        $("#Clients").append($("<option />").val(this.ClientId).text(this.Name));
+                    });
+                }
+            });
+
+            // create user
+            $("#SaveUser").click(function () {
+                $.ajax({
+                    url: "@this.GetApiUrl()" + "/Account/RegisterAdmin/",
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    },
+                    data: { ClientId: $("#Clients").val(), FirstName: $("#FirstName").val(), LastName: $("#LastName").val(), EmailAddress: $("#Email").val(), Password: $("#Password").val() },
+                    type: "POST",
+                    success: function (result) {
+                        $("#CreateUserModal").modal('hide');
+                        if (result.length > 0) {
+                            showUserFailure(result);
+                        } else {
+                            showUserSuccess();
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(errorThrown);
                     }
+                });
+            });
+
+            // update user
+            $("#SaveUpdatedUser").click(function () {
+                $.ajax({
+                    url: "@this.GetApiUrl()" + "/Users/UpdateUser/" + CurrentUser.id,
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    },
+                    data: { FirstName: $("#UpdateFirstName").val(), LastName: $("#UpdateLastName").val(), UserId: CurrentUser.id },
+                    type: "PATCH",
+                    success: function (result) {
+                        $("#UpdateUserModal").modal("hide");
+                        showUserUpdate();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(errorThrown);
+                    }
+                });
+            });
+
+            // delete user
+            $("#DeleteUser").click(function () {
+
+                var userName = $("#UpdateFirstName").val() + $("#UpdateLastName").val();
+                $.ajax({
+                    url: "@this.GetApiUrl()" + "/Users/DeleteUser/" + CurrentUser.id,
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    },
+                    type: "DELETE",
+                    success: function (result) {
+                        $("#UpdateUserModal").modal("hide");
+                        showUserDelete(userName);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(errorThrown);
+                    }
+                });
+            });
+
+            // initialise tree
+            $.ajax({
+                url: "@this.GetApiUrl()" + "/Users/GetAdmins/",
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
                 },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
+                success: function (userGroups) {
+                    UserGroups = addIdToUsersInTree(JSON.parse(userGroups));
+                    var treeview = $("#treeview").data("kendoTreeView");
+                    $("#treeview").kendoTreeView({
+                        dataSource: UserGroups
+                    });
+
+                    // style the group elements
+                    $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+                }
+            });
+
+            // bind to ajax created elements (clicking on categories in tree)
+            $(document).on('click', '.k-in', function () {
+                var isUser = $(this).find(".group").length == 0;
+                var userId = $(this).find("span").attr("class");
+                var name = $(this).html().split("</span>")[1];
+                userId = userId.split("k-sprite ")[1];
+
+                if (isUser) {
+                    $.each(UserGroups, function (i, outerNode) {
+                        if (outerNode.hasOwnProperty('items')) {
+                            $.each(outerNode.items, function (j, innerNode) {
+                                if (innerNode.id == userId) {
+                                    CurrentUser = innerNode;
+                                }
+                            });
+                        }
+                        // look for user not in group
+                        if (outerNode.spriteCssClass != "group" && outerNode.id == userId) {
+                            CurrentUser = outerNode;
+                        }
+                    });
+                    showUserEditor(userId);
+                }
+                else {
+                    // update client selected in drop down
+                    $("#Clients option").each(function () {
+                        if ($(this).text() == name) {
+                            $(this).attr('selected', 'selected');
+                        }
+                    });
                 }
             });
         });
 
-        // update user
-        $("#SaveUpdatedUser").click(function () {
+        function showUserSuccess() {
+            var msg = "Admin user: <b>" + $("#FirstName").val() + " " + $("#LastName").val() + "</b> successfully created!";
+
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+            // reset form
+            $("#FirstName").val("");
+            $("#LastName").val("");
+            $("#Password").val("");
+            $("#ConfirmPassword").val("");
+            $("#Email").val("");
+
+            // update tree
+            updateTree();
+        }
+
+        function showUserFailure(msg) {
+
+            $(".alert-danger .msg")
+                .html(msg)
+                .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+            // update tree
+            updateTree();
+        }
+
+        function showUserEditor(userId) {
             $.ajax({
-                url: "@this.GetApiUrl()" + "/Users/UpdateUser/" + CurrentUser.id,
+                url: "@this.GetApiUrl()" + "/Users/GetUser/" + userId,
                 beforeSend: function (request) {
                     request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
                 },
-                data: { FirstName: $("#UpdateFirstName").val(), LastName: $("#UpdateLastName").val(), UserId: CurrentUser.id },
-                type: "PATCH",
-                success: function (result) {
-                    $("#UpdateUserModal").modal("hide");
-                    showUserUpdate();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
+                success: function (user) {
+                    $("#UpdateFirstName").val(user.FirstName);
+                    $("#UpdateLastName").val(user.LastName);
+                    $("#UpdateUserModal").modal("show");
                 }
             });
-        });
+        }
 
-        // delete user
-        $("#DeleteUser").click(function () {
+        function showUserUpdate() {
+            var msg = "Admin User: <b>" + $("#UpdateFirstName").val() + " " + $("#UpdateLastName").val() + "</b> successfully updated!";
 
-            var userName = $("#UpdateFirstName").val() + $("#UpdateLastName").val();
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+            // update tree
+            updateTree();
+        }
+
+        function showUserDelete(userName) {
+            var msg = "Admin User: <b>" + userName + "</b> successfully deleted!";
+
+            $(".alert-danger .msg")
+                .html(msg)
+                .parent()
+                .removeClass("hidden")
+                .slideDown();
+
+            // update tree
+            updateTree();
+        }
+
+        function updateTree() {
+            $("#treeview").slideUp();
             $.ajax({
-                url: "@this.GetApiUrl()" + "/Users/DeleteUser/" + CurrentUser.id,
+                url: "@this.GetApiUrl()" + "/Users/GetAdmins/",
                 beforeSend: function (request) {
                     request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
                 },
-                type: "DELETE",
-                success: function (result) {
-                    $("#UpdateUserModal").modal("hide");
-                    showUserDelete(userName);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
+                success: function (userGroups) {
+                    UserGroups = addIdToUsersInTree(JSON.parse(userGroups));
+                    var treeview = $("#treeview").data("kendoTreeView");
+                    treeview.setDataSource(new kendo.data.HierarchicalDataSource({
+                        data: UserGroups
+                    }));
+
+                    // style the group elements
+                    $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+
+                    $("#treeview").slideDown();
                 }
             });
-        });
+        }
 
-        // initialise tree
-        $.ajax({
-            url: "@this.GetApiUrl()" + "/Users/GetAdmins/",
-            beforeSend: function (request) {
-                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-            },
-            success: function (userGroups) {
-                UserGroups = addIdToUsersInTree(JSON.parse(userGroups));
-                var treeview = $("#treeview").data("kendoTreeView");
-                $("#treeview").kendoTreeView({
-                    dataSource: UserGroups
-                });
+        function addIdToUsersInTree(userTree) {
+            $.each(userTree, function (i, outerNode) {
+                if (outerNode.hasOwnProperty('items')) {
+                    $.each(outerNode.items, function (j, innerNode) {
+                        // add user id to user node
+                        if (!innerNode.hasOwnProperty('spriteCssClass')) {
+                            innerNode["spriteCssClass"] = innerNode.id;
+                        }
+                    });
+                }
+                // add user id to ungrouped user node
+                if (!outerNode.hasOwnProperty('spriteCssClass')) {
+                    outerNode["spriteCssClass"] = outerNode.id;
+                }
+            });
 
-                // style the group elements
-                $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+            return userTree;
+        }
+    </script>
+    <script type="text/javascript">
+        (function () {
+            //var app = angular.module("LMS", ["kendo.directives"]);
+            var app = angular.module("LMS", []);
+
+            var UserManageAdminController = function ($scope, $http) {
+
+                // removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope
+                manageAdminScope = $scope;
+
             }
-        });
-
-        // bind to ajax created elements (clicking on categories in tree)
-        $(document).on('click', '.k-in', function () {
-            var isUser = $(this).find(".group").length == 0;
-            var userId = $(this).find("span").attr("class");
-            var name = $(this).html().split("</span>")[1];
-            userId = userId.split("k-sprite ")[1];
-
-            if (isUser) {
-                $.each(UserGroups, function (i, outerNode) {
-                    if (outerNode.hasOwnProperty('items')) {
-                        $.each(outerNode.items, function (j, innerNode) {
-                            if (innerNode.id == userId) {
-                                CurrentUser = innerNode;
-                            }
-                        });
-                    }
-                    // look for user not in group
-                    if (outerNode.spriteCssClass != "group" && outerNode.id == userId) {
-                        CurrentUser = outerNode;
-                    }
-                });
-                showUserEditor(userId);
-            }
-            else {
-                // update client selected in drop down
-                $("#Clients option").each(function () {
-                    if ($(this).text() == name) {
-                        $(this).attr('selected', 'selected');
-                    }
-                });
-            }
-        });
-    });
-
-    function showUserSuccess() {
-        var msg = "Admin user: <b>" + $("#FirstName").val() + " " + $("#LastName").val() + "</b> successfully created!";
-
-        $(".alert-success .msg")
-            .html(msg)
-            .parent()
-                .removeClass("hidden")
-                .slideDown();
-
-        // reset form
-        $("#FirstName").val("");
-        $("#LastName").val("");
-        $("#Password").val("");
-        $("#ConfirmPassword").val("");
-        $("#Email").val("");
-
-        // update tree
-        updateTree();
-    }
-
-    function showUserFailure(msg) {
-
-        $(".alert-danger .msg")
-            .html(msg)
-            .parent()
-                .removeClass("hidden")
-                .slideDown();
-
-        // update tree
-        updateTree();
-    }
-
-    function showUserEditor(userId) {
-        $.ajax({
-            url: "@this.GetApiUrl()" + "/Users/GetUser/" + userId,
-            beforeSend: function (request) {
-                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-            },
-            success: function (user) {
-                $("#UpdateFirstName").val(user.FirstName);
-                $("#UpdateLastName").val(user.LastName);
-                $("#UpdateUserModal").modal("show");
-            }
-        });
-    }
-
-    function showUserUpdate() {
-        var msg = "Admin User: <b>" + $("#UpdateFirstName").val() + " " + $("#UpdateLastName").val() + "</b> successfully updated!";
-
-        $(".alert-success .msg")
-            .html(msg)
-            .parent()
-                .removeClass("hidden")
-                .slideDown();
-
-        // update tree
-        updateTree();
-    }
-
-    function showUserDelete(userName) {
-        var msg = "Admin User: <b>" + userName + "</b> successfully deleted!";
-
-        $(".alert-danger .msg")
-            .html(msg)
-            .parent()
-                .removeClass("hidden")
-                .slideDown();
-
-        // update tree
-        updateTree();
-    }
-
-    function updateTree() {
-        $("#treeview").slideUp();
-        $.ajax({
-            url: "@this.GetApiUrl()" + "/Users/GetAdmins/",
-            beforeSend: function (request) {
-                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-            },
-            success: function (userGroups) {
-                UserGroups = addIdToUsersInTree(JSON.parse(userGroups));
-                var treeview = $("#treeview").data("kendoTreeView");
-                treeview.setDataSource(new kendo.data.HierarchicalDataSource({
-                    data: UserGroups
-                }));
-
-                // style the group elements
-                $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
-
-                $("#treeview").slideDown();
-            }
-        });
-    }
-
-    function addIdToUsersInTree(userTree) {
-        $.each(userTree, function (i, outerNode) {
-            if (outerNode.hasOwnProperty('items')) {
-                $.each(outerNode.items, function (j, innerNode) {
-                    // add user id to user node
-                    if (!innerNode.hasOwnProperty('spriteCssClass')) {
-                        innerNode["spriteCssClass"] = innerNode.id;
-                    }
-                });
-            }
-            // add user id to ungrouped user node
-            if (!outerNode.hasOwnProperty('spriteCssClass')) {
-                outerNode["spriteCssClass"] = outerNode.id;
-            }
-        });
-
-        return userTree;
-    }
-</script>
+            app.controller("UserManageAdminController", ["$scope", "$http", UserManageAdminController]);
+        }());
+    </script>
 }

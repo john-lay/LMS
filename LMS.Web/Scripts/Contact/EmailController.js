@@ -37,9 +37,6 @@ var EmailModule;
                     }).success(function (data) {
                         EmailModule.emailScope.showEmailSuccess();
                     }).error(function (data, status) {
-                        EmailModule.emailScope.errorStatus = status;
-                        EmailModule.emailScope.errorData = data;
-
                         EmailModule.emailScope.showEmailFailure(data);
                     });
                 }
@@ -79,12 +76,7 @@ var EmailModule;
                         $(".tree-view").slideDown();
                     });
                 }).error(function (data, status) {
-                    EmailModule.emailScope.errorStatus = status;
-                    EmailModule.emailScope.errorData = data;
-                    EmailModule.emailScope.errorURL = file;
-                    //setTimeout(function () {
-                    //    emailScope.errorWindow.center().open();
-                    //});
+                    EmailModule.emailScope.showEmailFailure(data);
                 });
             };
 
