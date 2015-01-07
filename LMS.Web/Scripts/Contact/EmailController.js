@@ -7,7 +7,7 @@ var EmailModule;
 
     
 
-    // Expose outide of the controller
+    // Expose outside of the controller
     EmailModule.emailScope;
 
     /*** ANGULAR CONTROLLER ***/

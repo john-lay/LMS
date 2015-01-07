@@ -14,11 +14,6 @@ module EmailModule {
         itemTemplate: string;
         treeData: kendo.IDataSource[];
 
-        // PROPERTIES - ajax errors
-        errorStatus: number; // http errors: 404, 500, etc
-        errorData: IErrorData;
-        errorURL: string;
-
         // PUBLIC METHODS
         loadData(file: string): void;
         send(): void;

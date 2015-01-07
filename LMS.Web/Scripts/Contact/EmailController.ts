@@ -9,7 +9,7 @@ module EmailModule {
     declare var API_URL: string;
     declare var TOKEN: string;
 
-    // Expose outide of the controller
+    // Expose outside of the controller
     export var emailScope: IEmailScope;
 
     /*** ANGULAR CONTROLLER ***/
