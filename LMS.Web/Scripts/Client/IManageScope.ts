@@ -8,8 +8,9 @@ module ClientModule {
 
         // PROPERTIES
         httpService: ng.IHttpService;
-        clientsList: IClient[];
+        ClientsList: IClient[];
         NewClientName: string;
+        DefaultClient: IClient;
         CurrentClient: IClient;
 
         // PUBLIC METHODS

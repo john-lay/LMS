@@ -1,0 +1,55 @@
+﻿<div class="modal fade" id="CreateUserModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Create admin</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <form name="createForm" data-ng-submit="create()">
+                        <div class="form-group">
+                            <label class="col-md-3 control-label" for="FirstName">First Name</label>
+                            <div class="col-md-9">
+                                <input data-ng-model="NewUser.FirstName" id="FirstName" required class="form-control" placeholder="First Name" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label" for="LastName">Last Name</label>
+                            <div class="col-md-9">
+                                <input data-ng-model="NewUser.LastName" id="LastName" required class="form-control" placeholder="Last Name" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label" for="Password">Password</label>
+                            <div class="col-md-9">
+                                <input data-ng-model="NewUser.Password" id="Password" required class="form-control" placeholder="Password" type="password" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label" for="ConfirmPassword">Confirm Password</label>
+                            <div class="col-md-9">
+                                <input data-ng-change="checkPasswordsMatch()" data-ng-model="NewUser.ConfirmPassword" id="ConfirmPassword" required class="form-control" placeholder="Password" type="password" />
+                                <span class="field-validation-error" data-ng-show="!PasswordsMatch">Passwords do not match!</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label" for="Email">Email</label>
+                            <div class="col-md-9">
+                                <input data-ng-model="NewUser.EmailAddress" id="Email" required class="form-control" placeholder="example@avemtec.com" type="email" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-3 col-md-9">
+                                <input type="submit" class="btn btn-default" value="Save" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

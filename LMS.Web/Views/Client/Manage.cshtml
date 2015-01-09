@@ -16,8 +16,9 @@
             <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
         </div>
         <table id="clients" class="table">
-            <tr data-ng-repeat="client in clientsList">
-                <td>{{client.Name}}</td>
+            <tr data-ng-repeat="client in ClientsList">
+                @* angular one way binding https://docs.angularjs.org/guide/expression#one-time-binding *@
+                <td>{{::client.Name}}</td>
                 <td width="15%">
                     <a href="#" data-toggle="modal" data-target="#EditModal" data-ng-click="setCurrentClient(client)">Edit</a> |
                     @*<a href="#" data-toggle="modal" data-target="#DetailsModal" class="details" data-val="{{client.ClientId}}" data-name="{{client.Name}}">Details</a> |*@

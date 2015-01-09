@@ -1712,6 +1712,8 @@
     <Content Include="Views\Client\_Manage.create.cshtml" />
     <Content Include="Views\Client\_Manage.edit.cshtml" />
     <Content Include="Views\Client\_Manage.delete.cshtml" />
+    <Content Include="Views\User\_ManageAdmin.create.cshtml" />
+    <Content Include="Views\User\_ManageAdmin.edit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
