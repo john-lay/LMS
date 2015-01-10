@@ -24,7 +24,7 @@
             <div class="form-group">
                 <label class="col-md-3 control-label">New user for client:</label>
                 <div class="col-md-9">
-                    <select class="form-control" data-ng-options="client as client.Name for client in ClientsList" data-ng-model="CurrentClient" data-ng-change="update()"></select>
+                    <select class="form-control" data-ng-options="client as client.Name for client in ClientsList" data-ng-model="CurrentClient"></select>
                 </div>
             </div>
             <div class="form-group">
@@ -42,136 +42,136 @@
     <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
     <script src="~/Scripts/Library/kendo-js/kendo.angular.min.js"></script>
     <script type="text/javascript">
-        var UserGroups;
-        var CurrentUser;
+        //var UserGroups;
+        //var CurrentUser;
 
-        $(function() {
-            //// load clients
-            //$.ajax({
-            //    url: API_URL + "/clients/GetClients/",
-            //    beforeSend: function (request) {
-            //        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-            //    },
-            //    type: "GET",
-            //    success: function (clients) {
-            //        $.each(clients, function () {
-            //            $("#Clients").append($("<option />").val(this.ClientId).text(this.Name));
-            //        });
-            //    }
-            //});
+        //$(function() {
+        //    // load clients
+        //    $.ajax({
+        //        url: API_URL + "/clients/GetClients/",
+        //        beforeSend: function (request) {
+        //            request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+        //        },
+        //        type: "GET",
+        //        success: function (clients) {
+        //            $.each(clients, function () {
+        //                $("#Clients").append($("<option />").val(this.ClientId).text(this.Name));
+        //            });
+        //        }
+        //    });
 
-            // create user
-            //$("#SaveUser").click(function() {
-            //    $.ajax({
-            //        url: API_URL + "/Account/RegisterAdmin/",
-            //        beforeSend: function(request) {
-            //            request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-            //        },
-            //        data: { ClientId: $("#Clients").val(), FirstName: $("#FirstName").val(), LastName: $("#LastName").val(), EmailAddress: $("#Email").val(), Password: $("#Password").val() },
-            //        type: "POST",
-            //        success: function(result) {
-            //            $("#CreateUserModal").modal('hide');
-            //            if (result.length > 0) {
-            //                showUserFailure(result);
-            //            } else {
-            //                showUserSuccess();
-            //            }
-            //        },
-            //        error: function(jqXHR, textStatus, errorThrown) {
-            //            console.log(errorThrown);
-            //        }
-            //    });
-            //});
+        //    // create user
+        //    $("#SaveUser").click(function() {
+        //        $.ajax({
+        //            url: API_URL + "/Account/RegisterAdmin/",
+        //            beforeSend: function(request) {
+        //                request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+        //            },
+        //            data: { ClientId: $("#Clients").val(), FirstName: $("#FirstName").val(), LastName: $("#LastName").val(), EmailAddress: $("#Email").val(), Password: $("#Password").val() },
+        //            type: "POST",
+        //            success: function(result) {
+        //                $("#CreateUserModal").modal('hide');
+        //                if (result.length > 0) {
+        //                    showUserFailure(result);
+        //                } else {
+        //                    showUserSuccess();
+        //                }
+        //            },
+        //            error: function(jqXHR, textStatus, errorThrown) {
+        //                console.log(errorThrown);
+        //            }
+        //        });
+        //    });
 
-            // update user
-            $("#SaveUpdatedUser").click(function() {
-                $.ajax({
-                    url: API_URL + "/Users/UpdateUser/" + CurrentUser.id,
-                    beforeSend: function(request) {
-                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-                    },
-                    data: { FirstName: $("#UpdateFirstName").val(), LastName: $("#UpdateLastName").val(), UserId: CurrentUser.id },
-                    type: "PATCH",
-                    success: function(result) {
-                        $("#UpdateUserModal").modal("hide");
-                        showUserUpdate();
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        console.log(errorThrown);
-                    }
-                });
-            });
+        //    // update user
+        //    $("#SaveUpdatedUser").click(function() {
+        //        $.ajax({
+        //            url: API_URL + "/Users/UpdateUser/" + CurrentUser.id,
+        //            beforeSend: function(request) {
+        //                request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+        //            },
+        //            data: { FirstName: $("#UpdateFirstName").val(), LastName: $("#UpdateLastName").val(), UserId: CurrentUser.id },
+        //            type: "PATCH",
+        //            success: function(result) {
+        //                $("#UpdateUserModal").modal("hide");
+        //                showUserUpdate();
+        //            },
+        //            error: function(jqXHR, textStatus, errorThrown) {
+        //                console.log(errorThrown);
+        //            }
+        //        });
+        //    });
 
-            // delete user
-            $("#DeleteUser").click(function() {
+        //    // delete user
+        //    $("#DeleteUser").click(function() {
 
-                var userName = $("#UpdateFirstName").val() + $("#UpdateLastName").val();
-                $.ajax({
-                    url: API_URL + "/Users/DeleteUser/" + CurrentUser.id,
-                    beforeSend: function(request) {
-                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-                    },
-                    type: "DELETE",
-                    success: function(result) {
-                        $("#UpdateUserModal").modal("hide");
-                        showUserDelete(userName);
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        console.log(errorThrown);
-                    }
-                });
-            });
+        //        var userName = $("#UpdateFirstName").val() + $("#UpdateLastName").val();
+        //        $.ajax({
+        //            url: API_URL + "/Users/DeleteUser/" + CurrentUser.id,
+        //            beforeSend: function(request) {
+        //                request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+        //            },
+        //            type: "DELETE",
+        //            success: function(result) {
+        //                $("#UpdateUserModal").modal("hide");
+        //                showUserDelete(userName);
+        //            },
+        //            error: function(jqXHR, textStatus, errorThrown) {
+        //                console.log(errorThrown);
+        //            }
+        //        });
+        //    });
 
-            // initialise tree
-            //$.ajax({
-            //    url: API_URL + "/Users/GetAdmins/",
-            //    beforeSend: function(request) {
-            //        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-            //    },
-            //    success: function(userGroups) {
-            //        UserGroups = addIdToUsersInTree(JSON.parse(userGroups));
-            //        var treeview = $("#treeview").data("kendoTreeView");
-            //        $("#treeview").kendoTreeView({
-            //            dataSource: UserGroups
-            //        });
+        //    // initialise tree
+        //    $.ajax({
+        //        url: API_URL + "/Users/GetAdmins/",
+        //        beforeSend: function(request) {
+        //            request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+        //        },
+        //        success: function(userGroups) {
+        //            UserGroups = addIdToUsersInTree(JSON.parse(userGroups));
+        //            var treeview = $("#treeview").data("kendoTreeView");
+        //            $("#treeview").kendoTreeView({
+        //                dataSource: UserGroups
+        //            });
 
-            //        // style the group elements
-            //        $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
-            //    }
-            //});
+        //            // style the group elements
+        //            $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+        //        }
+        //    });
 
-            // bind to ajax created elements (clicking on categories in tree)
-            $(document).on('click', '.k-in', function() {
-                var isUser = $(this).find(".group").length == 0;
-                var userId = $(this).find("span").attr("class");
-                var name = $(this).html().split("</span>")[1];
-                userId = userId.split("k-sprite ")[1];
+        //    // bind to ajax created elements (clicking on categories in tree)
+        //    $(document).on('click', '.k-in', function() {
+        //        var isUser = $(this).find(".group").length == 0;
+        //        var userId = $(this).find("span").attr("class");
+        //        var name = $(this).html().split("</span>")[1];
+        //        userId = userId.split("k-sprite ")[1];
 
-                if (isUser) {
-                    $.each(UserGroups, function(i, outerNode) {
-                        if (outerNode.hasOwnProperty('items')) {
-                            $.each(outerNode.items, function(j, innerNode) {
-                                if (innerNode.id == userId) {
-                                    CurrentUser = innerNode;
-                                }
-                            });
-                        }
-                        // look for user not in group
-                        if (outerNode.spriteCssClass != "group" && outerNode.id == userId) {
-                            CurrentUser = outerNode;
-                        }
-                    });
-                    showUserEditor(userId);
-                } else {
-                    // update client selected in drop down
-                    $("#Clients option").each(function() {
-                        if ($(this).text() == name) {
-                            $(this).attr('selected', 'selected');
-                        }
-                    });
-                }
-            });
-        });
+        //        if (isUser) {
+        //            $.each(UserGroups, function(i, outerNode) {
+        //                if (outerNode.hasOwnProperty('items')) {
+        //                    $.each(outerNode.items, function(j, innerNode) {
+        //                        if (innerNode.id == userId) {
+        //                            CurrentUser = innerNode;
+        //                        }
+        //                    });
+        //                }
+        //                // look for user not in group
+        //                if (outerNode.spriteCssClass != "group" && outerNode.id == userId) {
+        //                    CurrentUser = outerNode;
+        //                }
+        //            });
+        //            showUserEditor(userId);
+        //        } else {
+        //            // update client selected in drop down
+        //            $("#Clients option").each(function() {
+        //                if ($(this).text() == name) {
+        //                    $(this).attr('selected', 'selected');
+        //                }
+        //            });
+        //        }
+        //    });
+        //});
 
         //function showUserSuccess() {
         //    var msg = "Admin user: <b>" + $("#FirstName").val() + " " + $("#LastName").val() + "</b> successfully created!";
@@ -205,45 +205,45 @@
         //    updateTree();
         //}
 
-        function showUserEditor(userId) {
-            $.ajax({
-                url: API_URL + "/Users/GetUser/" + userId,
-                beforeSend: function(request) {
-                    request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-                },
-                success: function(user) {
-                    $("#UpdateFirstName").val(user.FirstName);
-                    $("#UpdateLastName").val(user.LastName);
-                    $("#UpdateUserModal").modal("show");
-                }
-            });
-        }
+        //function showUserEditor(userId) {
+        //    $.ajax({
+        //        url: API_URL + "/Users/GetUser/" + userId,
+        //        beforeSend: function(request) {
+        //            request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+        //        },
+        //        success: function(user) {
+        //            $("#UpdateFirstName").val(user.FirstName);
+        //            $("#UpdateLastName").val(user.LastName);
+        //            $("#UpdateUserModal").modal("show");
+        //        }
+        //    });
+        //}
 
-        function showUserUpdate() {
-            var msg = "Admin User: <b>" + $("#UpdateFirstName").val() + " " + $("#UpdateLastName").val() + "</b> successfully updated!";
+        //function showUserUpdate() {
+        //    var msg = "Admin User: <b>" + $("#UpdateFirstName").val() + " " + $("#UpdateLastName").val() + "</b> successfully updated!";
 
-            $(".alert-success .msg")
-                .html(msg)
-                .parent()
-                .removeClass("hidden")
-                .slideDown();
+        //    $(".alert-success .msg")
+        //        .html(msg)
+        //        .parent()
+        //        .removeClass("hidden")
+        //        .slideDown();
 
-            // update tree
-            //updateTree();
-        }
+        //    // update tree
+        //    //updateTree();
+        //}
 
-        function showUserDelete(userName) {
-            var msg = "Admin User: <b>" + userName + "</b> successfully deleted!";
+        //function showUserDelete(userName) {
+        //    var msg = "Admin User: <b>" + userName + "</b> successfully deleted!";
 
-            $(".alert-danger .msg")
-                .html(msg)
-                .parent()
-                .removeClass("hidden")
-                .slideDown();
+        //    $(".alert-danger .msg")
+        //        .html(msg)
+        //        .parent()
+        //        .removeClass("hidden")
+        //        .slideDown();
 
-            // update tree
-            //updateTree();
-        }
+        //    // update tree
+        //    //updateTree();
+        //}
 
         //function updateTree() {
         //    $("#treeview").slideUp();
@@ -294,17 +294,9 @@
 
                 manageAdminScope = $scope;
                 manageAdminScope.ClientsList = [{ ClientId: -1, Name: "Please select a client..." }];
-                manageAdminScope.AdminUserList = [];
+                manageAdminScope.CurrentClient = manageAdminScope.ClientsList[0];
                 manageAdminScope.PasswordsMatch = true;
-                manageAdminScope.DefaultUser = {
-                    ClientId: -1,
-                    FirstName: "",
-                    LastName: "",
-                    EmailAddress: "",
-                    Password: "",
-                    ConfirmPassword: ""
-                }
-                manageAdminScope.NewUser = manageAdminScope.DefaultUser;
+                
                 manageAdminScope.itemTemplate = "<span ng-click='edit(dataItem)'>{{dataItem.text}}</span>";
                 manageAdminScope.treeData = [{ text: "" }];
 
@@ -312,6 +304,20 @@
                     manageAdminScope.loadClients(API_URL + "/clients/GetClients/");
                     manageAdminScope.loadAdminUsers();
                 }
+
+                manageAdminScope.getDefaultUser = function () {
+
+                    var defaultUser = {
+                        ClientId: -1,
+                        FirstName: "",
+                        LastName: "",
+                        EmailAddress: "",
+                        Password: "",
+                        ConfirmPassword: ""
+                    }
+
+                    return JSON.parse(JSON.stringify(defaultUser));
+                }                
 
                 manageAdminScope.loadClients = function(file) {
                     $http({
@@ -339,12 +345,12 @@
                     })
                     .success(function(data) {
                         $(".tree-view").hide();
-                        manageAdminScope.treeData = JSON.parse(data);
-                        manageAdminScope.AdminUserList = manageAdminScope.treeData;
-                        $(".k-loading").parent().slideUp(function() {
-                            // style the group elements
-                            $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
-                            $(".tree-view").slideDown();
+                        manageAdminScope.treeData = JSON.parse(data);                        
+                        $(".k-loading").parent().slideUp(function() {                                                      
+                            $(".tree-view").slideDown(function () {
+                                // style the group elements - this needs to be done as late as possible so the DOM items exist.
+                                $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+                            });
                         });
                     })
                     .error(function(data, status) {
@@ -357,7 +363,6 @@
                 }
 
                 manageAdminScope.create = function() {
-
                     var newUser = manageAdminScope.NewUser;
                     newUser.ClientId = manageAdminScope.CurrentClient.ClientId;
 
@@ -381,7 +386,7 @@
                     }
                 }
 
-                // show the editor form
+                // show the editor dialog and form
                 manageAdminScope.edit = function(dataItem) {
                     if (!dataItem.hasOwnProperty('spriteCssClass')) { // && !dataItem.spriteCssClass === "group") {
                         $http({
@@ -391,8 +396,11 @@
                                 "Authorization": "Bearer " + TOKEN
                             }
                         })
-                        .success(function(data) {
-                            manageAdminScope.CurrentUser = data;
+                        .success(function (data) {
+                            manageAdminScope.CurrentUser = manageAdminScope.getDefaultUser();
+                            manageAdminScope.CurrentUser.FirstName = data.FirstName;
+                            manageAdminScope.CurrentUser.LastName = data.LastName;
+                            manageAdminScope.CurrentUser.id = dataItem.id;
                             $("#UpdateUserModal").modal("show");
                         })
                         .error(function(data, status) {
@@ -420,22 +428,26 @@
                     });
                 }
 
-                manageAdminScope.getClientbyUser = function(dataItem) {
-
-                    var clientId = -1;
-                    $.each(manageAdminScope.AdminUserList, function (i, client) {
-                        $.each(client, function(j, adminUser) {
-                            if (dataItem.id === adminUser.id) {
-                                clientId = client.id;
-                            }
-                        });
+                manageAdminScope.delete = function () {
+                    $http({
+                        method: "DELETE",
+                        url: API_URL + "/Users/DeleteUser/" + manageAdminScope.CurrentUser.id,                        
+                        headers: {
+                            "Authorization": "Bearer " + TOKEN
+                        }
+                    })
+                    .success(function (data) {
+                        $("#UpdateUserModal").modal("hide");
+                        manageAdminScope.showUserDelete();
+                    })
+                    .error(function (data, status) {
+                        $("#UpdateUserModal").modal("hide");
+                        manageAdminScope.showUserFailure(data);
                     });
-
-                    return clientId;
                 }
 
                 manageAdminScope.showUserSuccess = function() {
-                    var msg = "Admin user: <b>" + manageAdminScope.CurrentUser.FirstName + " " + manageAdminScope.CurrentUser.LastName + "</b> successfully created!";
+                    var msg = "Admin user: <b>" + manageAdminScope.NewUser.FirstName + " " + manageAdminScope.NewUser.LastName + "</b> successfully created!";
 
                     $(".alert-success .msg")
                         .html(msg)
@@ -444,14 +456,14 @@
                         .slideDown();
 
                     // reset field
-                    manageAdminScope.CurrentUser = manageAdminScope.DefaultUser;
+                    manageAdminScope.NewUser = manageAdminScope.getDefaultUser();
 
                     // update tree
                     manageAdminScope.loadAdminUsers();
                 }
 
                 manageAdminScope.showUserUpdate = function () {
-                    var msg = "Admin User: <b>" + $("#UpdateFirstName").val() + " " + $("#UpdateLastName").val() + "</b> successfully updated!";
+                    var msg = "Admin user: <b>" + manageAdminScope.CurrentUser.FirstName + " " + manageAdminScope.CurrentUser.LastName + "</b> successfully updated!";
                     $(".alert-success .msg")
                         .html(msg)
                         .parent()
@@ -459,7 +471,22 @@
                         .slideDown();
 
                     // reset field
-                    manageAdminScope.NewUser = manageAdminScope.DefaultUser;
+                    manageAdminScope.NewUser = manageAdminScope.getDefaultUser();
+
+                    // update tree
+                    manageAdminScope.loadAdminUsers();
+                }
+
+                manageAdminScope.showUserDelete = function () {
+                    var msg = "Admin user: <b>" + manageAdminScope.CurrentUser.FirstName + " " + manageAdminScope.CurrentUser.LastName + "</b> successfully deleted!";
+                    $(".alert-danger .msg")
+                        .html(msg)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+
+                    // reset field
+                    manageAdminScope.NewUser = manageAdminScope.getDefaultUser();
 
                     // update tree
                     manageAdminScope.loadAdminUsers();
@@ -476,10 +503,10 @@
 
                 // run the initialize method
                 manageAdminScope.init();
+                manageAdminScope.NewUser = manageAdminScope.getDefaultUser();
 
             }
             app.controller("UserManageAdminController", ["$scope", "$http", UserManageAdminController]);
-        }
-        ());
+        }());
     </script>
 }
