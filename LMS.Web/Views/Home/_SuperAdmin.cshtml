@@ -1,10 +1,21 @@
 ﻿<p class="lead">
-    super admin
+    As the system administrator you can add new clients (companies) and create new
+    administrators for these clients.<br />Click on one of the buttons below to begin.
 </p>
-<p class="lead">
-    <ul>
-        <li><a href="@Url.Action("Manage", "Client")">manage client</a></li>
-        <li><a href="@Url.Action("ManageAdmin", "User")">manage admin</a></li>
-        <li><a href="@Url.Action("Logo", "Client")">upload logo</a></li>
-    </ul>
-</p>
+<div aria-label="Justified button group" role="group" class="super-admin-dashboard btn-group btn-group-justified">
+    <a role="button" class="btn btn-default" href="@Url.Action("Manage", "Client")">
+        <span class="glyphicon glyphicon-briefcase"></span>
+        <hr />
+        <span class="lead">manage client</span>
+    </a>
+    <a role="button" class="btn btn-default" href="@Url.Action("ManageAdmin", "User")">
+        <span class="glyphicon glyphicon-user"></span>
+        <hr />
+        <span class="lead">manage admin</span>
+    </a>
+    <a role="button" class="btn btn-default disabled" href="@Url.Action("Logo", "Client")">
+        <span class="glyphicon glyphicon-picture"></span>
+        <hr />
+        <span class="lead">upload logo</span>
+    </a>
+</div>

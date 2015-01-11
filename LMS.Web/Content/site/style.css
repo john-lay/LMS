@@ -26,6 +26,18 @@ html body .footer {
   color: #c7254e;
   font-size: 0.9em;
 }
+.super-admin-dashboard .glyphicon {
+  font-size: 8em;
+  display: block;
+  margin: 0.2em 0 0.2em 0;
+}
+.super-admin-dashboard hr {
+  border-color: #cccccc;
+}
+.super-admin-dashboard .lead {
+  display: block;
+  margin-bottom: 0.6em;
+}
 .email-recipients {
   height: 100%;
   padding-top: 10px;
