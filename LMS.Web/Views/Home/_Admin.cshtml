@@ -1,21 +1,23 @@
-﻿<p class="lead">
-    admin
-</p>
-<p class="lead">
-    <ul>
-        <li><a href="@Url.Action("Manage", "Course")">manage Courses</a></li>
-        <li><a href="@Url.Action("SessionChooseCourse", "Course")">manage Sessions</a></li>
-        <li>
-            <ul>
-                <li><a href="@Url.Action("Manage", "User")">Manage Users</a></li>
-                <li><a href="@Url.Action("Group", "User")">Group Users</a></li>
-            </ul>
-        </li>
-        <li>
-            <ul>
-                <li><a href="@Url.Action("Email", "Contact")">Email</a></li>
-                <li><a class="disabled" href="#">SMS</a></li>
-            </ul>
-        </li>
-    </ul>
-</p>
+﻿<div data-ng-controller="AdminDashboard">
+    <p class="lead">
+        admin
+    </p>
+    <p class="lead">
+        <ul>
+            <li><a href="@Url.Action("Manage", "Course")">manage Courses</a></li>
+            <li><a href="@Url.Action("SessionChooseCourse", "Course")">manage Sessions</a></li>
+            <li>
+                <ul>
+                    <li><a href="@Url.Action("Manage", "User")">Manage Users</a></li>
+                    <li><a href="@Url.Action("Group", "User")">Group Users</a></li>
+                </ul>
+            </li>
+            <li>
+                <ul>
+                    <li><a href="@Url.Action("Email", "Contact")">Email</a></li>
+                    <li><a class="disabled" href="#">SMS</a></li>
+                </ul>
+            </li>
+        </ul>
+    </p> 
+</div>
