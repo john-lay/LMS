@@ -1,0 +1,165 @@
+﻿@{
+    ViewBag.Title = "Report";
+}
+@section head {
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.common.min.css" rel="stylesheet" />
+    <link href="~/Content/kendo-styles/kendo.silver.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.default.min.css" rel="stylesheet" />
+    <!-- Data Tables -->
+    <link href="~/Content/DataTables/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="~/Content/DataTables/dataTables.tableTools.min.css" rel="stylesheet" />
+}
+<div>
+    <div class="col-md-3">
+        select course<br />
+        how do you group by user?
+    </div>
+    <div class="col-md-9 form-horizontal">
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label col-md-4">Start Date</label>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <input id="EditStartDate" type="text" class="form-control datepicker" placeholder="Select date" />
+                            <label for="EditStartDate" class="input-group-addon">
+                                <i class="input-append glyphicon glyphicon-calendar"></i>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label col-md-4">End Date</label>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <input id="EditEndDate" type="text" class="form-control datepicker" placeholder="Select date" />
+                            <label for="EditEndDate" class="input-group-addon">
+                                <i class="input-append glyphicon glyphicon-calendar"></i>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Course type</label>
+                    <div class="col-md-8">
+                        <select class="form-control">
+                            <option>e-learning</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Status</label>
+                    <div class="col-md-8">
+                        <select class="form-control">
+                            <option>complete</option>
+                            <option>due</option>
+                            <option>overdue</option>
+                            <option>pending</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix"><br /></div>
+        </div>
+    </div>
+    <div class="clearfix" style="margin-bottom: 3em;"></div>
+    <hr />
+    <div style="margin-bottom: 5em;"></div>
+    <table id="example" class="display" cellspacing="0" width="100%" >
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Office</th>
+                <th>Age</th>
+                <th>Start date</th>
+                <th>Salary</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Office</th>
+                <th>Age</th>
+                <th>Start date</th>
+                <th>Salary</th>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tr>
+                <td>Tiger Nixon</td>
+                <td>System Architect</td>
+                <td>Edinburgh</td>
+                <td>61</td>
+                <td>2011/04/25</td>
+                <td>$320,800</td>
+            </tr>
+            <tr>
+                <td>Garrett Winters</td>
+                <td>Accountant</td>
+                <td>Tokyo</td>
+                <td>63</td>
+                <td>2011/07/25</td>
+                <td>$170,750</td>
+            </tr>
+            <tr>
+                <td>Ashton Cox</td>
+                <td>Junior Technical Author</td>
+                <td>San Francisco</td>
+                <td>66</td>
+                <td>2009/01/12</td>
+                <td>$86,000</td>
+            </tr>
+        </tbody>
+    </table>
+    <div style="margin-bottom: 5em;"></div>
+</div>
+@section scripts {
+    <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
+    <script src="~/Scripts/Library/bootstrap/bootstrap-datepicker.js"></script>
+    <!-- Data Tables -->
+<script src="~/Scripts/Library/DataTables/jquery.dataTables.min.js"></script>
+<script src="~/Scripts/Library/DataTables/dataTables.tableTools.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            $('.datepicker').datepicker({
+                todayHighlight: true,
+                startDate: new Date(),
+                autoclose: true,
+                format: 'dd/mm/yyyy'
+            });
+
+            // data tables
+            $('#example').DataTable({
+                dom: 'T<"clear">lfrtip',
+                tableTools: {
+                    "sSwfPath": "@Url.Content("~/Scripts/Library/DataTables/swf/copy_csv_xls_pdf.swf")"
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        (function () {
+            //var app = angular.module("LMS", ["kendo.directives"]);
+            var app = angular.module("LMS", []);
+
+            var ReportController = function ($scope, $http) {
+
+                // removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope
+                reportScope = $scope;
+
+            }
+            app.controller("ReportController", ["$scope", "$http", ReportController]);
+        }());
+    </script>
+}

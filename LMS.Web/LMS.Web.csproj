@@ -121,6 +121,35 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\DataTables\dataTables.tableTools.css" />
+    <Content Include="Content\DataTables\dataTables.tableTools.min.css" />
+    <Content Include="Content\DataTables\images\background.png" />
+    <Content Include="Content\DataTables\images\back_disabled.png" />
+    <Content Include="Content\DataTables\images\back_enabled.png" />
+    <Content Include="Content\DataTables\images\back_enabled_hover.png" />
+    <Content Include="Content\DataTables\images\collection.png" />
+    <Content Include="Content\DataTables\images\collection_hover.png" />
+    <Content Include="Content\DataTables\images\copy.png" />
+    <Content Include="Content\DataTables\images\copy_hover.png" />
+    <Content Include="Content\DataTables\images\csv.png" />
+    <Content Include="Content\DataTables\images\csv_hover.png" />
+    <Content Include="Content\DataTables\images\forward_disabled.png" />
+    <Content Include="Content\DataTables\images\forward_enabled.png" />
+    <Content Include="Content\DataTables\images\forward_enabled_hover.png" />
+    <Content Include="Content\DataTables\images\pdf.png" />
+    <Content Include="Content\DataTables\images\pdf_hover.png" />
+    <Content Include="Content\DataTables\images\print.png" />
+    <Content Include="Content\DataTables\images\print_hover.png" />
+    <Content Include="Content\DataTables\images\sort_asc.png" />
+    <Content Include="Content\DataTables\images\sort_asc_disabled.png" />
+    <Content Include="Content\DataTables\images\sort_both.png" />
+    <Content Include="Content\DataTables\images\sort_desc.png" />
+    <Content Include="Content\DataTables\images\sort_desc_disabled.png" />
+    <Content Include="Content\DataTables\images\xls.png" />
+    <Content Include="Content\DataTables\images\xls_hover.png" />
+    <Content Include="Content\DataTables\jquery.dataTables.css" />
+    <Content Include="Content\DataTables\jquery.dataTables.min.css" />
+    <Content Include="Content\DataTables\jquery.dataTables_themeroller.css" />
     <Content Include="Content\datepicker.css" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\kendo-styles\Black\editor.png" />
@@ -420,6 +449,12 @@
     <Content Include="Scripts\Library\angular\angular-aria.min.js.map" />
     <Content Include="Scripts\Library\angular\angular-animate.min.js.map" />
     <Content Include="Scripts\Library\angular\angular.min.js.map" />
+    <Content Include="Scripts\Library\DataTables\dataTables.tableTools.js" />
+    <Content Include="Scripts\Library\DataTables\dataTables.tableTools.min.js" />
+    <Content Include="Scripts\Library\DataTables\jquery.dataTables.js" />
+    <Content Include="Scripts\Library\DataTables\jquery.dataTables.min.js" />
+    <Content Include="Scripts\Library\DataTables\swf\copy_csv_xls.swf" />
+    <Content Include="Scripts\Library\DataTables\swf\copy_csv_xls_pdf.swf" />
     <Content Include="Scripts\Library\html5shiv.js" />
     <Content Include="Scripts\Library\angular\i18n\angular-locale_aa-dj.js" />
     <Content Include="Scripts\Library\angular\i18n\angular-locale_aa-er.js" />
@@ -1600,6 +1635,7 @@
     <Compile Include="Controllers\CourseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LMSBaseController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Extensions\HttpSessionStateBaseExtensions.cs" />
     <Compile Include="Extensions\WebViewPageExtensions.cs" />
@@ -1714,6 +1750,7 @@
     <Content Include="Views\Client\_Manage.delete.cshtml" />
     <Content Include="Views\User\_ManageAdmin.create.cshtml" />
     <Content Include="Views\User\_ManageAdmin.edit.cshtml" />
+    <Content Include="Views\Report\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
