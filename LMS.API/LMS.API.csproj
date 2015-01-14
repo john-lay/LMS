@@ -120,6 +120,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="SQL\stp_getBasicReport.sql" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -137,10 +138,15 @@
     <Compile Include="Controllers\CoursesController.cs" />
     <Compile Include="Controllers\CourseSessionsController.cs" />
     <Compile Include="Controllers\CoursesInCourseCategoriesController.cs" />
+    <Compile Include="Controllers\ReportsController.cs" />
     <Compile Include="Controllers\UserGroupsController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Controllers\UsersInCourseSessionsController.cs" />
     <Compile Include="Controllers\UsersInUserGroupsController.cs" />
+    <Compile Include="DataAccess\BaseSqlAccess.cs" />
+    <Compile Include="DataAccess\DbAccessExtensions.cs" />
+    <Compile Include="DataAccess\ReportsDbAccess.cs" />
+    <Compile Include="DataAccess\SqlServerAccess.cs" />
     <Compile Include="Infrastructure\LMSAuthorizeAttribute.cs" />
     <Compile Include="Models\AdminUserTree.cs" />
     <Compile Include="Models\Client.cs" />
@@ -160,6 +166,9 @@
     <Compile Include="Models\UsersInCourseSession.cs" />
     <Compile Include="Models\UsersInUserGroup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\Converter.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Utilities\DataBaseInitializer.cs" />
   </ItemGroup>
   <ItemGroup>
