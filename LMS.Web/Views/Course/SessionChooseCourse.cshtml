@@ -7,11 +7,12 @@
     <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.min.css" rel="stylesheet" />
     <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.default.min.css" rel="stylesheet" />
 }
-<div class="row col-md-12">
+<div class="row col-md-12" data-ng-controller="CourseSessionChooseController">
     <div class="col-md-3">
-        <div id="treeview" data-role="treeview" class="k-widget k-treeview" tabindex="0" role="tree" aria-activedescendant="treeview_tv_active">
+        <div>
             <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
         </div>
+        <div class="tree-view" kendo-tree-view="tree" k-data-source="treeData" k-template="itemTemplate" k-on-change="selectedItem=dataItem"></div>
     </div>
     <div class="col-md-9 form-horizontal">
         <div class="form-group">
@@ -29,44 +30,72 @@
 </div>
 @section scripts {
     <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
-    <script type="text/javascript" title="Kendo UI tree">
-        var courseId;
-        var courseCategories;
-        var sessionLink = "@Url.Action("Session", "Course")" + "/";
+    <script src="~/Scripts/Library/kendo-js/kendo.angular.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            var app = angular.module("LMS", ["kendo.directives"]);
 
-        $(function () {
-            $("#ManageCourseSession").addClass("disabled");
+            var CourseSessionChooseController = function ($scope, $http) {
 
-            $.ajax({
-                url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/GetCourseCategoriesAndCourses/",
-                beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-                },
-                success: function (categories) {
-                    $("#treeview").kendoTreeView({
-                        dataSource: JSON.parse(categories)
-                    });
-                    courseCategories = JSON.parse(categories);
-                }
-            });
-        });
+                courseSessionChooseScope = $scope;
+                courseSessionChooseScope.sessionLink = "@Url.Action("Session", "Course")" + "/";
+                courseSessionChooseScope.httpService = $http;
+                courseSessionChooseScope.treeData = [{ id: -1, text: "" }];
+                courseSessionChooseScope.itemTemplate = "<span ng-click='courseSelected(dataItem)'>{{dataItem.text}}</span>";
 
-        // bind to ajax created elements (clicking on categories in tree)
-        $(document).on('click', '.k-in', function () {
-            $("#ManageCourseSession").addClass("disabled");
-            var nodeName = $(this).html();
-
-            $.each(courseCategories, function (i, category) {
-                if (category.hasOwnProperty('items')) {
-                    $.each(category.items, function (j, course) {
-                        if (course.text == nodeName) {
-                            $("#ManageCourseSession")
-                                .removeClass("disabled")
-                                .attr("href", sessionLink + course.id);
+                courseSessionChooseScope.loadData = function () {
+                    courseSessionChooseScope.httpService({
+                        method: "GET",
+                        url: API_URL + "/CoursesInCourseCategories/GetCourseCategoriesAndCourses/",
+                        headers: {
+                            "Authorization": "Bearer " + TOKEN
                         }
+                    })
+                    .success(function (data) {
+                        $(".tree-view").hide();
+                        courseSessionChooseScope.treeData = JSON.parse(data);
+                        $(".k-loading").parent().slideUp(function () {
+                            $(".tree-view").slideDown();
+                        });
+                    })
+                    .error(function (data, status) {
+                        courseSessionChooseScope.showCourseFailure(data);
+                    });
+                };
+
+                courseSessionChooseScope.courseSelected = function (dataItem) {
+
+                    // disabled the manage course session button
+                    $("#ManageCourseSession")
+                        .addClass("disabled")
+                        .attr("href", "#");
+
+                    // only enable it for a valid course (not a course category)
+                    $.each(courseSessionChooseScope.treeData, function (i, categoryNode) {
+                        $.each(categoryNode.items, function (j, courseNode) {
+                            if (courseNode.text == dataItem.text) {
+                                $("#ManageCourseSession")
+                                    .removeClass("disabled")
+                                    .attr("href", courseSessionChooseScope.sessionLink + dataItem.id);
+                            }
+                        });
                     });
                 }
-            });
-        });
+
+                courseSessionChooseScope.showCourseFailure = function (data) {
+
+                    $(".alert-danger .msg")
+                        .html(data.ExceptionMessage)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+                }
+
+                // run the initialize method
+                courseSessionChooseScope.loadData();
+                $("#ManageCourseSession").addClass("disabled");
+            }
+            app.controller("CourseSessionChooseController", ["$scope", "$http", CourseSessionChooseController]);
+        }());
     </script>
 }
