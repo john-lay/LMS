@@ -19,7 +19,7 @@
         }
     </style>
 }
-<div class="row col-md-12">
+<div class="row col-md-12" data-ng-controller="CourseSessionController">
     <div class="col-md-3">
         <a href="#" id="Enrol" data-toggle="modal" data-target="#EnrolUsersModal" class="btn btn-sm btn-primary">Enrol Selected Users &raquo;</a>
         <br /><br />
@@ -56,421 +56,309 @@
             <div class="clearfix"><br /></div>
         </div>
     </div>
-</div>
-@* -- Add/Edit/Delete course session Modal -- *@
-<div class="modal fade" id="EditCourseSessionModal" tabindex="-1" role="dialog" aria-labelledby="EditCourseSessionModallLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="EditorTitle">Add Course Session</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Start Date</label>
-                        <div class="col-md-10">
-                            <div class="input-group">
-                                <input id="EditStartDate" type="text" class="form-control datepicker start" placeholder="Select date" />
-                                <label for="EditStartDate" class="input-group-addon">
-                                    <i class="input-append glyphicon glyphicon-calendar"></i>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">End Date</label>
-                        <div class="col-md-10">
-                            <div class="input-group">
-                                <input id="EditEndDate" type="text" class="form-control datepicker end" placeholder="Select date" />
-                                <label for="EditEndDate" class="input-group-addon">
-                                    <i class="input-append glyphicon glyphicon-calendar"></i>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-10 modal-checkbox">
-                            <label for="IsRolling" class="control-label col-md-2">Rolling</label>
-                            <input type="checkbox" id="IsRolling" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-10">
-                            <button id="AddCourseSession" type="button" class="btn btn-default btn-primary">Save</button>
-                            <button id="EditCourseSession" type="button" class="btn btn-default btn-primary hidden">Save</button>
-                            <button id="DeleteCourseSession" type="button" class="btn btn-default btn-danger hidden">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-@* -- Enrol Users Modal -- *@
-<div class="modal fade" id="EnrolUsersModal" tabindex="-1" role="dialog" aria-labelledby="EnrolUsersModallLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Enrol selected users into session?</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-horizontal">
-                    <ul id="SelectedUsersInModal" class="list-group"></ul>
-                    <hr />
-                    <div id="SelectedSessionInModal"></div>
-                    <div class="form-group">
-                        <div class="col-md-12">
-                            <button id="EnrolSelectedUsers" type="button" class="btn btn-default btn-primary pull-right">Enrol</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-@* -- Edit Users In Session Modal -- *@
-<div class="modal fade" id="EditUsersInSessionModal" tabindex="-1" role="dialog" aria-labelledby="EditUsersInSessionModallLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Remove selected users from session</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-horizontal">
-                    <div id="UsersInEditedSession"></div>
-                    <div class="form-group">
-                        <div class="col-md-12">
-                            <table id="EditUsersInSessionTable" class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center"><input type="checkbox" id="SelectAll" /></th>
-                                        <th>User</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="EditUsersInSessionTableBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-12">
-                            <button id="RemoveSelectedUsers" type="button" class="btn btn-default btn-warning pull-right">Remove selected users</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
+    @Html.Partial("_Session.edit")
+    @Html.Partial("_Session.enrol.user")
+    @Html.Partial("_Session.edit.user")
 </div>
 @section scripts {
-<script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>  
-<script src="~/Scripts/Library/bootstrap/bootstrap-datepicker.js"></script>
-<script src="~/Scripts/Site/DateLib.js"></script>
-<script type="text/javascript" title="Enrolment">
-    var selectedUsers = [];
-    var courseSessionId = -1;
-    // initialise tree
-    $(function () {
-        $.ajax({
-            url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/",
-            beforeSend: function (request) {
-                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-            },
-            success: function (userGroups) {
-                $("#treeview").kendoTreeView({
-                    checkboxes: {
-                        checkChildren: true
-                    },
-                    check: onCheck,
-                    dataSource: JSON.parse(userGroups)
+    <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
+    <script src="~/Scripts/Library/kendo-js/kendo.angular.min.js"></script>
+    <script src="~/Scripts/Library/bootstrap/bootstrap-datepicker.js"></script>
+    <script src="~/Scripts/Site/DateLib.js"></script>
+    <script type="text/javascript" title="Enrolment">
+        var selectedUsers = [];
+        var courseSessionId = -1;
+        // initialise tree
+        $(function () {
+            $.ajax({
+                url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/",
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
+                success: function (userGroups) {
+                    $("#treeview").kendoTreeView({
+                        checkboxes: {
+                            checkChildren: true
+                        },
+                        check: onCheck,
+                        dataSource: JSON.parse(userGroups)
+                    });
+
+                    // style the group elements
+                    $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+                }
+            });
+
+            // disabled enrol button, unless users have been selected and a session has been selected
+            $("#Enrol").addClass("disabled");
+            $(document).on('change', 'input[name=session]', updateEnrolmentStatus);
+
+            $("#Enrol").click(function() {
+                // add user names to modal
+                var list = $("#SelectedUsersInModal");
+                list.html("");
+                $.each(selectedUsers, function (i, user) {
+                    list.append('<li class="list-group-item">' + user.text + '</li>');
                 });
 
-                // style the group elements
-                $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
-            }
-        });
+                // add session name to modal
+                var sessionTableRow = $("input[name=session]:checked").parent().parent();
+                var startDate = sessionTableRow.find(".startDate").html();
+                var endDate = sessionTableRow.find(".endDate").html();
+                var isRolling = sessionTableRow.find(".isRolling").html();
 
-        // disabled enrol button, unless users have been selected and a session has been selected
-        $("#Enrol").addClass("disabled");
-        $(document).on('change', 'input[name=session]', updateEnrolmentStatus);
+                var sessionDetails = "<li><b>Start Date: </b>" + startDate + "</li>";
+                sessionDetails += "<li><b>End Date: </b>" + endDate + "</li>";
+                sessionDetails += "<li><b>Rolling: </b>" + isRolling + "</li>";
 
-        $("#Enrol").click(function() {
-            // add user names to modal
-            var list = $("#SelectedUsersInModal");
-            list.html("");
-            $.each(selectedUsers, function (i, user) {
-                list.append('<li class="list-group-item">' + user.text + '</li>');
+                $("#SelectedSessionInModal").html("<ul>" + sessionDetails + "</ul>");
             });
 
-            // add session name to modal
-            var sessionTableRow = $("input[name=session]:checked").parent().parent();
-            var startDate = sessionTableRow.find(".startDate").html();
-            var endDate = sessionTableRow.find(".endDate").html();
-            var isRolling = sessionTableRow.find(".isRolling").html();
+            $("#EnrolSelectedUsers").click(function() {
+                var sessionId = $("input[name=session]:checked").val();
+                var userData = [];
 
-            var sessionDetails = "<li><b>Start Date: </b>" + startDate + "</li>";
-            sessionDetails += "<li><b>End Date: </b>" + endDate + "</li>";
-            sessionDetails += "<li><b>Rolling: </b>" + isRolling + "</li>";
+                $.each(selectedUsers, function(i, user) {
+                    userData.push({UserId: user.id });
+                });
 
-            $("#SelectedSessionInModal").html("<ul>" + sessionDetails + "</ul>");
+                $.ajax({
+                    url: "@this.GetApiUrl()" + "/UsersInCourseSessions/AddUsersToCourseSession/" + sessionId,
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    },
+                    data: { '': userData },
+                    type: "POST",
+                    success: function (result) {
+                        $("#EnrolUsersModal").modal("hide");
+                        showEnrolUsersSuccess();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(errorThrown);
+                    }
+                });
+            });
+
+            // select all users in modal
+            $("#SelectAll").click(function() {
+                var checkBoxes = $("#EditUsersInSessionTableBody :checkbox");
+                checkBoxes.prop("checked", !checkBoxes.prop("checked"));
+            });
+        
+            // unenrol users
+            $("#RemoveSelectedUsers").click(function() {
+                var selectedUsers = $("#EditUsersInSessionTableBody :checkbox:checked");
+                var userData = [];
+                var removedUsers = [];
+                $.each(selectedUsers, function(i, input) {
+                    userData.push({UserId: $(input).val() });
+                    removedUsers.push($(input).attr("data-val"));
+                });
+
+                $.ajax({
+                    url: "@this.GetApiUrl()" + "/UsersInCourseSessions/RemoveUsersFromCourseSession/" + courseSessionId,
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    },
+                    data: { '': userData },
+                    type: "POST",
+                    success: function (result) {
+                        $("#EditUsersInSessionModal").modal("hide");
+                        showEnrolUsersUpdate(removedUsers);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(errorThrown);
+                    }
+                });
+            });
         });
 
-        $("#EnrolSelectedUsers").click(function() {
-            var sessionId = $("input[name=session]:checked").val();
-            var userData = [];
+        // function that gathers IDs of checked nodes
+        function checkedNodeIds(nodes, checkedNodes) {
+
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].checked) {
+                    // ignore user group nodes
+                    if(nodes[i].spriteCssClass != "group") {
+                        checkedNodes.push(nodes[i]);
+                    }
+                }
+
+                if (nodes[i].hasChildren) {
+                    checkedNodeIds(nodes[i].children.view(), checkedNodes);
+                }
+            }
+        }
+
+        // show checked node IDs on datasource change
+        function onCheck() {
+            var treeView = $("#treeview").data("kendoTreeView");
+            selectedUsers = []; // reset array
+            checkedNodeIds(treeView.dataSource.view(), selectedUsers);
+            updateEnrolmentStatus();
+        }
+
+        // at least one user and one session have been checked
+        function updateEnrolmentStatus() {
+            if(selectedUsers.length > 0 && $("input[name=session]:checked").val() != undefined) {
+                $("#Enrol").removeClass("disabled");
+            } else {
+                $("#Enrol").addClass("disabled");
+            }
+        }
+
+        function showEnrolUsersSuccess() {
+            var usersAdded = [];
 
             $.each(selectedUsers, function(i, user) {
-                userData.push({UserId: user.id });
+                usersAdded.push(user.text);
             });
+            var msg = "Users: <b>" + usersAdded.join(", ") + "</b> successfully added to session!";
 
-            $.ajax({
-                url: "@this.GetApiUrl()" + "/UsersInCourseSessions/AddUsersToCourseSession/" + sessionId,
-                beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-                },
-                data: { '': userData },
-                type: "POST",
-                success: function (result) {
-                    $("#EnrolUsersModal").modal("hide");
-                    showEnrolUsersSuccess();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                }
-            });
-        });
-
-        // select all users in modal
-        $("#SelectAll").click(function() {
-            var checkBoxes = $("#EditUsersInSessionTableBody :checkbox");
-            checkBoxes.prop("checked", !checkBoxes.prop("checked"));
-        });
-        
-        // unenrol users
-        $("#RemoveSelectedUsers").click(function() {
-            var selectedUsers = $("#EditUsersInSessionTableBody :checkbox:checked");
-            var userData = [];
-            var removedUsers = [];
-            $.each(selectedUsers, function(i, input) {
-                userData.push({UserId: $(input).val() });
-                removedUsers.push($(input).attr("data-val"));
-            });
-
-            $.ajax({
-                url: "@this.GetApiUrl()" + "/UsersInCourseSessions/RemoveUsersFromCourseSession/" + courseSessionId,
-                beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-                },
-                data: { '': userData },
-                type: "POST",
-                success: function (result) {
-                    $("#EditUsersInSessionModal").modal("hide");
-                    showEnrolUsersUpdate(removedUsers);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                }
-            });
-        });
-    });
-
-    // function that gathers IDs of checked nodes
-    function checkedNodeIds(nodes, checkedNodes) {
-
-        for (var i = 0; i < nodes.length; i++) {
-            if (nodes[i].checked) {
-                // ignore user group nodes
-                if(nodes[i].spriteCssClass != "group") {
-                    checkedNodes.push(nodes[i]);
-                }
-            }
-
-            if (nodes[i].hasChildren) {
-                checkedNodeIds(nodes[i].children.view(), checkedNodes);
-            }
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
+                    .removeClass("hidden")
+                    .slideDown();
         }
-    }
 
-    // show checked node IDs on datasource change
-    function onCheck() {
-        var treeView = $("#treeview").data("kendoTreeView");
-        selectedUsers = []; // reset array
-        checkedNodeIds(treeView.dataSource.view(), selectedUsers);
-        updateEnrolmentStatus();
-    }
+        function showEnrolUsersUpdate(removedUsers) {
+            var msg = "Users: <b>" + removedUsers.join(", ") + "</b> successfully removed from session!";
 
-    // at least one user and one session have been checked
-    function updateEnrolmentStatus() {
-        if(selectedUsers.length > 0 && $("input[name=session]:checked").val() != undefined) {
-            $("#Enrol").removeClass("disabled");
-        } else {
-            $("#Enrol").addClass("disabled");
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
+                    .removeClass("hidden")
+                    .slideDown();
         }
-    }
 
-    function showEnrolUsersSuccess() {
-        var usersAdded = [];
-
-        $.each(selectedUsers, function(i, user) {
-            usersAdded.push(user.text);
-        });
-        var msg = "Users: <b>" + usersAdded.join(", ") + "</b> successfully added to session!";
-
-        $(".alert-success .msg")
-            .html(msg)
-            .parent()
-                .removeClass("hidden")
-                .slideDown();
-    }
-
-    function showEnrolUsersUpdate(removedUsers) {
-        var msg = "Users: <b>" + removedUsers.join(", ") + "</b> successfully removed from session!";
-
-        $(".alert-success .msg")
-            .html(msg)
-            .parent()
-                .removeClass("hidden")
-                .slideDown();
-    }
-
-    $("#EditUsersInSessionModal").on("show.bs.modal", function (e) {
-        var $invoker = $(e.relatedTarget);
-        courseSessionId = $invoker.parent().attr("data-id");
-        showEditUsersInSession(courseSessionId);
-    });
-
-    function showEditUsersInSession(courseSessionId) {
-        $("#UsersInEditedSession").html("");
-        $("#RemoveSelectedUsers").show();
-        $("#EditUsersInSessionTable").show();
-
-        $.ajax({
-            url: "@this.GetApiUrl()" + "/UsersInCourseSessions/GetUsersInCourseSession/" + courseSessionId,
-            beforeSend: function (request) {
-                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-            },
-            success: function (result) { 
-                var users = JSON.parse(result);
-                if(users.length == 0) {
-                    $("#UsersInEditedSession").html("Could not find any users in session.");
-                    $("#RemoveSelectedUsers").hide();
-                    $("#EditUsersInSessionTable").hide();
-                } else {
-                    // populate users in session
-                    var table = $("#EditUsersInSessionTableBody");
-                    table.empty();
-
-                    $.each(users, function (i, user) {
-                        var row = '<tr>';
-                        row += '<td class="text-center"><input type="checkbox" data-val="' + user.Name + '" value="' + user.UserId + '" /></td>';
-                        row += '<td>' + user.Name + '</td>';
-                        row += '</tr>';
-
-                        table.append(row);
-                    });
-                }
-            }
-        });
-    }
-</script>
-<script type="text/javascript" title="Manage sessions">    
-    // get course session
-    $(function () {
-        $("#CourseSessionsContainer").hide();
-        populateSessionTable();
-
-        $('.datepicker').datepicker({
-            todayHighlight: true,
-            startDate: new Date(),
-            autoclose: true,
-            format: 'dd/mm/yyyy'
+        $("#EditUsersInSessionModal").on("show.bs.modal", function (e) {
+            var $invoker = $(e.relatedTarget);
+            courseSessionId = $invoker.parent().attr("data-id");
+            showEditUsersInSession(courseSessionId);
         });
 
-        // add session
-        $("#AddCourseSession").click(function () {
+        function showEditUsersInSession(courseSessionId) {
+            $("#UsersInEditedSession").html("");
+            $("#RemoveSelectedUsers").show();
+            $("#EditUsersInSessionTable").show();
+
             $.ajax({
-                url: "@this.GetApiUrl()" + "/CourseSessions/CreateCourseSession/",
+                url: "@this.GetApiUrl()" + "/UsersInCourseSessions/GetUsersInCourseSession/" + courseSessionId,
                 beforeSend: function (request) {
                     request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
                 },
-                data: {
-                    CourseId: @Model.CourseId,
-                    StartDate: covertToISODateString($("#EditStartDate").val()),
-                    EndDate: covertToISODateString($("#EditEndDate").val()),
-                    IsRolling: $("#IsRolling").is(':checked') ? true : false,
-                },
-                type: "POST",
-                success: function (result) {
-                    $("#EditCourseSessionModal").modal("hide");
-                    showCourseCategorySuccess();
-                    populateSessionTable();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
+                success: function (result) { 
+                    var users = JSON.parse(result);
+                    if(users.length == 0) {
+                        $("#UsersInEditedSession").html("Could not find any users in session.");
+                        $("#RemoveSelectedUsers").hide();
+                        $("#EditUsersInSessionTable").hide();
+                    } else {
+                        // populate users in session
+                        var table = $("#EditUsersInSessionTableBody");
+                        table.empty();
+
+                        $.each(users, function (i, user) {
+                            var row = '<tr>';
+                            row += '<td class="text-center"><input type="checkbox" data-val="' + user.Name + '" value="' + user.UserId + '" /></td>';
+                            row += '<td>' + user.Name + '</td>';
+                            row += '</tr>';
+
+                            table.append(row);
+                        });
+                    }
                 }
             });
+        }
+    </script>
+    <script type="text/javascript" title="Manage sessions">    
+        // get course session
+        $(function () {
+            $("#CourseSessionsContainer").hide();
+            populateSessionTable();
+
+            $('.datepicker').datepicker({
+                todayHighlight: true,
+                startDate: new Date(),
+                autoclose: true,
+                format: 'dd/mm/yyyy'
+            });
+
+            // add session
+            $("#AddCourseSession").click(function () {
+                $.ajax({
+                    url: "@this.GetApiUrl()" + "/CourseSessions/CreateCourseSession/",
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    },
+                    data: {
+                        CourseId: @Model.CourseId,
+                        StartDate: covertToISODateString($("#EditStartDate").val()),
+                        EndDate: covertToISODateString($("#EditEndDate").val()),
+                        IsRolling: $("#IsRolling").is(':checked') ? true : false,
+                    },
+                    type: "POST",
+                    success: function (result) {
+                        $("#EditCourseSessionModal").modal("hide");
+                        showCourseCategorySuccess();
+                        populateSessionTable();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(errorThrown);
+                    }
+                });
+            });
+
+            // edit session
+            $("#EditCourseSession").click(function () {
+                $.ajax({
+                    url: "@this.GetApiUrl()" + "/CourseSessions/UpdateCourseSession/" + courseSessionId,
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    },
+                    data: {
+                        CourseSessionId: courseSessionId,
+                        CourseId: @Model.CourseId,
+                        StartDate: covertToISODateString($("#EditStartDate").val()),
+                        EndDate: covertToISODateString($("#EditEndDate").val()),
+                        IsRolling: $("#IsRolling").is(':checked') ? true : false,
+                    },
+                    type: "PUT",
+                    success: function (result) {
+                        $("#EditCourseSessionModal").modal("hide");
+                        showCourseCategoryUpdate();
+                        populateSessionTable();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(errorThrown);
+                    }
+                });
+            });
+
+            // delete session
+            $("#DeleteCourseSession").click(function () {
+                $.ajax({
+                    url: "@this.GetApiUrl()" + "/CourseSessions/DeleteCourseSession/" + courseSessionId,
+                    type: "DELETE",
+                    success: function (result) {
+                        $("#EditCourseSessionModal").modal("hide");
+                        showCourseCategoryDelete();
+                        populateSessionTable();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(errorThrown);
+                    }
+                });
+            });        
         });
 
-        // edit session
-        $("#EditCourseSession").click(function () {
-            $.ajax({
-                url: "@this.GetApiUrl()" + "/CourseSessions/UpdateCourseSession/" + courseSessionId,
-                beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-                },
-                data: {
-                    CourseSessionId: courseSessionId,
-                    CourseId: @Model.CourseId,
-                    StartDate: covertToISODateString($("#EditStartDate").val()),
-                    EndDate: covertToISODateString($("#EditEndDate").val()),
-                    IsRolling: $("#IsRolling").is(':checked') ? true : false,
-                },
-                type: "PUT",
-                success: function (result) {
-                    $("#EditCourseSessionModal").modal("hide");
-                    showCourseCategoryUpdate();
-                    populateSessionTable();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                }
-            });
-        });
+        // bind to the links which open the session editor (modal window)
+        $("#EditCourseSessionModal").on("show.bs.modal", function (e) {
+            var $invoker = $(e.relatedTarget);
+            courseSessionId = $invoker.parent().attr("data-id");
 
-        // delete session
-        $("#DeleteCourseSession").click(function () {
-            $.ajax({
-                url: "@this.GetApiUrl()" + "/CourseSessions/DeleteCourseSession/" + courseSessionId,
-                type: "DELETE",
-                success: function (result) {
-                    $("#EditCourseSessionModal").modal("hide");
-                    showCourseCategoryDelete();
-                    populateSessionTable();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                }
-            });
-        });        
-    });
-
-    // bind to the links which open the session editor (modal window)
-    $("#EditCourseSessionModal").on("show.bs.modal", function (e) {
-        var $invoker = $(e.relatedTarget);
-        courseSessionId = $invoker.parent().attr("data-id");
-
-        switch($invoker.attr("data-val")) {
+            switch($invoker.attr("data-val")) {
             case "addCourseSession":
                 showCourseSessionCreator();
                 break;
@@ -480,146 +368,160 @@
             case "deleteCourseSession":
                 showCourseSessionDelete($invoker);
                 break;
-        }
-    });
-
-    function showCourseSessionCreator() {
-        $("#EditorTitle").html("Add Course Session");
-
-        // clear the form for creation
-        $("#EditStartDate")
-            .val("")
-            .prop("readonly", false);
-
-        $("#EditEndDate")
-            .val("")
-            .prop("readonly", false);
-
-        $("#IsRolling")
-            .prop('checked', false)
-            .prop("disabled", false);
-
-        showEditorButton("AddCourseSession");
-    }
-
-    function showCourseSessionEditor($invoker) {
-        $("#EditorTitle").html("Edit Course Session");
-
-        var sessionTableRow = $invoker.parent().parent();
-        var startDate = sessionTableRow.find(".startDate").html();
-        var endDate = sessionTableRow.find(".endDate").html();
-        var isRolling = sessionTableRow.find(".isRolling").html();
-
-        $("#EditStartDate")
-            .val(startDate)
-            .prop("readonly", false);
-
-        $("#EditEndDate")
-            .val(endDate)
-            .prop("readonly", false);
-
-        $("#IsRolling").prop("disabled", false);
-
-        if (isRolling.toLowerCase() == "true") {
-            $("#IsRolling").prop('checked', true);
-        } else {
-            $("#IsRolling").prop('checked', false);
-        }
-
-        showEditorButton("EditCourseSession");
-    }
-
-    function showCourseSessionDelete($invoker) {
-        $("#EditorTitle").html("Are you sure you want to delete this session?");
-
-        var sessionTableRow = $invoker.parent().parent();
-        var startDate = sessionTableRow.find(".startDate").html();
-        var endDate = sessionTableRow.find(".endDate").html();
-        var isRolling = sessionTableRow.find(".isRolling").html();
-
-        $("#EditStartDate").val(startDate);
-        $("#EditEndDate").val(endDate);
-
-        if (isRolling.toLowerCase() == "true") {
-            $("#IsRolling").prop('checked', true);
-        } else {
-            $("#IsRolling").prop('checked', false);
-        }
-
-        // make the form read-only
-        $("#EditStartDate").prop("readonly", true);
-        $("#EditEndDate").prop("readonly", true);
-        $("#IsRolling").prop("disabled", true);
-
-        showEditorButton("DeleteCourseSession");
-    }
-
-    function showEditorButton(elementId) {
-        $("#AddCourseSession").addClass("hidden");
-        $("#EditCourseSession").addClass("hidden");
-        $("#DeleteCourseSession").addClass("hidden");
-        $("#" + elementId).removeClass("hidden");
-    }
-
-    function populateSessionTable() {
-        var table = $("#CourseSessions");
-        table.empty();
-        $.ajax({
-            url: "@this.GetApiUrl()" + "/CourseSessions/GetCourseSessions/" + @Model.CourseId,
-            beforeSend: function (request) {
-                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-            },
-            success: function (courseSessions) {
-                $.each(courseSessions, function (i, item) {
-                    var row = '<tr>';
-                    row += '<td class="text-center"><input type="radio" name="session" value="' + item.CourseSessionId + '" /></td>';
-                    row += '<td class="startDate">' + formatDate(item.StartDate) + '</td>';
-                    row += '<td class="endDate">' + formatDate(item.EndDate) + '</td>';
-                    row += '<td class="isRolling">' + item.IsRolling + '</td>';
-                    row += '<td data-id="' + item.CourseSessionId + '">';
-                    row += '<a href="#" data-val="editCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal">Edit</a> | ';
-                    row += '<a href="#" data-val="deleteCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal">Delete</a> | ';
-                    row += '<a href="#" data-toggle="modal" data-target="#EditUsersInSessionModal">Remove Users</a></td>';
-                    row += '</tr>';
-
-                    table.append(row);
-                });
-
-                $("#LoadingContainer").slideUp(function() {
-                    $("#CourseSessionsContainer").slideDown();
-                });
             }
         });
-    }
 
-    function showCourseCategorySuccess() {
-        var msg = "Course session successfully created!";
+        function showCourseSessionCreator() {
+            $("#EditorTitle").html("Add Course Session");
 
-        $(".alert-success .msg")
-            .html(msg)
-            .parent()
+            // clear the form for creation
+            $("#EditStartDate")
+                .val("")
+                .prop("readonly", false);
+
+            $("#EditEndDate")
+                .val("")
+                .prop("readonly", false);
+
+            $("#IsRolling")
+                .prop('checked', false)
+                .prop("disabled", false);
+
+            showEditorButton("AddCourseSession");
+        }
+
+        function showCourseSessionEditor($invoker) {
+            $("#EditorTitle").html("Edit Course Session");
+
+            var sessionTableRow = $invoker.parent().parent();
+            var startDate = sessionTableRow.find(".startDate").html();
+            var endDate = sessionTableRow.find(".endDate").html();
+            var isRolling = sessionTableRow.find(".isRolling").html();
+
+            $("#EditStartDate")
+                .val(startDate)
+                .prop("readonly", false);
+
+            $("#EditEndDate")
+                .val(endDate)
+                .prop("readonly", false);
+
+            $("#IsRolling").prop("disabled", false);
+
+            if (isRolling.toLowerCase() == "true") {
+                $("#IsRolling").prop('checked', true);
+            } else {
+                $("#IsRolling").prop('checked', false);
+            }
+
+            showEditorButton("EditCourseSession");
+        }
+
+        function showCourseSessionDelete($invoker) {
+            $("#EditorTitle").html("Are you sure you want to delete this session?");
+
+            var sessionTableRow = $invoker.parent().parent();
+            var startDate = sessionTableRow.find(".startDate").html();
+            var endDate = sessionTableRow.find(".endDate").html();
+            var isRolling = sessionTableRow.find(".isRolling").html();
+
+            $("#EditStartDate").val(startDate);
+            $("#EditEndDate").val(endDate);
+
+            if (isRolling.toLowerCase() == "true") {
+                $("#IsRolling").prop('checked', true);
+            } else {
+                $("#IsRolling").prop('checked', false);
+            }
+
+            // make the form read-only
+            $("#EditStartDate").prop("readonly", true);
+            $("#EditEndDate").prop("readonly", true);
+            $("#IsRolling").prop("disabled", true);
+
+            showEditorButton("DeleteCourseSession");
+        }
+
+        function showEditorButton(elementId) {
+            $("#AddCourseSession").addClass("hidden");
+            $("#EditCourseSession").addClass("hidden");
+            $("#DeleteCourseSession").addClass("hidden");
+            $("#" + elementId).removeClass("hidden");
+        }
+
+        function populateSessionTable() {
+            var table = $("#CourseSessions");
+            table.empty();
+            $.ajax({
+                url: "@this.GetApiUrl()" + "/CourseSessions/GetCourseSessions/" + @Model.CourseId,
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                },
+                success: function (courseSessions) {
+                    $.each(courseSessions, function (i, item) {
+                        var row = '<tr>';
+                        row += '<td class="text-center"><input type="radio" name="session" value="' + item.CourseSessionId + '" /></td>';
+                        row += '<td class="startDate">' + formatDate(item.StartDate) + '</td>';
+                        row += '<td class="endDate">' + formatDate(item.EndDate) + '</td>';
+                        row += '<td class="isRolling">' + item.IsRolling + '</td>';
+                        row += '<td data-id="' + item.CourseSessionId + '">';
+                        row += '<a href="#" data-val="editCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal">Edit</a> | ';
+                        row += '<a href="#" data-val="deleteCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal">Delete</a> | ';
+                        row += '<a href="#" data-toggle="modal" data-target="#EditUsersInSessionModal">Remove Users</a></td>';
+                        row += '</tr>';
+
+                        table.append(row);
+                    });
+
+                    $("#LoadingContainer").slideUp(function() {
+                        $("#CourseSessionsContainer").slideDown();
+                    });
+                }
+            });
+        }
+
+        function showCourseCategorySuccess() {
+            var msg = "Course session successfully created!";
+
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
                 .removeClass("hidden")
                 .slideDown();
-    }
+        }
 
-    function showCourseCategoryUpdate() {
-        var msg = "Course session successfully updated!";
+        function showCourseCategoryUpdate() {
+            var msg = "Course session successfully updated!";
 
-        $(".alert-success .msg")
-            .html(msg)
-            .parent()
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
                 .removeClass("hidden")
                 .slideDown();
-    }
+        }
 
-    function showCourseCategoryDelete() {
-        var msg = "Course session successfully deleted!";
+        function showCourseCategoryDelete() {
+            var msg = "Course session successfully deleted!";
 
-        $(".alert-success .msg")
-            .html(msg)
-            .parent()
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
                 .removeClass("hidden")
                 .slideDown();
-    }
-</script>
+        }
+    </script>
+    <script type="text/javascript">
+        (function () {
+            //var app = angular.module("LMS", ["kendo.directives"]);
+            var app = angular.module("LMS", []);
+
+            var CourseSessionController = function ($scope, $http) {
+
+                // removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope
+                CourseSessionScope = $scope;
+
+            }
+            app.controller("CourseSessionController", ["$scope", "$http", CourseSessionController]);
+        }());
+    </script>
 }

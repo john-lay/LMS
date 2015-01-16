@@ -1754,6 +1754,9 @@
     <Content Include="Views\Course\_Manage.delete.category.cshtml" />
     <Content Include="Views\Course\_Manage.delete.course.cshtml" />
     <Content Include="Views\Course\_Manage.create.course.cshtml" />
+    <Content Include="Views\Course\_Session.edit.cshtml" />
+    <Content Include="Views\Course\_Session.enrol.user.cshtml" />
+    <Content Include="Views\Course\_Session.edit.user.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
