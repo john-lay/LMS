@@ -9,31 +9,30 @@
 }
 <div class="row col-md-12" data-ng-controller="CourseManageController">
     <div class="col-md-3">
-        <a href="#" id="ShowCategoryCreator" class="btn btn-sm btn-primary">Add new category &raquo;</a>
-        <br /><br />
-        <div id="treeview" data-role="treeview" class="k-widget k-treeview" tabindex="0" role="tree" aria-activedescendant="treeview_tv_active">
+        <a href="#" data-ng-click="loadCategoryCreator()" class="btn btn-sm btn-primary">Add new category &raquo;</a>
+        <div>
             <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
         </div>
-        <div id="result"></div>
+        <div class="tree-view" kendo-tree-view="tree" k-data-source="treeData" k-template="itemTemplate" k-on-change="selectedItem=dataItem"></div>
     </div>
     <div id="EditorContainer" class="col-md-9">
         <div class="form-group row col-md-12">
             <div class="col-md-6">
                 <label class="control-label" for="CategoryName">Category Name:</label>
-                <input id="CategoryName" class="form-control text-box single-line" type="text" placeholder="Course category name..." />
+                <input id="CategoryName" data-ng-model="Category.Name" required class="form-control text-box single-line" type="text" placeholder="Course category name..." />
             </div>
             <div class="col-md-6" style="margin-top: 2em">
-                <button id="CreateCategory" type="button" class="btn btn-primary pull-right">Save</button>
+                <button id="CreateCategory" data-ng-click="createCategory()" type="button" class="btn btn-primary pull-right">Save</button>
                 <a href="#" data-toggle="modal" data-target="#DeleteCategoryModal" class="editor-btn btn btn-danger pull-right hidden" style="margin-left: 1em">Delete</a>
-                <button id="UpdateCategory" type="button" class="editor-btn btn btn-primary pull-right hidden">Update</button>
+                <button id="UpdateCategory" data-ng-click="updateCategory()" type="button" class="editor-btn btn btn-primary pull-right hidden">Update</button>
             </div>
             <div class="clearfix"></div>
             <hr />
             <div class="col-md-12">
                 <label class="control-label" for="CategoryNotes">Category Notes:</label>
-                <textarea id="CategoryNotes" class="form-control" cols="40" rows="5" placeholder="A brief description of the new course category..."></textarea>
+                <textarea id="CategoryNotes" data-ng-model="Category.Notes" class="form-control" cols="40" rows="5" placeholder="A brief description of the new course category..."></textarea>
                 <br />
-                <a href="#" data-toggle="modal" data-target="#CreateCourseModal" class="editor-btn btn btn-primary pull-right hidden">Add course to&nbsp;<span style="text-decoration: underline" class="currentCategoryName"></span> »</a>
+                <a href="#" data-toggle="modal" data-ng-click="clearCourse()" data-target="#CreateCourseModal" class="editor-btn btn btn-primary pull-right hidden">Add course to&nbsp;<span style="text-decoration: underline">{{Category.Name}}</span> »</a>
             </div>
         </div>
     </div>
@@ -41,111 +40,24 @@
         <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
     </div>
     <div id="CourseContainer" class="col-md-9 hidden">
-        <p class="lead">Click below to add content, create sessions, and manage <span style="text-decoration: underline" class="courseName"></span>.</p>
+        <p class="lead">Click below to add content, create sessions, and manage <span style="text-decoration: underline" >{{Course.Name}}</span>.</p>
         <a href="#" data-toggle="modal" data-target="#DeleteCourseModal" class="btn btn-danger pull-right" style="margin-left: 1em">Delete</a>
         <a href="#" id="EditCourse" class="btn btn-primary pull-right" style="margin-left: 1em">Manage Course &raquo;</a>
         <a href="#" id="ManageSessions" class="btn btn-primary pull-right">Manage Session &raquo;</a>
     </div>
+    @Html.Partial("_Manage.delete.category")
+    @Html.Partial("_Manage.create.course")
+    @Html.Partial("_Manage.delete.course")
 </div>
-
-@* -- Delete Category Modal -- *@
-<div class="modal fade" id="DeleteCategoryModal" tabindex="-1" role="dialog" aria-labelledby="DeleteCategoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Delete</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <label class="control-label col-md-offset-1">Are you sure you want to delete client category&nbsp;<span style="text-decoration: underline" class="currentCategoryName"></span>?</label>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-offset-1">
-                            <button id="DeleteCategory" type="button" class="btn btn-danger btn-default">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@* -- Create Course Modal -- *@
-<div class="modal fade" id="CreateCourseModal" tabindex="-1" role="dialog" aria-labelledby="CreateCourseModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Create Course</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Course Name</label>
-                        <div class="col-md-10">
-                            <input id="CourseName" class="form-control text-box single-line" type="text" placeholder="Course name..." />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Course Description</label>
-                        <div class="col-md-10">
-                            <textarea id="CourseDescription" class="form-control" cols="40" rows="5" placeholder="A brief description of the new course..."></textarea>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-10">
-                            <button id="CreateCourse" type="button" class="btn btn-default btn-primary">Save</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@* -- Delete Course Modal -- *@
-<div class="modal fade" id="DeleteCourseModal" tabindex="-1" role="dialog" aria-labelledby="DeleteCourseModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Delete</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <label class="control-label col-md-offset-1">Are you sure you want to delete course&nbsp;<span style="text-decoration: underline" class="currentCourseName"></span>?</label>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-offset-1">
-                            <button id="DeleteCourse" type="button" class="btn btn-danger btn-default">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 @section scripts {
     <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
+    <script src="~/Scripts/Library/kendo-js/kendo.angular.min.js"></script>
 
     <script type="text/javascript" title="Kendo UI tree">
         var course;
         var courseCategories;
         
-        $(function () {
+        @*$(function () {
             $.ajax({
                 url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/GetCourseCategoriesAndCourses/",
                 beforeSend: function (request) {
@@ -158,9 +70,9 @@
                     courseCategories = JSON.parse(categories);
                 }
             });
-        });      
+        });*@      
 
-        function loadCategories() {
+        @*function loadCategories() {
             $.ajax({
                 url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/GetCourseCategoriesAndCourses/",
                 beforeSend: function (request) {
@@ -200,68 +112,68 @@
                 course = getCourseByName(Name);
                 $(".currentCourseName").html(Name);
             }
-        });
+        });*@
     </script>
-    <script type="text/javascript" title="Manage Course Categories">        
+    <script type="text/javascript" title="Manage Course Categories">
         var categoryId = -1;
         var categoryName = "";
 
         // Create
-        $(function () {
-            $("#CreateCategory").click(function () {
+        @*$(function() {
+            $("#CreateCategory").click(function() {
                 $.ajax({
                     url: "@this.GetApiUrl()" + "/CourseCategories/CreateCourseCategory/",
-                    beforeSend: function (request) {
+                    beforeSend: function(request) {
                         request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
                     },
                     data: { Name: $("#CategoryName").val(), Notes: $("#CategoryNotes").val() },
                     type: "POST",
-                    success: function (result) {
+                    success: function(result) {
                         showCategorySuccess(result);
                     },
-                    error: function (jqXHR, textStatus, errorThrown) {
+                    error: function(jqXHR, textStatus, errorThrown) {
                         console.log(errorThrown);
                     }
                 });
-            });            
-        });
+            });
+        });*@
 
-        function showCategorySuccess(result) {
-            var msg = "Category: <b>" + result.Name + "</b> successfully created!";
+        //function showCategorySuccess(result) {
+        //    var msg = "Category: <b>" + result.Name + "</b> successfully created!";
 
-            $(".alert-success .msg")
-                .html(msg)
-                .parent()
-                    .removeClass("hidden")
-                    .slideDown();
+        //    $(".alert-success .msg")
+        //        .html(msg)
+        //        .parent()
+        //        .removeClass("hidden")
+        //        .slideDown();
 
-            $('#treeview').slideUp();
-            loadCategories();
-            $('#treeview').slideDown();
-            loadCategoryEditor(result.CourseCategoryId);
+        //    $('#treeview').slideUp();
+        //    loadCategories();
+        //    $('#treeview').slideDown();
+        //    loadCategoryEditor(result.CourseCategoryId);
 
-            // set cat id and cat name for update/delete
-            categoryId = result.CourseCategoryId;
-            categoryName = result.Name;
-        }
+        //    // set cat id and cat name for update/delete
+        //    categoryId = result.CourseCategoryId;
+        //    categoryName = result.Name;
+        //}
 
         // Update
-        $(function () {
-            $("#UpdateCategory").click(function () {
+        @*$(function() {
+            $("#UpdateCategory").click(function() {
                 var categoryName = $("#CategoryName").val();
                 var categoryNotes = $("#CategoryNotes").val();
 
                 $.ajax({
                     url: "@this.GetApiUrl()" + "/CourseCategories/UpdateCourseCategory/" + categoryId,
-                    beforeSend: function (request) {
+                    beforeSend: function(request) {
                         request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
                     },
                     data: { CourseCategoryId: categoryId, Name: categoryName, Notes: categoryNotes },
                     type: "PUT",
-                    success: function (result) {
+                    success: function(result) {
                         showCategoryUpdated();
                     },
-                    error: function (jqXHR, textStatus, errorThrown) {
+                    error: function(jqXHR, textStatus, errorThrown) {
                         console.log(errorThrown);
                     }
                 });
@@ -274,27 +186,27 @@
             $(".alert-success .msg")
                 .html(msg)
                 .parent()
-                    .removeClass("hidden")
-                    .slideDown();
+                .removeClass("hidden")
+                .slideDown();
 
             $('#treeview').slideUp();
             loadCategories();
             $('#treeview').slideDown();
-        }
+        }*@
 
         // Delete
-        $("#DeleteCategory").click(function () {
+        @*$("#DeleteCategory").click(function() {
             $.ajax({
                 url: "@this.GetApiUrl()" + "/CourseCategories/DeleteCourseCategory/" + categoryId,
-                beforeSend: function (request) {
+                beforeSend: function(request) {
                     request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
                 },
                 type: "DELETE",
-                success: function (result) {
+                success: function(result) {
                     $("#DeleteCategoryModal").modal("hide");
                     showCategoryDelete();
                 },
-                error: function (jqXHR, textStatus, errorThrown) {
+                error: function(jqXHR, textStatus, errorThrown) {
                     console.log(errorThrown);
                 }
             });
@@ -306,28 +218,28 @@
             $(".alert-success .msg")
                 .html(msg)
                 .parent()
-                    .removeClass("hidden")
-                    .slideDown();
+                .removeClass("hidden")
+                .slideDown();
 
             $('#treeview').slideUp();
             loadCategories();
             $('#treeview').slideDown();
             loadCategoryCreator();
-        }
+        }*@
 
         // Library functions
-        function loadCategoryEditor(categoryId) {
+        @*function loadCategoryEditor(categoryId) {
             // hide editor and show loading
             $("#EditorContainer").slideUp();
             $("#CourseContainer").hide();
-            $("#LoadingContainer").slideDown(function () {
+            $("#LoadingContainer").slideDown(function() {
                 //get the data
                 $.ajax({
                     url: "@this.GetApiUrl()" + "/CourseCategories/GetCourseCategory/" + categoryId,
-                    beforeSend: function (request) {
+                    beforeSend: function(request) {
                         request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
                     },
-                    success: function (category) {
+                    success: function(category) {
                         $("#CategoryName").val(category.Name);
                         $("#CategoryNotes").val(category.Notes);
                     }
@@ -335,163 +247,482 @@
 
                 // hide loading and show the update editor
                 $("#LoadingContainer").slideUp();
-                $("#EditorContainer").slideDown();               
+                $("#EditorContainer").slideDown();
 
                 // show the update / delete category buttons, and the create course button
                 $("#CreateCategory").hide();
                 $(".editor-btn").removeClass("hidden");
             });
-        }
+        }*@
 
-        $("#ShowCategoryCreator").click(loadCategoryCreator);
+        //$("#ShowCategoryCreator").click(loadCategoryCreator);
 
-        function loadCategoryCreator() {
-            // hide editor and show loading
-            $("#EditorContainer").slideUp();
-            $("#CourseContainer").hide();
-            $("#EditorContainer").slideDown(function () {
-                // clear the fields
-                $("#CategoryName").val("");
-                $("#CategoryNotes").val("");
-                // hide the update and delete buttons, show the create button
-                $(".editor-btn").addClass("hidden");
-                $("#CreateCategory").show();
-            });
-        }        
+        //function loadCategoryCreator() {
+        //    // hide editor and show loading
+        //    $("#EditorContainer").slideUp();
+        //    $("#CourseContainer").hide();
+        //    $("#EditorContainer").slideDown(function() {
+        //        // clear the fields
+        //        $("#CategoryName").val("");
+        //        $("#CategoryNotes").val("");
+        //        // hide the update and delete buttons, show the create button
+        //        $(".editor-btn").addClass("hidden");
+        //        $("#CreateCategory").show();
+        //    });
+        //}
     </script>
     <script type="text/javascript" title="Manage Course">
-    $(function () {
-        $("#CreateCourse").click(function () {
+        @*$(function() {
+            $("#CreateCourse").click(function() {
+                $.ajax({
+                    url: "@this.GetApiUrl()" + "/Courses/CreateCourse/",
+                    beforeSend: function(request) {
+                        request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    },
+                    data: { Name: $("#CourseName").val(), Description: $("#CourseDescription").val() },
+                    type: "POST",
+                    success: function(result) {
+                        addCourseToCourseCategory(result);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.log(errorThrown);
+                    }
+                });
+            });
+        });
+
+        function addCourseToCourseCategory(course) {
+            var courseId = course.CourseId;
+            var courseName = course.Name;
+
             $.ajax({
-                url: "@this.GetApiUrl()" + "/Courses/CreateCourse/",
-                beforeSend: function (request) {
+                url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/AddCourseToCourseCategory/",
+                beforeSend: function(request) {
                     request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
                 },
-                data: { Name: $("#CourseName").val(), Description: $("#CourseDescription").val() },
+                data: { CourseCategoryId: categoryId, CourseId: courseId },
                 type: "POST",
-                success: function (result) {
-                    addCourseToCourseCategory(result);
+                success: function(result) {
+                    $("#CreateCourseModal").modal("hide");
+                    showCourseSuccess(courseName);
                 },
-                error: function (jqXHR, textStatus, errorThrown) {
+                error: function(jqXHR, textStatus, errorThrown) {
                     console.log(errorThrown);
                 }
             });
-        });
-    });
+        }
 
-    function addCourseToCourseCategory(course) {
-        var courseId = course.CourseId;
-        var courseName = course.Name;
+        function showCourseSuccess(courseName) {
+            var msg = "Course: <b>" + courseName + "</b> successfully added to category: <b>" + categoryName + "</b>.";
 
-        $.ajax({
-            url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/AddCourseToCourseCategory/",
-            beforeSend: function (request) {
-                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-            },
-            data: { CourseCategoryId: categoryId, CourseId: courseId },
-            type: "POST",
-            success: function (result) {
-                $("#CreateCourseModal").modal("hide");
-                showCourseSuccess(courseName);
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-            }
-        });
-    }
-
-    function showCourseSuccess(courseName) {
-        var msg = "Course: <b>" + courseName + "</b> successfully added to category: <b>" + categoryName + "</b>.";
-
-        $(".alert-success .msg")
-            .html(msg)
-            .parent()
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
                 .removeClass("hidden")
                 .slideDown();
 
-        $('#treeview').slideUp();
-        loadCategories();
-        $('#treeview').slideDown();
-    }
+            $('#treeview').slideUp();
+            loadCategories();
+            $('#treeview').slideDown();
+        }*@
 
-    // Delete
-    $(function () {
-        $("#DeleteCourse").click(function () {
-            $.ajax({
-                url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/DeleteCourseInCourseCategory/",
-                beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-                },
-                data: { CourseCategoryId: categoryId, CourseId: course.id },
-                type: "DELETE",
-                success: function (result) {
-                    $("#DeleteCourseModal").modal("hide");
-                    showCourseDelete();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                }
+        // Delete
+        @*$(function() {
+            $("#DeleteCourse").click(function() {
+                $.ajax({
+                    url: "@this.GetApiUrl()" + "/CoursesInCourseCategories/DeleteCourseInCourseCategory/",
+                    beforeSend: function(request) {
+                        request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    },
+                    data: { CourseCategoryId: categoryId, CourseId: course.id },
+                    type: "DELETE",
+                    success: function(result) {
+                        $("#DeleteCourseModal").modal("hide");
+                        showCourseDelete();
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.log(errorThrown);
+                    }
+                });
             });
         });
-    });
 
-    function showCourseDelete() {
-        var msg = "Course: <b>" + course.text + "</b> successfully deleted!";
+        function showCourseDelete() {
+            var msg = "Course: <b>" + course.text + "</b> successfully deleted!";
 
-        $(".alert-success .msg")
-            .html(msg)
-            .parent()
+            $(".alert-success .msg")
+                .html(msg)
+                .parent()
                 .removeClass("hidden")
                 .slideDown();
 
-        $('#treeview').slideUp();
-        loadCategories();
-        $('#treeview').slideDown();
-        loadCategoryCreator();
-    }
+            $('#treeview').slideUp();
+            loadCategories();
+            $('#treeview').slideDown();
+            loadCategoryCreator();
+        }*@
 
-    function loadCourseEditor(courseName) {
-        var course = getCourseByName(courseName);
-        var editUrl = "@Url.Action("Edit", "Course")" + "/" + course.id;
-        var sessionUrl = "@Url.Action("Session", "Course")" + "/" + course.id;
+        @*function loadCourseEditor(courseName) {
+            var course = getCourseByName(courseName);
+            var editUrl = "@Url.Action("Edit", "Course")" + "/" + course.id;
+            var sessionUrl = "@Url.Action("Session", "Course")" + "/" + course.id;
 
-        // hide editor and show loading
-        $("#EditorContainer").hide();
-        $("#CourseContainer").slideDown(function () {
-            $(".courseName").html(courseName);
-            $("#EditCourse").attr("href", editUrl);
-            $("#ManageSessions").attr("href", sessionUrl);
-            $(this).removeClass("hidden");
-        });
-    }
-
-    function getCourseByName(courseName) {
-        var ret;
-        $.each(courseCategories, function (categoryIndex, category) {
-            $.each(category.items, function (courseIndex, course) {
-                if (course.text == courseName) {
-                    ret = course;
-                    categoryId = category.id;
-                }
+            // hide editor and show loading
+            $("#EditorContainer").hide();
+            $("#CourseContainer").slideDown(function() {
+                $(".courseName").html(courseName);
+                $("#EditCourse").attr("href", editUrl);
+                $("#ManageSessions").attr("href", sessionUrl);
+                $(this).removeClass("hidden");
             });
-        });
+        }
 
-        return ret;
-    }
+        function getCourseByName(courseName) {
+            var ret;
+            $.each(courseCategories, function(categoryIndex, category) {
+                $.each(category.items, function(courseIndex, course) {
+                    if (course.text == courseName) {
+                        ret = course;
+                        categoryId = category.id;
+                    }
+                });
+            });
+
+            return ret;
+        }*@
     </script>
-<script type="text/javascript">
-(function () {
-    //var app = angular.module("LMS", ["kendo.directives"]);
-    var app = angular.module("LMS", []);
+    <script type="text/javascript">
+        (function() {
+            var app = angular.module("LMS", ["kendo.directives"]);
 
-    var CourseManageController = function ($scope, $http) {
+            var CourseManageController = function($scope, $http) {
 
-        // removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope
-        manageCourseScope = $scope;
+                courseManageScope = $scope;
+                courseManageScope.httpService = $http;
+                courseManageScope.treeData = [{ id: -1, text: "" }];
+                courseManageScope.itemTemplate = "<span ng-click='openEditor(dataItem)'>{{dataItem.text}}</span>";
 
-    }
-    app.controller("CourseManageController", ["$scope", "$http", CourseManageController]);
-}());
-</script>
+                courseManageScope.init = function() {
+                    courseManageScope.loadData(API_URL + "/CoursesInCourseCategories/GetCourseCategoriesAndCourses/");
+                }
+
+                courseManageScope.getDefaultCategory = function() {
+
+                    var defaultCategory = { Name: "", Notes: "", CourseCategoryId: -1 };
+
+                    return JSON.parse(JSON.stringify(defaultCategory));
+                }
+
+                courseManageScope.getDefaultCourse = function() {
+
+                    var defaultCourse = { Name: "", Description: "", CourseId: -1 };
+
+                    return JSON.parse(JSON.stringify(defaultCourse));
+                }
+
+                courseManageScope.loadData = function(file) {
+                    courseManageScope.httpService({
+                            method: "GET",
+                            url: file,
+                            headers: {
+                                "Authorization": "Bearer " + TOKEN
+                            }
+                        })
+                        .success(function(data) {
+                            $(".tree-view").hide();
+                            courseManageScope.treeData = JSON.parse(data);
+                            $(".k-loading").parent().slideUp(function() {
+                                $(".tree-view").slideDown();
+                            });
+                        })
+                        .error(function(data, status) {
+                            courseManageScope.showCourseFailure(data);
+                        });
+                };
+
+                // the user clicked on the tree. Ascertain whether to open the category editor or the course editor
+                courseManageScope.openEditor = function(dataItem) {
+                    $.each(courseManageScope.treeData, function(i, categoryNode) {
+                        if (categoryNode.text == dataItem.text) {
+                            courseManageScope.loadCategoryEditor(dataItem.id);
+                        }
+
+                        $.each(categoryNode.items, function(j, courseNode) {
+                            if (courseNode.text == dataItem.text) {
+                                // set the current course (for course management)
+                                courseManageScope.Course.Name = dataItem.text;
+                                courseManageScope.Course.CourseId = dataItem.id;
+                                // set the current category (for course deletion)
+                                courseManageScope.Category.CourseCategoryId = categoryNode.id;
+                                courseManageScope.loadCourseEditor();
+                            }
+                        });
+                    });
+                }
+
+                courseManageScope.loadCategoryCreator = function() {
+                    // hide editor and show loading
+                    $("#EditorContainer").slideUp();
+                    $("#CourseContainer").hide();
+
+                    // clear the fields
+                    courseManageScope.Category = courseManageScope.getDefaultCategory();
+
+                    $("#EditorContainer").slideDown(function() {
+                        // hide the update and delete buttons, show the create button
+                        $(".editor-btn").addClass("hidden");
+                        $("#CreateCategory").show();
+                    });
+                }
+
+                courseManageScope.loadCategoryEditor = function(categoryId) {
+                    // hide editor and show loading
+                    $("#EditorContainer").slideUp();
+                    $("#CourseContainer").hide();
+                    $("#LoadingContainer").slideDown(function() {
+                        //get the data
+                        courseManageScope.httpService({
+                                method: "GET",
+                                url: API_URL + "/CourseCategories/GetCourseCategory/" + categoryId,
+                                headers: {
+                                    "Authorization": "Bearer " + TOKEN
+                                }
+                            })
+                            .success(function(data) {
+                                courseManageScope.Category = data;
+                            })
+                            .error(function(data, status) {
+                                courseManageScope.showCourseFailure(data);
+                            });
+
+                        // hide loading and show the update editor
+                        $("#LoadingContainer").slideUp();
+                        $("#EditorContainer").slideDown();
+
+                        // show the update / delete category buttons, and the create course button
+                        $("#CreateCategory").hide();
+                        $(".editor-btn").removeClass("hidden");
+                    });
+                }
+
+                courseManageScope.createCategory = function() {
+                    courseManageScope.httpService({
+                            method: "POST",
+                            url: API_URL + "/CourseCategories/CreateCourseCategory/",
+                            data: { Name: courseManageScope.Category.Name, Notes: courseManageScope.Category.Notes },
+                            headers: {
+                                "Authorization": "Bearer " + TOKEN
+                            }
+                        })
+                        .success(function(data) {
+                            courseManageScope.Category = data;
+                            courseManageScope.showCategorySuccess();
+                        })
+                        .error(function(data, status) {
+                            courseManageScope.showCourseFailure(data);
+                        });
+                }
+
+                courseManageScope.updateCategory = function() {
+                    courseManageScope.httpService({
+                            method: "PUT",
+                            url: API_URL + "/CourseCategories/UpdateCourseCategory/" + courseManageScope.Category.CourseCategoryId,
+                            data: courseManageScope.Category,
+                            headers: {
+                                "Authorization": "Bearer " + TOKEN
+                            }
+                        })
+                        .success(function(data) {
+                            courseManageScope.showCategoryUpdated();
+                        })
+                        .error(function(data, status) {
+                            courseManageScope.showCourseFailure(data);
+                        });
+                }
+
+                courseManageScope.deleteCategory = function() {
+                    courseManageScope.httpService({
+                            method: "DELETE",
+                            url: API_URL + "/CourseCategories/DeleteCourseCategory/" + courseManageScope.Category.CourseCategoryId,
+                            headers: {
+                                "Authorization": "Bearer " + TOKEN
+                            }
+                        })
+                        .success(function(data) {
+                            $("#DeleteCategoryModal").modal("hide");
+                            // clear the fields
+                            courseManageScope.Category = courseManageScope.getDefaultCategory();
+                            courseManageScope.Course = courseManageScope.getDefaultCourse();
+                            courseManageScope.showCategoryDelete();
+                        })
+                        .error(function (data, status) {
+                            $("#DeleteCategoryModal").modal("hide");
+                            courseManageScope.showCourseFailure(data);
+                        });
+                }
+
+                courseManageScope.loadCourseEditor = function() {
+                    var editUrl = "@Url.Action("Edit", "Course")" + "/" + courseManageScope.Course.CourseId;
+                    var sessionUrl = "@Url.Action("Session", "Course")" + "/" + courseManageScope.Course.CourseId;
+
+                    // hide editor and show loading
+                    $("#EditorContainer").hide();
+                    $("#CourseContainer").slideDown(function() {
+                        $("#EditCourse").attr("href", editUrl);
+                        $("#ManageSessions").attr("href", sessionUrl);
+                        $(this).removeClass("hidden");
+                    });
+                }
+
+                courseManageScope.clearCourse = function() {
+                    courseManageScope.Course = courseManageScope.getDefaultCourse();
+                }
+
+                courseManageScope.createCourse = function () {
+                    courseManageScope.httpService({
+                        method: "POST",
+                        url: API_URL + "/Courses/CreateCourse/",
+                        data: { Name: courseManageScope.Course.Name, Description: courseManageScope.Course.Description },
+                        headers: {
+                            "Authorization": "Bearer " + TOKEN
+                        }
+                    })
+                    .success(function (data) {
+                        courseManageScope.Course = data;
+                        courseManageScope.addCourseToCourseCategory();
+                    })
+                    .error(function (data, status) {
+                        courseManageScope.showCourseFailure(data);
+                    });
+                }
+
+                courseManageScope.addCourseToCourseCategory = function () {
+                    courseManageScope.httpService({
+                        method: "POST",
+                        url: API_URL + "/CoursesInCourseCategories/AddCourseToCourseCategory/",
+                        data: { CourseCategoryId: courseManageScope.Category.CourseCategoryId, CourseId: courseManageScope.Course.CourseId },
+                        headers: {
+                            "Authorization": "Bearer " + TOKEN
+                        }
+                    })
+                    .success(function (data) {
+                        $("#CreateCourseModal").modal("hide");
+                        courseManageScope.showCourseSuccess();
+                    })
+                    .error(function (data, status) {
+                        courseManageScope.showCourseFailure(data);
+                    });
+                }
+
+                courseManageScope.deleteCourse = function () {
+                    courseManageScope.httpService({
+                        method: "DELETE",
+                        url: API_URL + "/CoursesInCourseCategories/DeleteCourseInCourseCategory/",
+                        data: { CourseCategoryId: courseManageScope.Category.CourseCategoryId, CourseId: courseManageScope.Course.CourseId },
+                        headers: {
+                            "Authorization": "Bearer " + TOKEN,
+                            "Content-Type": "application/json"
+                        }
+                    })
+                    .success(function (data) {
+                        $("#DeleteCourseModal").modal("hide");
+                        courseManageScope.showCourseDelete();
+                    })
+                    .error(function (data, status) {
+                        courseManageScope.showCourseFailure(data);
+                    });
+                }
+
+                courseManageScope.showCategorySuccess = function() {
+                    var msg = "Category: <b>" + courseManageScope.Category.Name + "</b> successfully created!";
+
+                    $(".alert-success .msg")
+                        .html(msg)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+
+                    $('#treeview').slideUp();
+                    courseManageScope.init();
+                    $('#treeview').slideDown();
+                    courseManageScope.loadCategoryEditor(courseManageScope.Category.CourseCategoryId);
+                }
+
+                courseManageScope.showCategoryUpdated = function() {
+                    var msg = "Category: <b>" + courseManageScope.Category.Name + "</b> successfully updated!";
+
+                    $(".alert-success .msg")
+                        .html(msg)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+
+                    $('#treeview').slideUp();
+                    courseManageScope.init();
+                    $('#treeview').slideDown();
+                }
+
+                courseManageScope.showCategoryDelete = function() {
+                    var msg = "Category: <b>" + courseManageScope.Category.Name + "</b> successfully deleted!";
+
+                    $(".alert-danger .msg")
+                        .html(msg)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+
+                    $('#treeview').slideUp();
+                    courseManageScope.init();
+                    $('#treeview').slideDown();
+                    courseManageScope.loadCategoryCreator();
+                }
+
+                courseManageScope.showCourseSuccess = function () {
+                    var msg = "Course: <b>" + courseManageScope.Course.Name + "</b> successfully added to category: <b>" + courseManageScope.Category.Name + "</b>.";
+
+                    $(".alert-success .msg")
+                        .html(msg)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+
+                    $('#treeview').slideUp();
+                    courseManageScope.init();
+                    $('#treeview').slideDown();
+                }
+
+                courseManageScope.showCourseDelete = function () {
+                    var msg = "Course: <b>" + courseManageScope.Course.Name + "</b> successfully deleted!";
+
+                    $(".alert-danger .msg")
+                        .html(msg)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+
+                    $('#treeview').slideUp();
+                    courseManageScope.init();
+                    $('#treeview').slideDown();
+                    courseManageScope.loadCategoryCreator();
+                }
+
+                courseManageScope.showCourseFailure = function (data) {
+
+                    $(".alert-danger .msg")
+                        .html(data.ExceptionMessage)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+                }
+
+                // run the initialize method
+                courseManageScope.init();
+                courseManageScope.Category = courseManageScope.getDefaultCategory();
+                courseManageScope.Course = courseManageScope.getDefaultCourse();
+
+            }
+            app.controller("CourseManageController", ["$scope", "$http", CourseManageController]);
+        }());
+    </script>
 
 }

@@ -1751,6 +1751,9 @@
     <Content Include="Views\User\_ManageAdmin.create.cshtml" />
     <Content Include="Views\User\_ManageAdmin.edit.cshtml" />
     <Content Include="Views\Report\Index.cshtml" />
+    <Content Include="Views\Course\_Manage.delete.category.cshtml" />
+    <Content Include="Views\Course\_Manage.delete.course.cshtml" />
+    <Content Include="Views\Course\_Manage.create.course.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

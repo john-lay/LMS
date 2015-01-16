@@ -9,6 +9,8 @@ using System.Web.Script.Serialization;
 
 namespace LMS.API.Controllers
 {
+    using System;
+
     public class CourseCategoriesController : ApiBaseController
     {
         private LMSContext db = new LMSContext();
@@ -92,13 +94,24 @@ namespace LMS.API.Controllers
         public IHttpActionResult DeleteCourseCategory(int id)
         {
             CourseCategory courseCategory = db.CourseCategories.Find(id);
+
             if (courseCategory == null)
             {
                 return NotFound();
             }
 
-            db.CourseCategories.Remove(courseCategory);
-            db.SaveChanges();
+            try
+            {
+                db.CourseCategories.Remove(courseCategory);
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException.InnerException.Message.Contains("The DELETE statement conflicted with the REFERENCE constraint"))
+                {
+                    throw new Exception("Please DELETE all courses in this category before attempting to delete the category.", ex);
+                }
+            }
 
             return Ok(courseCategory);
         }
