@@ -21,16 +21,16 @@
 }
 <div class="row col-md-12" data-ng-controller="CourseSessionController">
     <div class="col-md-3">
-        <a href="#" id="Enrol" data-toggle="modal" data-target="#EnrolUsersModal" class="btn btn-sm btn-primary">Enrol Selected Users &raquo;</a>
-        <br /><br />
-        <div id="treeview" data-role="treeview" class="k-widget k-treeview" tabindex="0" role="tree" aria-activedescendant="treeview_tv_active">
+        <a href="#" id="Enrol" data-ng-class="{disabled: selectedUsers.length === 0 && currentCourseSession === -1}" data-toggle="modal" data-target="#EnrolUsersModal" class="btn btn-sm btn-primary">Enrol Selected Users &raquo;</a>
+        <div>
             <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
         </div>
+        <div class="tree-view" kendo-tree-view="tree" k-data-source="treeData" k-options="treeOptions"></div>
     </div>
     <div class="col-md-9 form-horizontal">
         <div class="form-group row col-md-12">
             <div class="col-md-offset-6">
-                <a href="#" data-val="addCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal" class="btn btn-primary pull-right">Add Session &raquo;</a>
+                <a href="#" data-ng-click="clearCourseSession()" data-val="addCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal" class="btn btn-primary pull-right">Add Session &raquo;</a>
             </div>
         </div>
         <div class="form-group row col-md-12">
@@ -49,7 +49,19 @@
                                 <th>&nbsp;</th>
                             </tr>
                         </thead>
-                        <tbody id="CourseSessions"></tbody>
+                        <tbody id="CourseSessions">
+                            <tr data-ng-repeat="courseSession in courseSessionsList">
+                                <td class="text-center"><input data-ng-click="setCourseSession(courseSession)" setcoursesession type="radio" name="session" value="{{courseSession.CourseSessionId}}" /></td>
+                                <td class="startDate">{{courseSession.StartDate | date: 'dd/mm/yyyy'}}</td>
+                                <td class="endDate">{{courseSession.EndDate | date: 'dd/mm/yyyy'}}</td>
+                                <td class="isRolling">{{courseSession.IsRolling}}</td>
+                                <td>
+                                    <a href="#" data-ng-click="setCourseSession(courseSession)" data-toggle="modal" data-target="#EditCourseSessionModal">Edit</a> |
+                                    <a href="#" data-ng-click="setCourseSession(courseSession)" data-toggle="modal" data-target="#EditCourseSessionModal">Delete</a> |
+                                    <a href="#" data-ng-click="setCourseSession(courseSession)" data-toggle="modal" data-target="#EditUsersInSessionModal">Remove Users</a>
+                                </td>
+                            </tr>'
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -70,28 +82,28 @@
         var courseSessionId = -1;
         // initialise tree
         $(function () {
-            $.ajax({
-                url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/",
-                beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-                },
-                success: function (userGroups) {
-                    $("#treeview").kendoTreeView({
-                        checkboxes: {
-                            checkChildren: true
-                        },
-                        check: onCheck,
-                        dataSource: JSON.parse(userGroups)
-                    });
+            //$.ajax({
+            //    url: API_URL + "/UsersInUserGroups/GetUserGroupsAndUsers/",
+            //    beforeSend: function (request) {
+            //        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+            //    },
+            //    success: function (userGroups) {
+            //        $("#treeview").kendoTreeView({
+            //            checkboxes: {
+            //                checkChildren: true
+            //            },
+            //            check: onCheck,
+            //            dataSource: JSON.parse(userGroups)
+            //        });
 
-                    // style the group elements
-                    $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
-                }
-            });
+            //        // style the group elements
+            //        $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+            //    }
+            //});
 
             // disabled enrol button, unless users have been selected and a session has been selected
-            $("#Enrol").addClass("disabled");
-            $(document).on('change', 'input[name=session]', updateEnrolmentStatus);
+            //$("#Enrol").addClass("disabled");
+            //$(document).on('change', 'input[name=session]', updateEnrolmentStatus);
 
             $("#Enrol").click(function() {
                 // add user names to modal
@@ -123,9 +135,9 @@
                 });
 
                 $.ajax({
-                    url: "@this.GetApiUrl()" + "/UsersInCourseSessions/AddUsersToCourseSession/" + sessionId,
+                    url: API_URL + "/UsersInCourseSessions/AddUsersToCourseSession/" + sessionId,
                     beforeSend: function (request) {
-                        request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
                     },
                     data: { '': userData },
                     type: "POST",
@@ -156,9 +168,9 @@
                 });
 
                 $.ajax({
-                    url: "@this.GetApiUrl()" + "/UsersInCourseSessions/RemoveUsersFromCourseSession/" + courseSessionId,
+                    url: API_URL + "/UsersInCourseSessions/RemoveUsersFromCourseSession/" + courseSessionId,
                     beforeSend: function (request) {
-                        request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
                     },
                     data: { '': userData },
                     type: "POST",
@@ -174,29 +186,29 @@
         });
 
         // function that gathers IDs of checked nodes
-        function checkedNodeIds(nodes, checkedNodes) {
+        //function checkedNodeIds(nodes, checkedNodes) {
 
-            for (var i = 0; i < nodes.length; i++) {
-                if (nodes[i].checked) {
-                    // ignore user group nodes
-                    if(nodes[i].spriteCssClass != "group") {
-                        checkedNodes.push(nodes[i]);
-                    }
-                }
+        //    for (var i = 0; i < nodes.length; i++) {
+        //        if (nodes[i].checked) {
+        //            // ignore user group nodes
+        //            if(nodes[i].spriteCssClass != "group") {
+        //                checkedNodes.push(nodes[i]);
+        //            }
+        //        }
 
-                if (nodes[i].hasChildren) {
-                    checkedNodeIds(nodes[i].children.view(), checkedNodes);
-                }
-            }
-        }
+        //        if (nodes[i].hasChildren) {
+        //            checkedNodeIds(nodes[i].children.view(), checkedNodes);
+        //        }
+        //    }
+        //}
 
-        // show checked node IDs on datasource change
-        function onCheck() {
-            var treeView = $("#treeview").data("kendoTreeView");
-            selectedUsers = []; // reset array
-            checkedNodeIds(treeView.dataSource.view(), selectedUsers);
-            updateEnrolmentStatus();
-        }
+        //// show checked node IDs on datasource change
+        //function onCheck() {
+        //    var treeView = $("#treeview").data("kendoTreeView");
+        //    selectedUsers = []; // reset array
+        //    checkedNodeIds(treeView.dataSource.view(), selectedUsers);
+        //    updateEnrolmentStatus();
+        //}
 
         // at least one user and one session have been checked
         function updateEnrolmentStatus() {
@@ -244,9 +256,9 @@
             $("#EditUsersInSessionTable").show();
 
             $.ajax({
-                url: "@this.GetApiUrl()" + "/UsersInCourseSessions/GetUsersInCourseSession/" + courseSessionId,
+                url: API_URL + "/UsersInCourseSessions/GetUsersInCourseSession/" + courseSessionId,
                 beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    request.setRequestHeader("Authorization", "Bearer " + TOKEN);
                 },
                 success: function (result) { 
                     var users = JSON.parse(result);
@@ -275,8 +287,8 @@
     <script type="text/javascript" title="Manage sessions">    
         // get course session
         $(function () {
-            $("#CourseSessionsContainer").hide();
-            populateSessionTable();
+            //$("#CourseSessionsContainer").hide();
+            //populateSessionTable();
 
             $('.datepicker').datepicker({
                 todayHighlight: true,
@@ -288,9 +300,9 @@
             // add session
             $("#AddCourseSession").click(function () {
                 $.ajax({
-                    url: "@this.GetApiUrl()" + "/CourseSessions/CreateCourseSession/",
+                    url: API_URL + "/CourseSessions/CreateCourseSession/",
                     beforeSend: function (request) {
-                        request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
                     },
                     data: {
                         CourseId: @Model.CourseId,
@@ -313,9 +325,9 @@
             // edit session
             $("#EditCourseSession").click(function () {
                 $.ajax({
-                    url: "@this.GetApiUrl()" + "/CourseSessions/UpdateCourseSession/" + courseSessionId,
+                    url: API_URL + "/CourseSessions/UpdateCourseSession/" + courseSessionId,
                     beforeSend: function (request) {
-                        request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
                     },
                     data: {
                         CourseSessionId: courseSessionId,
@@ -339,7 +351,7 @@
             // delete session
             $("#DeleteCourseSession").click(function () {
                 $.ajax({
-                    url: "@this.GetApiUrl()" + "/CourseSessions/DeleteCourseSession/" + courseSessionId,
+                    url: API_URL + "/CourseSessions/DeleteCourseSession/" + courseSessionId,
                     type: "DELETE",
                     success: function (result) {
                         $("#EditCourseSessionModal").modal("hide");
@@ -449,13 +461,13 @@
             $("#" + elementId).removeClass("hidden");
         }
 
-        function populateSessionTable() {
+        @*function populateSessionTable() {
             var table = $("#CourseSessions");
             table.empty();
             $.ajax({
-                url: "@this.GetApiUrl()" + "/CourseSessions/GetCourseSessions/" + @Model.CourseId,
+                url: API_URL + "/CourseSessions/GetCourseSessions/" + @Model.CourseId,
                 beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    request.setRequestHeader("Authorization", "Bearer " + TOKEN);
                 },
                 success: function (courseSessions) {
                     $.each(courseSessions, function (i, item) {
@@ -478,7 +490,7 @@
                     });
                 }
             });
-        }
+        }*@
 
         function showCourseCategorySuccess() {
             var msg = "Course session successfully created!";
@@ -511,16 +523,142 @@
         }
     </script>
     <script type="text/javascript">
-        (function () {
-            var app = angular.module("LMS", ["kendo.directives"]);
+    (function () {
+        var app = angular.module("LMS", ["kendo.directives"]);
 
-            var CourseSessionController = function ($scope, $http) {
+        var CourseSessionController = function ($scope, $http) {
 
-                // removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope
-                CourseSessionScope = $scope;
+            courseSessionScope = $scope;
+            courseSessionScope.httpService = $http;
+            courseSessionScope.treeData = [{ id: -1, text: "" }];
+            courseSessionScope.selectedUsers = [];//[{ id: -1, text: "" }];
+            courseSessionScope.courseSessionsList =  [];//[{CourseSessionId: -1, StartDate: null, EndDate: null, IsRolling: false}];
+            courseSessionScope.currentCourseSession = {}; //{CourseSessionId: -1, StartDate: null, EndDate: null, IsRolling: false}
 
+            courseSessionScope.loadData = function () {
+                courseSessionScope.httpService({
+                    method: "GET",
+                    url: API_URL + "/UsersInUserGroups/GetUserGroupsAndUsers/",
+                    headers: {
+                        "Authorization": "Bearer " + TOKEN
+                    }
+                })
+                .success(function (data) {
+                    $(".tree-view").hide();
+                    courseSessionScope.treeData = JSON.parse(data);
+                    $(".k-loading").parent().slideUp(function () {
+                        $(".tree-view").slideDown(function () {
+                            // style the group elements - this needs to be done as late as possible so the DOM items exist.
+                            $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+                        });
+                    });
+                })
+                .error(function (data, status) {
+                    courseSessionScope.showSessionFailure(data);
+                });
+            };
+
+            courseSessionScope.treeOptions = {
+                checkboxes: {
+                    checkChildren: true
+                },
+                dataBound: function(e) {
+                    courseSessionScope.attachChangeEvent(e);
+                }
+            };
+
+            courseSessionScope.attachChangeEvent = function(e) {
+                var dataSource = e.sender.dataSource;
+                dataSource.bind("change", function(e) {
+                    var selectedNodes = 0;
+                    var checkedNodes = [];
+                    courseSessionScope.checkedNodeIds(dataSource.view(), checkedNodes);
+                    // clear the contents of the selected user array before repopulating
+                    courseSessionScope.selectedUsers.length = 0;
+                    for (var i = 0; i < checkedNodes.length; i++) {
+                        var nd = checkedNodes[i];
+                        if (nd.checked) {
+                            // only add users to the array (ignore user groups)
+                            //console.log("item " + nd.id + ": " + nd.text + " checked.");
+                            if(!nd.hasOwnProperty("spriteCssClass")) {
+                                courseSessionScope.selectedUsers.push({id: nd.id, text: nd.text});
+                            }
+                            selectedNodes++;
+                        }
+                    }
+                    //console.log(courseSessionScope.selectedUsers);
+                });
+            };
+
+            courseSessionScope.checkedNodeIds = function(nodes, checkedNodes) {
+                for (var i = 0; i < nodes.length; i++) {
+                    var ndo = nodes[i];
+                    checkedNodes.push(ndo);
+                    if (ndo.hasChildren) {
+                        courseSessionScope.checkedNodeIds(ndo.children.view(), checkedNodes);
+                    }
+                }
+            };
+
+            courseSessionScope.populateSessionTable = function() {
+                courseSessionScope.httpService({
+                    method: "GET",
+                    url: API_URL + "/CourseSessions/GetCourseSessions/" + @Model.CourseId,
+                    headers: {
+                        "Authorization": "Bearer " + TOKEN
+                    }
+                })
+                .success(function (data) {
+                    courseSessionScope.courseSessionsList = data;
+                })
+                .error(function (data, status) {
+                    courseSessionScope.showSessionFailure(data);
+                });
             }
-            app.controller("CourseSessionController", ["$scope", "$http", CourseSessionController]);
-        }());
-    </script>
+
+            courseSessionScope.setCourseSession = function(dataItem) {
+                //console.log(dataItem);
+                courseSessionScope.currentCourseSession = dataItem;
+            }
+
+            courseSessionScope.getDefaultCourseSession = function() {
+
+                var defaultCourseSession = { CourseId: -1, CourseSessionId: -1, EndDate: null, IsRolling: false, StartDate: null };
+
+                return JSON.parse(JSON.stringify(defaultCourseSession));                
+            }
+
+            courseSessionScope.clearCourseSession = function() {
+                courseSessionScope.currentCourseSession = courseSessionScope.getDefaultCourseSession();
+            }
+
+            courseSessionScope.createCourseSession = function() {
+                console.log("creating...");
+            }
+
+            courseSessionScope.editCourseSession = function() {
+                console.log("editting...");
+            }
+            
+            courseSessionScope.deleteCourseSession = function() {
+                console.log("deleting...");
+            }
+
+            courseSessionScope.showSessionFailure = function (data) {
+
+                $(".alert-danger .msg")
+                    .html(data.ExceptionMessage)
+                    .parent()
+                    .removeClass("hidden")
+                    .slideDown();
+            }
+
+            // run the initialize method
+            courseSessionScope.loadData();
+            courseSessionScope.populateSessionTable();
+
+        }
+        app.controller("CourseSessionController", ["$scope", "$http", CourseSessionController]);
+    }());
+</script>
 }

@@ -7,13 +7,13 @@
     <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.min.css" rel="stylesheet" />
     <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.default.min.css" rel="stylesheet" />
 }
-<div class="row col-md-12">
+<div class="row col-md-12" data-ng-controller="UserGroupController">
     <div class="col-md-3">
         <a href="#" id="ShowGroupCreator" data-toggle="modal" data-target="#CreateUserGroupModal" class="btn btn-sm btn-primary">Add new group »</a>
         <br /><br />
         <div id="treeview" data-role="treeview" class="k-widget k-treeview" tabindex="0" role="tree" aria-activedescendant="treeview_tv_active">
             <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
-        </div>       
+        </div>
     </div>
     <div class="col-md-9 form-horizontal">
         <div class="form-group">
@@ -88,7 +88,8 @@
     </div>
 </div>
 @section scripts {
-<script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>    
+<script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
+@*<script src="~/Scripts/Library/kendo-js/kendo.angular.min.js"></script>*@ 
 <script type="text/javascript">
     var UserGroups;
     var CurrentUserGroup;    
@@ -96,9 +97,9 @@
     function updateTree() {
         $("#treeview").slideUp();
         $.ajax({
-            url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/",
+            url: API_URL + "/UsersInUserGroups/GetUserGroupsAndUsers/",
             beforeSend: function (request) {
-                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                request.setRequestHeader("Authorization", "Bearer " + TOKEN);
             },
             success: function (userGroups) {
                 UserGroups = JSON.parse(userGroups);
@@ -118,9 +119,9 @@
     $(function () {
         // initialise tree
         $.ajax({
-            url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/",
+            url: API_URL + "/UsersInUserGroups/GetUserGroupsAndUsers/",
             beforeSend: function (request) {
-                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                request.setRequestHeader("Authorization", "Bearer " + TOKEN);
             },
             success: function (userGroups) {
                 UserGroups = JSON.parse(userGroups);
@@ -157,9 +158,9 @@
         
         $("#SaveGroup").click(function () {
             $.ajax({
-                url: "@this.GetApiUrl()" + "/UserGroups/CreateGroup/",
+                url: API_URL + "/UserGroups/CreateGroup/",
                 beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    request.setRequestHeader("Authorization", "Bearer " + TOKEN);
                 },
                 data: { Name: $("#GroupName").val(), ParentId: -1 },
                 type: "POST",
@@ -175,9 +176,9 @@
 
         $("#SaveUpdatedGroup").click(function () {
             $.ajax({
-                url: "@this.GetApiUrl()" + "/UserGroups/UpdateGroup/" + CurrentUserGroup.id,
+                url: API_URL + "/UserGroups/UpdateGroup/" + CurrentUserGroup.id,
                 beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    request.setRequestHeader("Authorization", "Bearer " + TOKEN);
                 },
                 data: { Name: $("#UpdateGroupName").val(), UserGroupId: CurrentUserGroup.id },
                 type: "PUT",
@@ -224,7 +225,7 @@
 
     $("#UpdateGroupOrder").click(function () {
         $.ajax({
-            url: "@this.GetApiUrl()" + "/UsersInUserGroups/UpdateUsersInGroup/",
+            url: API_URL + "/UsersInUserGroups/UpdateUsersInGroup/",
             data: { '': getUserGroupsJSON() },
             type: "PUT",
             success: function (result) {
@@ -277,5 +278,18 @@
 
         updateTree();
     }
+</script>
+<script type="text/javascript">
+    (function () {
+        var app = angular.module("LMS", ["kendo.directives"]);
+
+        var UserGroupController = function ($scope, $http) {
+
+            // removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope
+            userGroupScope = $scope;
+
+        }
+        app.controller("UserGroupController", ["$scope", "$http", UserGroupController]);
+    }());
 </script>
 }

@@ -7,7 +7,7 @@
     <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.min.css" rel="stylesheet" />
     <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.default.min.css" rel="stylesheet" />
 }
-<div class="row col-md-12">    
+<div class="row col-md-12" data-ng-controller="UserManageController">
     <div class="col-md-3">
         <div class="lead">Edit Users</div>
         <div id="treeview" data-role="treeview" class="k-widget k-treeview" tabindex="0" role="tree" aria-activedescendant="treeview_tv_active">
@@ -91,6 +91,7 @@
 </div>
 @section scripts {
 <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>  
+<script src="~/Scripts/Library/kendo-js/kendo.angular.min.js"></script>
 <script type="text/javascript">
     var UserGroups;
     var CurrentUser;
@@ -98,9 +99,9 @@
     function updateTree() {
         $("#treeview").slideUp();
         $.ajax({
-            url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/",
+            url: API_URL + "/UsersInUserGroups/GetUserGroupsAndUsers/",
             beforeSend: function (request) {
-                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                request.setRequestHeader("Authorization", "Bearer " + TOKEN);
             },
             success: function (userGroups) {
                 UserGroups = addIdToUsersInTree(JSON.parse(userGroups));
@@ -139,9 +140,9 @@
     $(function () {
         // initialise tree
         $.ajax({
-            url: "@this.GetApiUrl()" + "/UsersInUserGroups/GetUserGroupsAndUsers/",
+            url: API_URL + "/UsersInUserGroups/GetUserGroupsAndUsers/",
             beforeSend: function (request) {
-                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                request.setRequestHeader("Authorization", "Bearer " + TOKEN);
             },
             success: function (userGroups) {
                 UserGroups = addIdToUsersInTree(JSON.parse(userGroups));
@@ -181,9 +182,9 @@
         // create user
         $("#SaveUser").click(function () {
             $.ajax({
-                url: "@this.GetApiUrl()" + "/Account/Register/",
+                url: API_URL + "/Account/Register/",
                 beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    request.setRequestHeader("Authorization", "Bearer " + TOKEN);
                 },
                 data: { FirstName: $("#FirstName").val(), LastName: $("#LastName").val(), EmailAddress: $("#Email").val(), Password: $("#Password").val() },
                 type: "POST",
@@ -203,9 +204,9 @@
         // update user
         $("#SaveUpdatedUser").click(function () {
             $.ajax({
-                url: "@this.GetApiUrl()" + "/Users/UpdateUser/" + CurrentUser.id,
+                url: API_URL + "/Users/UpdateUser/" + CurrentUser.id,
                 beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    request.setRequestHeader("Authorization", "Bearer " + TOKEN);
                 },
                 data: { FirstName: $("#UpdateFirstName").val(), LastName: $("#UpdateLastName").val(), UserId: CurrentUser.id },
                 type: "PATCH",
@@ -224,9 +225,9 @@
 
             var userName = $("#UpdateFirstName").val() + $("#UpdateLastName").val();
             $.ajax({
-                url: "@this.GetApiUrl()" + "/Users/DeleteUser/" + CurrentUser.id,
+                url: API_URL + "/Users/DeleteUser/" + CurrentUser.id,
                 beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                    request.setRequestHeader("Authorization", "Bearer " + TOKEN);
                 },
                 type: "DELETE",
                 success: function (result) {
@@ -242,9 +243,9 @@
 
     function showUserEditor(userId) {
         $.ajax({
-            url: "@this.GetApiUrl()" + "/Users/GetUser/" + userId,
+            url: API_URL + "/Users/GetUser/" + userId,
             beforeSend: function (request) {
-                request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
+                request.setRequestHeader("Authorization", "Bearer " + TOKEN);
             },
             success: function (user) {
                 $("#UpdateFirstName").val(user.FirstName);
@@ -311,5 +312,18 @@
         // update tree
         updateTree();
     }
+</script>
+<script type="text/javascript">
+    (function () {
+        var app = angular.module("LMS", ["kendo.directives"]);
+
+        var UserManageController = function ($scope, $http) {
+
+            // removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope
+            userManageScope = $scope;
+
+        }
+        app.controller("UserManageController", ["$scope", "$http", UserManageController]);
+    }());
 </script>
 }

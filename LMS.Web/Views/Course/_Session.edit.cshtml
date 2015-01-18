@@ -11,7 +11,7 @@
                         <label class="control-label col-md-2">Start Date</label>
                         <div class="col-md-10">
                             <div class="input-group">
-                                <input id="EditStartDate" type="text" class="form-control datepicker start" placeholder="Select date" />
+                                <input data-ng-model="currentCourseSession.StartDate" id="EditStartDate" type="text" class="form-control datepicker start" placeholder="Select date" />
                                 <label for="EditStartDate" class="input-group-addon">
                                     <i class="input-append glyphicon glyphicon-calendar"></i>
                                 </label>
@@ -22,7 +22,7 @@
                         <label class="control-label col-md-2">End Date</label>
                         <div class="col-md-10">
                             <div class="input-group">
-                                <input id="EditEndDate" type="text" class="form-control datepicker end" placeholder="Select date" />
+                                <input data-ng-model="currentCourseSession.EndDate"  id="EditEndDate" type="text" class="form-control datepicker end" placeholder="Select date" />
                                 <label for="EditEndDate" class="input-group-addon">
                                     <i class="input-append glyphicon glyphicon-calendar"></i>
                                 </label>
@@ -32,14 +32,14 @@
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10 modal-checkbox">
                             <label for="IsRolling" class="control-label col-md-2">Rolling</label>
-                            <input type="checkbox" id="IsRolling" />
+                            <input data-ng-model="currentCourseSession.IsRolling" type="checkbox" id="IsRolling" />
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            <button id="AddCourseSession" type="button" class="btn btn-default btn-primary">Save</button>
-                            <button id="EditCourseSession" type="button" class="btn btn-default btn-primary hidden">Save</button>
-                            <button id="DeleteCourseSession" type="button" class="btn btn-default btn-danger hidden">Delete</button>
+                            <button data-ng-click="createCourseSession()" id="AddCourseSession" type="button" class="btn btn-default btn-primary">Save</button>
+                            <button data-ng-click="editCourseSession()"  id="EditCourseSession" type="button" class="btn btn-default btn-primary hidden">Save</button>
+                            <button data-ng-click="deleteCourseSession()"  id="DeleteCourseSession" type="button" class="btn btn-default btn-danger hidden">Delete</button>
                         </div>
                     </div>
                 </div>
