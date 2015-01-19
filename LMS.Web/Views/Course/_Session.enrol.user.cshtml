@@ -7,12 +7,20 @@
             </div>
             <div class="modal-body">
                 <div class="form-horizontal">
-                    <ul id="SelectedUsersInModal" class="list-group"></ul>
+                    <ul class="list-group">
+                        <li class="list-group-item" data-ng-repeat="user in selectedUsers">{{user.text}}</li>
+                    </ul>
                     <hr />
-                    <div id="SelectedSessionInModal"></div>
+                    <div id="SelectedSessionInModal">
+                        <ul>
+                            <li><b>Start Date: </b>{{currentCourseSession.StartDate}}</li>
+                            <li><b>End Date: </b>{{currentCourseSession.EndDate}}</li>
+                            <li><b>Rolling: </b>{{currentCourseSession.IsRolling}}</li>
+                        </ul>
+                    </div>
                     <div class="form-group">
                         <div class="col-md-12">
-                            <button id="EnrolSelectedUsers" type="button" class="btn btn-default btn-primary pull-right">Enrol</button>
+                            <button data-ng-click="enrolUsers()" type="button" class="btn btn-default btn-primary pull-right">Enrol</button>
                         </div>
                     </div>
                 </div>

@@ -51,16 +51,16 @@
                         </thead>
                         <tbody id="CourseSessions">
                             <tr data-ng-repeat="courseSession in courseSessionsList">
-                                <td class="text-center"><input data-ng-click="setCourseSession(courseSession)" setcoursesession type="radio" name="session" value="{{courseSession.CourseSessionId}}" /></td>
-                                <td class="startDate">{{courseSession.StartDate | date: 'dd/mm/yyyy'}}</td>
-                                <td class="endDate">{{courseSession.EndDate | date: 'dd/mm/yyyy'}}</td>
-                                <td class="isRolling">{{courseSession.IsRolling}}</td>
+                                <td class="text-center"><input data-ng-click="setCourseSession(courseSession)" setcoursesession type="radio" name="session" value="{{::courseSession.CourseSessionId}}" /></td>
+                                <td class="startDate">{{::getDateFromJSONString(courseSession.StartDate)}}</td>
+                                <td class="endDate">{{::getDateFromJSONString(courseSession.EndDate)}}</td>
+                                <td class="isRolling">{{::courseSession.IsRolling}}</td>
                                 <td>
                                     <a href="#" data-ng-click="setCourseSession(courseSession)" data-toggle="modal" data-target="#EditCourseSessionModal">Edit</a> |
                                     <a href="#" data-ng-click="setCourseSession(courseSession)" data-toggle="modal" data-target="#EditCourseSessionModal">Delete</a> |
                                     <a href="#" data-ng-click="setCourseSession(courseSession)" data-toggle="modal" data-target="#EditUsersInSessionModal">Remove Users</a>
                                 </td>
-                            </tr>'
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -105,51 +105,51 @@
             //$("#Enrol").addClass("disabled");
             //$(document).on('change', 'input[name=session]', updateEnrolmentStatus);
 
-            $("#Enrol").click(function() {
-                // add user names to modal
-                var list = $("#SelectedUsersInModal");
-                list.html("");
-                $.each(selectedUsers, function (i, user) {
-                    list.append('<li class="list-group-item">' + user.text + '</li>');
-                });
+            //$("#Enrol").click(function() {
+            //    // add user names to modal
+            //    var list = $("#SelectedUsersInModal");
+            //    list.html("");
+            //    $.each(selectedUsers, function (i, user) {
+            //        list.append('<li class="list-group-item">' + user.text + '</li>');
+            //    });
 
-                // add session name to modal
-                var sessionTableRow = $("input[name=session]:checked").parent().parent();
-                var startDate = sessionTableRow.find(".startDate").html();
-                var endDate = sessionTableRow.find(".endDate").html();
-                var isRolling = sessionTableRow.find(".isRolling").html();
+            //    // add session name to modal
+            //    var sessionTableRow = $("input[name=session]:checked").parent().parent();
+            //    var startDate = sessionTableRow.find(".startDate").html();
+            //    var endDate = sessionTableRow.find(".endDate").html();
+            //    var isRolling = sessionTableRow.find(".isRolling").html();
 
-                var sessionDetails = "<li><b>Start Date: </b>" + startDate + "</li>";
-                sessionDetails += "<li><b>End Date: </b>" + endDate + "</li>";
-                sessionDetails += "<li><b>Rolling: </b>" + isRolling + "</li>";
+            //    var sessionDetails = "<li><b>Start Date: </b>" + startDate + "</li>";
+            //    sessionDetails += "<li><b>End Date: </b>" + endDate + "</li>";
+            //    sessionDetails += "<li><b>Rolling: </b>" + isRolling + "</li>";
 
-                $("#SelectedSessionInModal").html("<ul>" + sessionDetails + "</ul>");
-            });
+            //    $("#SelectedSessionInModal").html("<ul>" + sessionDetails + "</ul>");
+            //});
 
-            $("#EnrolSelectedUsers").click(function() {
-                var sessionId = $("input[name=session]:checked").val();
-                var userData = [];
+            //$("#EnrolSelectedUsers").click(function() {
+            //    var sessionId = $("input[name=session]:checked").val();
+            //    var userData = [];
 
-                $.each(selectedUsers, function(i, user) {
-                    userData.push({UserId: user.id });
-                });
+            //    $.each(selectedUsers, function(i, user) {
+            //        userData.push({UserId: user.id });
+            //    });
 
-                $.ajax({
-                    url: API_URL + "/UsersInCourseSessions/AddUsersToCourseSession/" + sessionId,
-                    beforeSend: function (request) {
-                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-                    },
-                    data: { '': userData },
-                    type: "POST",
-                    success: function (result) {
-                        $("#EnrolUsersModal").modal("hide");
-                        showEnrolUsersSuccess();
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log(errorThrown);
-                    }
-                });
-            });
+            //    $.ajax({
+            //        url: API_URL + "/UsersInCourseSessions/AddUsersToCourseSession/" + sessionId,
+            //        beforeSend: function (request) {
+            //            request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+            //        },
+            //        data: { '': userData },
+            //        type: "POST",
+            //        success: function (result) {
+            //            $("#EnrolUsersModal").modal("hide");
+            //            showEnrolUsersSuccess();
+            //        },
+            //        error: function (jqXHR, textStatus, errorThrown) {
+            //            console.log(errorThrown);
+            //        }
+            //    });
+            //});
 
             // select all users in modal
             $("#SelectAll").click(function() {
@@ -219,20 +219,20 @@
             }
         }
 
-        function showEnrolUsersSuccess() {
-            var usersAdded = [];
+        //function showEnrolUsersSuccess() {
+        //    var usersAdded = [];
 
-            $.each(selectedUsers, function(i, user) {
-                usersAdded.push(user.text);
-            });
-            var msg = "Users: <b>" + usersAdded.join(", ") + "</b> successfully added to session!";
+        //    $.each(selectedUsers, function(i, user) {
+        //        usersAdded.push(user.text);
+        //    });
+        //    var msg = "Users: <b>" + usersAdded.join(", ") + "</b> successfully added to session!";
 
-            $(".alert-success .msg")
-                .html(msg)
-                .parent()
-                    .removeClass("hidden")
-                    .slideDown();
-        }
+        //    $(".alert-success .msg")
+        //        .html(msg)
+        //        .parent()
+        //            .removeClass("hidden")
+        //            .slideDown();
+        //}
 
         function showEnrolUsersUpdate(removedUsers) {
             var msg = "Users: <b>" + removedUsers.join(", ") + "</b> successfully removed from session!";
@@ -609,7 +609,7 @@
                     }
                 })
                 .success(function (data) {
-                    courseSessionScope.courseSessionsList = data;
+                    courseSessionScope.courseSessionsList = JSON.parse(data);
                 })
                 .error(function (data, status) {
                     courseSessionScope.showSessionFailure(data);
@@ -617,19 +617,63 @@
             }
 
             courseSessionScope.setCourseSession = function(dataItem) {
-                //console.log(dataItem);
                 courseSessionScope.currentCourseSession = dataItem;
+                // try and convert the Microsoft ajax date string. i.e. "/Date(1421712000000)"
+                if (courseSessionScope.currentCourseSession.StartDate.indexOf("/Date") !== -1) {
+                    courseSessionScope.currentCourseSession.StartDate = courseSessionScope.getDateFromJSONString(dataItem.StartDate);
+                    courseSessionScope.currentCourseSession.EndDate = courseSessionScope.getDateFromJSONString(dataItem.EndDate);
+                }
             }
 
             courseSessionScope.getDefaultCourseSession = function() {
 
                 var defaultCourseSession = { CourseId: -1, CourseSessionId: -1, EndDate: null, IsRolling: false, StartDate: null };
 
-                return JSON.parse(JSON.stringify(defaultCourseSession));                
+                return JSON.parse(JSON.stringify(defaultCourseSession));
             }
 
             courseSessionScope.clearCourseSession = function() {
                 courseSessionScope.currentCourseSession = courseSessionScope.getDefaultCourseSession();
+            }
+
+            courseSessionScope.getDateFromJSONString = function(JSONString) {
+                var dateString = JSONString.match(/[0-9]+/g)[0];
+                var formattedDate = new Date(parseInt(dateString, 10));
+                var d = formattedDate.getDate();
+                var m = formattedDate.getMonth();
+                m += 1;  // JavaScript months are 0-11
+                var y = formattedDate.getFullYear();
+
+                // prepend single day/month with zero
+                d = ('0' + d).slice(-2);
+                m = ('0' + m).slice(-2);
+
+                return d + "/" + m + "/" + y;
+            }
+
+            courseSessionScope.enrolUsers = function() {
+
+                var userData = [];
+
+                $.each(courseSessionScope.selectedUsers, function(i, user) {
+                    userData.push({UserId: user.id });
+                });
+
+                courseSessionScope.httpService({
+                    method: "POST",
+                    url: API_URL + "/UsersInCourseSessions/AddUsersToCourseSession/" + courseSessionScope.currentCourseSession.CourseSessionId,
+                    data: userData,
+                    headers: {
+                        "Authorization": "Bearer " + TOKEN
+                    }
+                })
+                .success(function (data) {
+                    $("#EnrolUsersModal").modal("hide");
+                    courseSessionScope.showEnrolUsersSuccess();
+                })
+                .error(function (data, status) {
+                    courseSessionScope.showSessionFailure(data);
+                });
             }
 
             courseSessionScope.createCourseSession = function() {
@@ -639,9 +683,25 @@
             courseSessionScope.editCourseSession = function() {
                 console.log("editting...");
             }
-            
+
             courseSessionScope.deleteCourseSession = function() {
                 console.log("deleting...");
+            }
+
+            courseSessionScope.showEnrolUsersSuccess = function() {
+                var usersAdded = [];
+
+                $.each(courseSessionScope.selectedUsers, function(i, user) {
+                    usersAdded.push(user.text);
+                });
+
+                var msg = "Users: <b>" + usersAdded.join(", ") + "</b> successfully added to session!";
+
+                $(".alert-success .msg")
+                    .html(msg)
+                    .parent()
+                        .removeClass("hidden")
+                        .slideDown();
             }
 
             courseSessionScope.showSessionFailure = function (data) {

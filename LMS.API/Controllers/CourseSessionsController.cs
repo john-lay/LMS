@@ -8,29 +8,27 @@ using System.Web.Http;
 
 namespace LMS.API.Controllers
 {
+    using System.Web.Script.Serialization;
+
     public class CourseSessionsController : ApiBaseController
     {
         private LMSContext db = new LMSContext();
 
+        //// GET: api/CourseSessions
+        //[HttpGet]
+        //public IQueryable<CourseSession> GetCourseSessions(int id)
+        //{
+        //    return db.CourseSessions.Where(s => s.CourseId == id);
+        //}
+
         // GET: api/CourseSessions
         [HttpGet]
-        public IQueryable<CourseSession> GetCourseSessions(int id)
+        public string GetCourseSessions(int id)
         {
-            return db.CourseSessions.Where(s => s.CourseId == id);
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            var query = db.CourseSessions.Where(s => s.CourseId == id).ToArray();
+            return serializer.Serialize(query);
         }
-
-        // GET: api/CourseSessions/5
-        //[ResponseType(typeof(CourseSession))]
-        //public IHttpActionResult GetCourseSession(int id)
-        //{
-        //    CourseSession courseSession = db.CourseSessions.Find(id);
-        //    if (courseSession == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return Ok(courseSession);
-        //}
 
         // PUT: api/CourseSessions/5
         [HttpPut]
