@@ -24,10 +24,10 @@ namespace LMS.API.Controllers
                 return "Error: No users in session";
             }
 
-            var users = usersInCourseSession.Select(x => new 
+            var users = usersInCourseSession.Select(u => new 
             {
-                UserId = x.UserId,
-                Name = x.User.FirstName + x.User.LastName
+                UserId = u.UserId,
+                Name = u.User.FirstName + " " + u.User.LastName
             }).ToArray();
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();

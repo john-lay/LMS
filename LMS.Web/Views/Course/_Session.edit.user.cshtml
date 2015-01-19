@@ -10,20 +10,27 @@
                     <div id="UsersInEditedSession"></div>
                     <div class="form-group">
                         <div class="col-md-12">
-                            <table id="EditUsersInSessionTable" class="table table-bordered table-striped">
+                            <table class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
-                                        <th class="text-center"><input type="checkbox" id="SelectAll" /></th>
+                                        <th class="text-center"><input type="checkbox" id="SelectAll" data-ng-model="SelectAll" data-ng-click="SelectAllUsers()" /></th>
                                         <th>User</th>
                                     </tr>
                                 </thead>
-                                <tbody id="EditUsersInSessionTableBody"></tbody>
+                                <tbody>
+                                    <tr data-ng-repeat="user in usersInSessionList">
+                                        <td class="text-center">
+                                            <input type="checkbox" data-ng-model="user.IsEnrolled" />
+                                        </td>
+                                        <td>{{user.Name}}</td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-md-12">
-                            <button id="RemoveSelectedUsers" type="button" class="btn btn-default btn-warning pull-right">Remove selected users</button>
+                            <button data-ng-click="removeSelectedUsers()" type="button" class="btn btn-default btn-warning pull-right">Remove selected users</button>
                         </div>
                     </div>
                 </div>
