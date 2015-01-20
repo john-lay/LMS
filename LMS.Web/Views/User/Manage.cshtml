@@ -10,196 +10,125 @@
 <div class="row col-md-12" data-ng-controller="UserManageController">
     <div class="col-md-3">
         <div class="lead">Edit Users</div>
-        <div id="treeview" data-role="treeview" class="k-widget k-treeview" tabindex="0" role="tree" aria-activedescendant="treeview_tv_active">
+        <div>
             <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
         </div>
+        <div class="tree-view" kendo-tree-view="tree" k-data-source="treeData" k-template="itemTemplate" k-on-change="selectedItem=dataItem"></div>
     </div>
-    <div class="col-md-9 form-horizontal">
-        <div class="lead">Create new user</div>
-        <div class="form-group">
-            <label class="col-md-3 control-label" for="FirstName">First Name</label>
-            <div class="col-md-9">
-                <input class="form-control" id="FirstName" placeholder="First Name" type="text">
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-md-3 control-label" for="LastName">Last Name</label>
-            <div class="col-md-9">
-                <input class="form-control" id="LastName" placeholder="Last Name" type="text">
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-md-3 control-label" for="Password">Password</label>
-            <div class="col-md-9">
-                <input class="form-control" id="Password" placeholder="Password" type="password">
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-md-3 control-label" for="ConfirmPassword">Confirm Password</label>
-            <div class="col-md-9">
-                <input class="form-control" id="ConfirmPassword" placeholder="Password" type="password">
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-md-3 control-label" for="Email">Email</label>
-            <div class="col-md-9">
-                <input class="form-control" id="Email" placeholder="example@avemtec.com" type="text">
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-2 col-md-offset-10">
-                <button id="SaveUser" class="btn btn-primary pull-right">Save new user &raquo;</button>
-            </div>
-        </div>
-    </div>
-</div>
-@* -- Update User Modal -- *@
-<div class="modal fade" id="UpdateUserModal" tabindex="-1" role="dialog" aria-labelledby="UpdateUserModallLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Update User</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <label class="control-label col-md-3">First Name</label>
-                        <div class="col-md-9">
-                            <input id="UpdateFirstName" class="form-control text-box single-line" type="text" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-3">Last Name</label>
-                        <div class="col-md-9">
-                            <input id="UpdateLastName" class="form-control text-box single-line" type="text" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-offset-3 col-md-9">
-                            <button id="SaveUpdatedUser" type="button" class="btn btn-default btn-primary">Save</button>
-                            <button id="DeleteUser" type="button" class="btn btn-default btn-danger">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
+    @Html.Partial("_ManageUser.create")
+    @Html.Partial("_ManageUser.edit")
 </div>
 @section scripts {
 <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>  
 <script src="~/Scripts/Library/kendo-js/kendo.angular.min.js"></script>
 <script type="text/javascript">
-    var UserGroups;
-    var CurrentUser;
+    //var UserGroups;
+    //var CurrentUser;
 
-    function updateTree() {
-        $("#treeview").slideUp();
-        $.ajax({
-            url: API_URL + "/UsersInUserGroups/GetUserGroupsAndUsers/",
-            beforeSend: function (request) {
-                request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-            },
-            success: function (userGroups) {
-                UserGroups = addIdToUsersInTree(JSON.parse(userGroups));
-                var treeview = $("#treeview").data("kendoTreeView");
-                treeview.setDataSource(new kendo.data.HierarchicalDataSource({
-                    data: UserGroups
-                }));
+    //function updateTree() {
+    //    $("#treeview").slideUp();
+    //    $.ajax({
+    //        url: API_URL + "/UsersInUserGroups/GetUserGroupsAndUsers/",
+    //        beforeSend: function (request) {
+    //            request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+    //        },
+    //        success: function (userGroups) {
+    //            UserGroups = addIdToUsersInTree(JSON.parse(userGroups));
+    //            var treeview = $("#treeview").data("kendoTreeView");
+    //            treeview.setDataSource(new kendo.data.HierarchicalDataSource({
+    //                data: UserGroups
+    //            }));
 
-                // style the group elements
-                $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+    //            // style the group elements
+    //            $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
 
-                $("#treeview").slideDown();
-            }
-        });
-    }
+    //            $("#treeview").slideDown();
+    //        }
+    //    });
+    //}
 
-    function addIdToUsersInTree(userTree) {
-        $.each(userTree, function (i, outerNode) {
-            if (outerNode.hasOwnProperty('items')) {
-                $.each(outerNode.items, function (j, innerNode) {
-                    // add user id to user node
-                    if (!innerNode.hasOwnProperty('spriteCssClass')) {
-                        innerNode["spriteCssClass"] = innerNode.id;
-                    }
-                });
-            }
-            // add user id to ungrouped user node
-            if (!outerNode.hasOwnProperty('spriteCssClass')) {
-                outerNode["spriteCssClass"] = outerNode.id;
-            }
-        });
+    //function addIdToUsersInTree(userTree) {
+    //    $.each(userTree, function (i, outerNode) {
+    //        if (outerNode.hasOwnProperty('items')) {
+    //            $.each(outerNode.items, function (j, innerNode) {
+    //                // add user id to user node
+    //                if (!innerNode.hasOwnProperty('spriteCssClass')) {
+    //                    innerNode["spriteCssClass"] = innerNode.id;
+    //                }
+    //            });
+    //        }
+    //        // add user id to ungrouped user node
+    //        if (!outerNode.hasOwnProperty('spriteCssClass')) {
+    //            outerNode["spriteCssClass"] = outerNode.id;
+    //        }
+    //    });
 
-        return userTree;
-    }
+    //    return userTree;
+    //}
 
     $(function () {
         // initialise tree
-        $.ajax({
-            url: API_URL + "/UsersInUserGroups/GetUserGroupsAndUsers/",
-            beforeSend: function (request) {
-                request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-            },
-            success: function (userGroups) {
-                UserGroups = addIdToUsersInTree(JSON.parse(userGroups));
-                $("#treeview").kendoTreeView({
-                    dataSource: UserGroups
-                });
+        //$.ajax({
+        //    url: API_URL + "/UsersInUserGroups/GetUserGroupsAndUsers/",
+        //    beforeSend: function (request) {
+        //        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+        //    },
+        //    success: function (userGroups) {
+        //        UserGroups = addIdToUsersInTree(JSON.parse(userGroups));
+        //        $("#treeview").kendoTreeView({
+        //            dataSource: UserGroups
+        //        });
 
-                // style the group elements
-                $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
-            }
-        });
+        //        // style the group elements
+        //        $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+        //    }
+        //});
 
         // bind to ajax created elements (clicking on categories in tree)
-        $(document).on('click', '.k-in', function () {
-            var isUser = $(this).find(".group").length == 0;
-            var userId = $(this).find("span").attr("class");
-            userId = userId.split("k-sprite ")[1];
+        //$(document).on('click', '.k-in', function () {
+        //    var isUser = $(this).find(".group").length == 0;
+        //    var userId = $(this).find("span").attr("class");
+        //    userId = userId.split("k-sprite ")[1];
 
-            if (isUser) {
-                $.each(UserGroups, function (i, outerNode) {
-                    if (outerNode.hasOwnProperty('items')) {
-                        $.each(outerNode.items, function (j, innerNode) {
-                            if (innerNode.id == userId) {
-                                CurrentUser = innerNode;
-                            }
-                        });
-                    }
-                    // look for user not in group
-                    if (outerNode.spriteCssClass != "group" && outerNode.id == userId) {
-                        CurrentUser = outerNode;
-                    }
-                });
-                showUserEditor(userId);
-            }
-        });
+        //    if (isUser) {
+        //        $.each(UserGroups, function (i, outerNode) {
+        //            if (outerNode.hasOwnProperty('items')) {
+        //                $.each(outerNode.items, function (j, innerNode) {
+        //                    if (innerNode.id == userId) {
+        //                        CurrentUser = innerNode;
+        //                    }
+        //                });
+        //            }
+        //            // look for user not in group
+        //            if (outerNode.spriteCssClass != "group" && outerNode.id == userId) {
+        //                CurrentUser = outerNode;
+        //            }
+        //        });
+        //        showUserEditor(userId);
+        //    }
+        //});
 
         // create user
-        $("#SaveUser").click(function () {
-            $.ajax({
-                url: API_URL + "/Account/Register/",
-                beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-                },
-                data: { FirstName: $("#FirstName").val(), LastName: $("#LastName").val(), EmailAddress: $("#Email").val(), Password: $("#Password").val() },
-                type: "POST",
-                success: function (result) {
-                    if (result.length > 0) {
-                        showUserFailure(result);
-                    } else {
-                        showUserSuccess();
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                }
-            });
-        });
+        //$("#SaveUser").click(function () {
+        //    $.ajax({
+        //        url: API_URL + "/Account/Register/",
+        //        beforeSend: function (request) {
+        //            request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+        //        },
+        //        data: { FirstName: $("#FirstName").val(), LastName: $("#LastName").val(), EmailAddress: $("#Email").val(), Password: $("#Password").val() },
+        //        type: "POST",
+        //        success: function (result) {
+        //            if (result.length > 0) {
+        //                showUserFailure(result);
+        //            } else {
+        //                showUserSuccess();
+        //            }
+        //        },
+        //        error: function (jqXHR, textStatus, errorThrown) {
+        //            console.log(errorThrown);
+        //        }
+        //    });
+        //});
 
         // update user
         $("#SaveUpdatedUser").click(function () {
@@ -255,25 +184,25 @@
         });
     }
 
-    function showUserSuccess() {
-        var msg = "User: <b>" + $("#FirstName").val() + " " + $("#LastName").val() + "</b> successfully created!";
+    //function showUserSuccess() {
+    //    var msg = "User: <b>" + $("#FirstName").val() + " " + $("#LastName").val() + "</b> successfully created!";
 
-        $(".alert-success .msg")
-            .html(msg)
-            .parent()
-                .removeClass("hidden")
-                .slideDown();
+    //    $(".alert-success .msg")
+    //        .html(msg)
+    //        .parent()
+    //            .removeClass("hidden")
+    //            .slideDown();
 
-        // reset form
-        $("#FirstName").val("");
-        $("#LastName").val("");
-        $("#Password").val("");
-        $("#ConfirmPassword").val("");
-        $("#Email").val("");
+    //    // reset form
+    //    $("#FirstName").val("");
+    //    $("#LastName").val("");
+    //    $("#Password").val("");
+    //    $("#ConfirmPassword").val("");
+    //    $("#Email").val("");
 
-        // update tree
-        updateTree();
-    }
+    //    // update tree
+    //    //updateTree();
+    //}
 
     function showUserFailure(msg) {
 
@@ -284,7 +213,7 @@
                 .slideDown();
 
         // update tree
-        updateTree();
+        //updateTree();
     }
 
     function showUserUpdate() {
@@ -297,7 +226,7 @@
                 .slideDown();
 
         // update tree
-        updateTree();
+        //updateTree();
     }
 
     function showUserDelete(userName) {
@@ -310,7 +239,7 @@
                 .slideDown();
 
         // update tree
-        updateTree();
+        //updateTree();
     }
 </script>
 <script type="text/javascript">
@@ -321,6 +250,127 @@
 
             // removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope
             userManageScope = $scope;
+            userManageScope.httpService = $http;
+            userManageScope.treeData = [{ id: -1, text: "" }];
+            userManageScope.itemTemplate = "<span ng-click='openEditor(dataItem)'>{{dataItem.text}}</span>";
+            userManageScope.CurrentUser = {}; //{id: -1, ClientId: -1, FirstName: "", LastName: "", EmailAddress: "", Password: "", ConfirmPassword: "" }
+            userManageScope.PasswordsMatch = true;
+
+            userManageScope.loadData = function () {
+                userManageScope.httpService({
+                    method: "GET",
+                    url: API_URL + "/UsersInUserGroups/GetUserGroupsAndUsers/",
+                    headers: {
+                        "Authorization": "Bearer " + TOKEN
+                    }
+                })
+                .success(function (data) {
+                    $(".tree-view").hide();
+                    userManageScope.treeData = JSON.parse(data);
+                    $(".k-loading").parent().slideUp(function () {
+                        $(".tree-view").slideDown(function () {
+                            // style the group elements - this needs to be done as late as possible so the DOM items exist.
+                            $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+                        });
+                    });
+                })
+                .error(function (data, status) {
+                    userManageScope.showSessionFailure(data);
+                });
+            };
+
+            userManageScope.checkPasswordsMatch = function () {
+                userManageScope.PasswordsMatch = userManageScope.CurrentUser.Password === userManageScope.CurrentUser.ConfirmPassword;
+            }
+
+            userManageScope.createNewUser = function () {
+                if (userManageScope.PasswordsMatch) {
+                    userManageScope.httpService({
+                        method: "POST",
+                        url: API_URL + "/Account/Register/",
+                        data: {
+                            FirstName: userManageScope.CurrentUser.FirstName,
+                            LastName: userManageScope.CurrentUser.LastName,
+                            EmailAddress: userManageScope.CurrentUser.EmailAddress,
+                            Password: userManageScope.CurrentUser.Password
+                        },
+                        headers: {
+                            "Authorization": "Bearer " + TOKEN
+                        }
+                    })
+                    .success(function (data) {
+                        userManageScope.showUserSuccess();
+                    })
+                    .error(function (data, status) {
+                        userManageScope.showUserFailure(data);
+                    });
+                }
+            };
+
+            // the user clicked on the tree. Ascertain whether to open the user editor or ignore
+            userManageScope.openEditor = function (dataItem) {
+                $.each(userManageScope.treeData, function (i, groupNode) {
+                    if (groupNode.text === dataItem.text) {
+                        //console.log("user not in group: " + dataItem.text)
+                        userManageScope.loadUserEditor(dataItem.id);
+                    }
+                    if (groupNode.hasOwnProperty("items")) {
+                        $.each(groupNode.items, function (j, userNode) {
+                            if (userNode.text === dataItem.text) {
+                                //console.log("user in a group: " + dataItem.text)                               
+                                userManageScope.loadUserEditor(dataItem.id);
+                            }
+                        });
+                    }
+                });
+            }
+
+            userManageScope.loadUserEditor = function (selectedUserId) {
+                console.log("opening editor for user: " + selectedUserId);
+            }
+
+            userManageScope.getDefaultUser = function () {
+
+                var defaultUser = {
+                    id: -1,
+                    ClientId: -1,
+                    FirstName: "",
+                    LastName: "",
+                    EmailAddress: "",
+                    Password: "",
+                    ConfirmPassword: ""
+                }
+
+                return JSON.parse(JSON.stringify(defaultUser));
+            }
+
+            userManageScope.showUserSuccess = function () {
+                var msg = "User: <b>" + userManageScope.CurrentUser.FirstName + " " + userManageScope.CurrentUser.LastName + "</b> successfully created!";
+
+                $(".alert-success .msg")
+                    .html(msg)
+                    .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+
+                // reset form
+                userManageScope.CurrentUser = userManageScope.getDefaultUser();
+
+                // update tree
+                userManageScope.loadData();
+            }
+
+            userManageScope.showUserFailure = function (data) {
+
+                $(".alert-danger .msg")
+                    .html(data.ExceptionMessage)
+                    .parent()
+                    .removeClass("hidden")
+                    .slideDown();
+            }
+
+            // run the initialize method
+            userManageScope.loadData();
 
         }
         app.controller("UserManageController", ["$scope", "$http", UserManageController]);

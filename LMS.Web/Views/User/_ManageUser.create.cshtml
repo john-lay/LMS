@@ -1,0 +1,39 @@
+﻿<div class="col-md-9 form-horizontal">
+    <div class="lead">Create new user</div>
+    <div class="form-group">
+        <label class="col-md-3 control-label" for="FirstName">First Name</label>
+        <div class="col-md-9">
+            <input data-ng-model="CurrentUser.FirstName" required class="form-control" id="FirstName" placeholder="First Name" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-3 control-label" for="LastName">Last Name</label>
+        <div class="col-md-9">
+            <input data-ng-model="CurrentUser.LastName" required class="form-control" id="LastName" placeholder="Last Name" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-3 control-label" for="Password">Password</label>
+        <div class="col-md-9">
+            <input data-ng-model="CurrentUser.Password" required class="form-control" id="Password" placeholder="Password" type="password">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-3 control-label" for="ConfirmPassword">Confirm Password</label>
+        <div class="col-md-9">
+            <input data-ng-change="checkPasswordsMatch()" data-ng-model="CurrentUser.ConfirmPassword" required class="form-control" id="ConfirmPassword" placeholder="Password" type="password">
+            <span class="field-validation-error" data-ng-show="!PasswordsMatch">Passwords do not match!</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-3 control-label" for="Email">Email</label>
+        <div class="col-md-9">
+            <input data-ng-model="CurrentUser.EmailAddress" required class="form-control" id="Email" placeholder="example@avemtec.com" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-2 col-md-offset-10">
+            <button data-ng-click="createNewUser()" id="SaveUser" class="btn btn-primary pull-right">Save new user &raquo;</button>
+        </div>
+    </div>
+</div>
