@@ -4,6 +4,7 @@ using System.Net.Mail;
 
 namespace LMS.API.Controllers
 {
+    using System;
     using System.Linq;
 
     using LMS.API.Models;
@@ -14,20 +15,24 @@ namespace LMS.API.Controllers
         [HttpPost]
         public IHttpActionResult SendEmail([FromBody]Email email)
         {
-            MailMessage mail = new MailMessage();
+            using (var client = new SmtpClient())
+            {
+                MailMessage mail = new MailMessage();
+                mail.To.Add(string.Join(",", email.Recipients));
+                mail.Subject = email.Subject;
+                mail.Body = email.Body;
 
-            SmtpClient smtpServer = new SmtpClient("smtp.gmail.com");
-            smtpServer.Credentials = new NetworkCredential("userName", "password");
-            smtpServer.Port = 587; // Gmail works on this port
-
-            mail.From = new MailAddress("myemail@gmail.com");
-            mail.To.Add(string.Join(",", email.Recipients));
-            mail.Subject = email.Subject;
-            mail.Body = email.Body;
-
-            smtpServer.Send(mail);
-
-            return Ok("message sent");
+                try
+                {
+                    client.Send(mail);
+                    return Ok("message sent");
+                }
+                catch (Exception ex)
+                {
+                    // should be logging the exception here...
+                    throw new Exception("There was an error sending your message, please try again.", ex);
+                }
+            }
         }
     }
 }

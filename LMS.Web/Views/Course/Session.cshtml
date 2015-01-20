@@ -21,7 +21,7 @@
 }
 <div class="row col-md-12" data-ng-controller="CourseSessionController">
     <div class="col-md-3">
-        <a href="#" id="Enrol" data-ng-class="{disabled: selectedUsers.length === 0 && currentCourseSession === -1}" data-toggle="modal" data-target="#EnrolUsersModal" class="btn btn-sm btn-primary">Enrol Selected Users &raquo;</a>
+        <a href="#" id="Enrol" data-ng-class="{disabled: selectedUsers.length === 0 && currentCourseSession.CourseSessionId === undefined}" data-toggle="modal" data-target="#EnrolUsersModal" class="btn btn-sm btn-primary">Enrol Selected Users &raquo;</a>
         <div>
             <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
         </div>
@@ -30,7 +30,7 @@
     <div class="col-md-9 form-horizontal">
         <div class="form-group row col-md-12">
             <div class="col-md-offset-6">
-                <a href="#" data-ng-click="clearCourseSession()" data-val="addCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal" class="btn btn-primary pull-right">Add Session &raquo;</a>
+                <a href="#" data-ng-click="showCourseSessionCreator()" data-val="addCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal" class="btn btn-primary pull-right">Add Session &raquo;</a>
             </div>
         </div>
         <div class="form-group row col-md-12">
@@ -56,8 +56,8 @@
                                 <td class="endDate">{{::getDateFromJSONString(courseSession.EndDate)}}</td>
                                 <td class="isRolling">{{::courseSession.IsRolling}}</td>
                                 <td>
-                                    <a href="#" data-ng-click="setCourseSession(courseSession)" data-toggle="modal" data-target="#EditCourseSessionModal">Edit</a> |
-                                    <a href="#" data-ng-click="setCourseSession(courseSession)" data-toggle="modal" data-target="#EditCourseSessionModal">Delete</a> |
+                                    <a href="#" data-ng-click="showCourseSessionEditor(courseSession)" data-toggle="modal" data-target="#EditCourseSessionModal">Edit</a> |
+                                    <a href="#" data-ng-click="showCourseSessionRemover(courseSession)" data-toggle="modal" data-target="#EditCourseSessionModal">Delete</a> |
                                     <a href="#" data-ng-click="getUsersInSession(courseSession)" data-toggle="modal" data-target="#EditUsersInSessionModal">Remove Users</a>
                                 </td>
                             </tr>
@@ -77,115 +77,127 @@
     <script src="~/Scripts/Library/kendo-js/kendo.angular.min.js"></script>
     <script src="~/Scripts/Library/bootstrap/bootstrap-datepicker.js"></script>
     <script src="~/Scripts/Site/DateLib.js"></script>
-    <script type="text/javascript" title="Enrolment">
-        var selectedUsers = [];
-        var courseSessionId = -1;
-        // initialise tree
-        $(function () {
-            //$.ajax({
-            //    url: API_URL + "/UsersInUserGroups/GetUserGroupsAndUsers/",
-            //    beforeSend: function (request) {
-            //        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-            //    },
-            //    success: function (userGroups) {
-            //        $("#treeview").kendoTreeView({
-            //            checkboxes: {
-            //                checkChildren: true
-            //            },
-            //            check: onCheck,
-            //            dataSource: JSON.parse(userGroups)
-            //        });
+    <script type="text/javascript">
+        var COURSE_ID = @Model.CourseId;
 
-            //        // style the group elements
-            //        $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
-            //    }
-            //});
-
-            // disabled enrol button, unless users have been selected and a session has been selected
-            //$("#Enrol").addClass("disabled");
-            //$(document).on('change', 'input[name=session]', updateEnrolmentStatus);
-
-            //$("#Enrol").click(function() {
-            //    // add user names to modal
-            //    var list = $("#SelectedUsersInModal");
-            //    list.html("");
-            //    $.each(selectedUsers, function (i, user) {
-            //        list.append('<li class="list-group-item">' + user.text + '</li>');
-            //    });
-
-            //    // add session name to modal
-            //    var sessionTableRow = $("input[name=session]:checked").parent().parent();
-            //    var startDate = sessionTableRow.find(".startDate").html();
-            //    var endDate = sessionTableRow.find(".endDate").html();
-            //    var isRolling = sessionTableRow.find(".isRolling").html();
-
-            //    var sessionDetails = "<li><b>Start Date: </b>" + startDate + "</li>";
-            //    sessionDetails += "<li><b>End Date: </b>" + endDate + "</li>";
-            //    sessionDetails += "<li><b>Rolling: </b>" + isRolling + "</li>";
-
-            //    $("#SelectedSessionInModal").html("<ul>" + sessionDetails + "</ul>");
-            //});
-
-            //$("#EnrolSelectedUsers").click(function() {
-            //    var sessionId = $("input[name=session]:checked").val();
-            //    var userData = [];
-
-            //    $.each(selectedUsers, function(i, user) {
-            //        userData.push({UserId: user.id });
-            //    });
-
-            //    $.ajax({
-            //        url: API_URL + "/UsersInCourseSessions/AddUsersToCourseSession/" + sessionId,
-            //        beforeSend: function (request) {
-            //            request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-            //        },
-            //        data: { '': userData },
-            //        type: "POST",
-            //        success: function (result) {
-            //            $("#EnrolUsersModal").modal("hide");
-            //            showEnrolUsersSuccess();
-            //        },
-            //        error: function (jqXHR, textStatus, errorThrown) {
-            //            console.log(errorThrown);
-            //        }
-            //    });
-            //});
-
-            // select all users in modal
-            //$("#SelectAll").click(function() {
-            //    var checkBoxes = $("#EditUsersInSessionTableBody :checkbox");
-            //    checkBoxes.prop("checked", !checkBoxes.prop("checked"));
-            //});
-        
-            // unenrol users
-            //$("#RemoveSelectedUsers").click(function() {
-            //    var selectedUsers = $("#EditUsersInSessionTableBody :checkbox:checked");
-            //    var userData = [];
-            //    var removedUsers = [];
-            //    $.each(selectedUsers, function(i, input) {
-            //        userData.push({UserId: $(input).val() });
-            //        removedUsers.push($(input).attr("data-val"));
-            //    });
-
-            //    $.ajax({
-            //        url: API_URL + "/UsersInCourseSessions/RemoveUsersFromCourseSession/" + courseSessionId,
-            //        beforeSend: function (request) {
-            //            request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-            //        },
-            //        data: { '': userData },
-            //        type: "POST",
-            //        success: function (result) {
-            //            $("#EditUsersInSessionModal").modal("hide");
-            //            showEnrolUsersUpdate(removedUsers);
-            //        },
-            //        error: function (jqXHR, textStatus, errorThrown) {
-            //            console.log(errorThrown);
-            //        }
-            //    });
-            //});
+        $(function() {
+            $('.datepicker').datepicker({
+                todayHighlight: true,
+                startDate: new Date(),
+                autoclose: true,
+                format: 'dd/mm/yyyy'
+            });
         });
+    </script>
+    <script type="text/javascript" title="Enrolment">
+        //var selectedUsers = [];
+        //var courseSessionId = -1;
+        //// initialise tree
+        //$(function() {
+        //    $.ajax({
+        //        url: API_URL + "/UsersInUserGroups/GetUserGroupsAndUsers/",
+        //        beforeSend: function (request) {
+        //            request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+        //        },
+        //        success: function (userGroups) {
+        //            $("#treeview").kendoTreeView({
+        //                checkboxes: {
+        //                    checkChildren: true
+        //                },
+        //                check: onCheck,
+        //                dataSource: JSON.parse(userGroups)
+        //            });
 
-        // function that gathers IDs of checked nodes
+        //            // style the group elements
+        //            $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+        //        }
+        //    });
+
+        //    // disabled enrol button, unless users have been selected and a session has been selected
+        //    $("#Enrol").addClass("disabled");
+        //    $(document).on('change', 'input[name=session]', updateEnrolmentStatus);
+
+        //    $("#Enrol").click(function() {
+        //        // add user names to modal
+        //        var list = $("#SelectedUsersInModal");
+        //        list.html("");
+        //        $.each(selectedUsers, function (i, user) {
+        //            list.append('<li class="list-group-item">' + user.text + '</li>');
+        //        });
+
+        //        // add session name to modal
+        //        var sessionTableRow = $("input[name=session]:checked").parent().parent();
+        //        var startDate = sessionTableRow.find(".startDate").html();
+        //        var endDate = sessionTableRow.find(".endDate").html();
+        //        var isRolling = sessionTableRow.find(".isRolling").html();
+
+        //        var sessionDetails = "<li><b>Start Date: </b>" + startDate + "</li>";
+        //        sessionDetails += "<li><b>End Date: </b>" + endDate + "</li>";
+        //        sessionDetails += "<li><b>Rolling: </b>" + isRolling + "</li>";
+
+        //        $("#SelectedSessionInModal").html("<ul>" + sessionDetails + "</ul>");
+        //    });
+
+        //    $("#EnrolSelectedUsers").click(function() {
+        //        var sessionId = $("input[name=session]:checked").val();
+        //        var userData = [];
+
+        //        $.each(selectedUsers, function(i, user) {
+        //            userData.push({UserId: user.id });
+        //        });
+
+        //        $.ajax({
+        //            url: API_URL + "/UsersInCourseSessions/AddUsersToCourseSession/" + sessionId,
+        //            beforeSend: function (request) {
+        //                request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+        //            },
+        //            data: { '': userData },
+        //            type: "POST",
+        //            success: function (result) {
+        //                $("#EnrolUsersModal").modal("hide");
+        //                showEnrolUsersSuccess();
+        //            },
+        //            error: function (jqXHR, textStatus, errorThrown) {
+        //                console.log(errorThrown);
+        //            }
+        //        });
+        //    });
+
+        //    // select all users in modal
+        //    $("#SelectAll").click(function() {
+        //        var checkBoxes = $("#EditUsersInSessionTableBody :checkbox");
+        //        checkBoxes.prop("checked", !checkBoxes.prop("checked"));
+        //    });
+
+        //    // unenrol users
+        //    $("#RemoveSelectedUsers").click(function() {
+        //        var selectedUsers = $("#EditUsersInSessionTableBody :checkbox:checked");
+        //        var userData = [];
+        //        var removedUsers = [];
+        //        $.each(selectedUsers, function(i, input) {
+        //            userData.push({UserId: $(input).val() });
+        //            removedUsers.push($(input).attr("data-val"));
+        //        });
+
+        //        $.ajax({
+        //            url: API_URL + "/UsersInCourseSessions/RemoveUsersFromCourseSession/" + courseSessionId,
+        //            beforeSend: function (request) {
+        //                request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+        //            },
+        //            data: { '': userData },
+        //            type: "POST",
+        //            success: function (result) {
+        //                $("#EditUsersInSessionModal").modal("hide");
+        //                showEnrolUsersUpdate(removedUsers);
+        //            },
+        //            error: function (jqXHR, textStatus, errorThrown) {
+        //                console.log(errorThrown);
+        //            }
+        //        });
+        //    });
+        //});
+
+        //// function that gathers IDs of checked nodes
         //function checkedNodeIds(nodes, checkedNodes) {
 
         //    for (var i = 0; i < nodes.length; i++) {
@@ -202,7 +214,7 @@
         //    }
         //}
 
-        //// show checked node IDs on datasource change
+        ////// show checked node IDs on datasource change
         //function onCheck() {
         //    var treeView = $("#treeview").data("kendoTreeView");
         //    selectedUsers = []; // reset array
@@ -210,7 +222,7 @@
         //    updateEnrolmentStatus();
         //}
 
-        // at least one user and one session have been checked
+        //// at least one user and one session have been checked
         //function updateEnrolmentStatus() {
         //    if(selectedUsers.length > 0 && $("input[name=session]:checked").val() != undefined) {
         //        $("#Enrol").removeClass("disabled");
@@ -284,526 +296,656 @@
         //    });
         //}
     </script>
-    <script type="text/javascript" title="Manage sessions">    
-        // get course session
-        $(function () {
-            //$("#CourseSessionsContainer").hide();
-            //populateSessionTable();
+    <script type="text/javascript" title="Manage sessions">
+        //// get course session
+        //$(function() {
+        //    $("#CourseSessionsContainer").hide();
+        //    populateSessionTable();
 
-            $('.datepicker').datepicker({
-                todayHighlight: true,
-                startDate: new Date(),
-                autoclose: true,
-                format: 'dd/mm/yyyy'
-            });
+        //    $('.datepicker').datepicker({
+        //        todayHighlight: true,
+        //        startDate: new Date(),
+        //        autoclose: true,
+        //        format: 'dd/mm/yyyy'
+        //    });
 
-            // add session
-            $("#AddCourseSession").click(function () {
-                $.ajax({
-                    url: API_URL + "/CourseSessions/CreateCourseSession/",
-                    beforeSend: function (request) {
-                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-                    },
-                    data: {
-                        CourseId: @Model.CourseId,
-                        StartDate: covertToISODateString($("#EditStartDate").val()),
-                        EndDate: covertToISODateString($("#EditEndDate").val()),
-                        IsRolling: $("#IsRolling").is(':checked') ? true : false,
-                    },
-                    type: "POST",
-                    success: function (result) {
-                        $("#EditCourseSessionModal").modal("hide");
-                        showCourseCategorySuccess();
-                        populateSessionTable();
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log(errorThrown);
-                    }
-                });
-            });
+        //    // add session
+        //    $("#AddCourseSession").click(function () {
+        //        $.ajax({
+        //            url: API_URL + "/CourseSessions/CreateCourseSession/",
+        //            beforeSend: function (request) {
+        //                request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+        //            },
+        //            data: {
+        //                CourseId: COURSE_ID,
+        //                StartDate: covertToISODateString($("#EditStartDate").val()),
+        //                EndDate: covertToISODateString($("#EditEndDate").val()),
+        //                IsRolling: $("#IsRolling").is(':checked') ? true : false,
+        //            },
+        //            type: "POST",
+        //            success: function (result) {
+        //                $("#EditCourseSessionModal").modal("hide");
+        //                showCourseCategorySuccess();
+        //                populateSessionTable();
+        //            },
+        //            error: function (jqXHR, textStatus, errorThrown) {
+        //                console.log(errorThrown);
+        //            }
+        //        });
+        //    });
 
-            // edit session
-            $("#EditCourseSession").click(function () {
-                $.ajax({
-                    url: API_URL + "/CourseSessions/UpdateCourseSession/" + courseSessionId,
-                    beforeSend: function (request) {
-                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-                    },
-                    data: {
-                        CourseSessionId: courseSessionId,
-                        CourseId: @Model.CourseId,
-                        StartDate: covertToISODateString($("#EditStartDate").val()),
-                        EndDate: covertToISODateString($("#EditEndDate").val()),
-                        IsRolling: $("#IsRolling").is(':checked') ? true : false,
-                    },
-                    type: "PUT",
-                    success: function (result) {
-                        $("#EditCourseSessionModal").modal("hide");
-                        showCourseCategoryUpdate();
-                        populateSessionTable();
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log(errorThrown);
-                    }
-                });
-            });
+        //    // edit session
+        //    $("#EditCourseSession").click(function() {
+        //        $.ajax({
+        //            url: API_URL + "/CourseSessions/UpdateCourseSession/" + courseSessionId,
+        //            beforeSend: function(request) {
+        //                request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+        //            },
+        //            data: {
+        //                CourseSessionId: courseSessionId,
+        //                CourseId: COURSE_ID,
+        //                StartDate: covertToISODateString($("#EditStartDate").val()),
+        //                EndDate: covertToISODateString($("#EditEndDate").val()),
+        //                IsRolling: $("#IsRolling").is(':checked') ? true : false,
+        //            },
+        //            type: "PUT",
+        //            success: function(result) {
+        //                $("#EditCourseSessionModal").modal("hide");
+        //                showCourseCategoryUpdate();
+        //                populateSessionTable();
+        //            },
+        //            error: function(jqXHR, textStatus, errorThrown) {
+        //                console.log(errorThrown);
+        //            }
+        //        });
+        //    });
 
-            // delete session
-            $("#DeleteCourseSession").click(function () {
-                $.ajax({
-                    url: API_URL + "/CourseSessions/DeleteCourseSession/" + courseSessionId,
-                    type: "DELETE",
-                    success: function (result) {
-                        $("#EditCourseSessionModal").modal("hide");
-                        showCourseCategoryDelete();
-                        populateSessionTable();
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log(errorThrown);
-                    }
-                });
-            });        
-        });
+        //    // delete session
+        //    $("#DeleteCourseSession").click(function() {
+        //        $.ajax({
+        //            url: API_URL + "/CourseSessions/DeleteCourseSession/" + courseSessionId,
+        //            type: "DELETE",
+        //            success: function(result) {
+        //                $("#EditCourseSessionModal").modal("hide");
+        //                showCourseCategoryDelete();
+        //                populateSessionTable();
+        //            },
+        //            error: function(jqXHR, textStatus, errorThrown) {
+        //                console.log(errorThrown);
+        //            }
+        //        });
+        //    });
+        //});
 
-        // bind to the links which open the session editor (modal window)
-        $("#EditCourseSessionModal").on("show.bs.modal", function (e) {
-            var $invoker = $(e.relatedTarget);
-            courseSessionId = $invoker.parent().attr("data-id");
+        //// bind to the links which open the session editor (modal window)
+        //$("#EditCourseSessionModal").on("show.bs.modal", function(e) {
+        //    var $invoker = $(e.relatedTarget);
+        //    courseSessionId = $invoker.parent().attr("data-id");
 
-            switch($invoker.attr("data-val")) {
-            case "addCourseSession":
-                showCourseSessionCreator();
-                break;
-            case "editCourseSession":
-                showCourseSessionEditor($invoker);
-                break;
-            case "deleteCourseSession":
-                showCourseSessionDelete($invoker);
-                break;
-            }
-        });
+        //    switch ($invoker.attr("data-val")) {
+        //    case "addCourseSession":
+        //        showCourseSessionCreator();
+        //        break;
+        //    case "editCourseSession":
+        //        showCourseSessionEditor($invoker);
+        //        break;
+        //    case "deleteCourseSession":
+        //        showCourseSessionDelete($invoker);
+        //        break;
+        //    }
+        //});
 
-        function showCourseSessionCreator() {
-            $("#EditorTitle").html("Add Course Session");
+        //function showCourseSessionCreator() {
+        //    $("#EditorTitle").html("Add Course Session");
 
-            // clear the form for creation
-            $("#EditStartDate")
-                .val("")
-                .prop("readonly", false);
+        //    // clear the form for creation
+        //    $("#EditStartDate")
+        //        .val("")
+        //        .prop("readonly", false);
 
-            $("#EditEndDate")
-                .val("")
-                .prop("readonly", false);
+        //    $("#EditEndDate")
+        //        .val("")
+        //        .prop("readonly", false);
 
-            $("#IsRolling")
-                .prop('checked', false)
-                .prop("disabled", false);
+        //    $("#IsRolling")
+        //        .prop('checked', false)
+        //        .prop("disabled", false);
 
-            showEditorButton("AddCourseSession");
-        }
+        //    showEditorButton("AddCourseSession");
+        //}
 
-        function showCourseSessionEditor($invoker) {
-            $("#EditorTitle").html("Edit Course Session");
+        //function showCourseSessionEditor($invoker) {
+        //    $("#EditorTitle").html("Edit Course Session");
 
-            var sessionTableRow = $invoker.parent().parent();
-            var startDate = sessionTableRow.find(".startDate").html();
-            var endDate = sessionTableRow.find(".endDate").html();
-            var isRolling = sessionTableRow.find(".isRolling").html();
+        //    var sessionTableRow = $invoker.parent().parent();
+        //    var startDate = sessionTableRow.find(".startDate").html();
+        //    var endDate = sessionTableRow.find(".endDate").html();
+        //    var isRolling = sessionTableRow.find(".isRolling").html();
 
-            $("#EditStartDate")
-                .val(startDate)
-                .prop("readonly", false);
+        //    $("#EditStartDate")
+        //        .val(startDate)
+        //        .prop("readonly", false);
 
-            $("#EditEndDate")
-                .val(endDate)
-                .prop("readonly", false);
+        //    $("#EditEndDate")
+        //        .val(endDate)
+        //        .prop("readonly", false);
 
-            $("#IsRolling").prop("disabled", false);
+        //    $("#IsRolling").prop("disabled", false);
 
-            if (isRolling.toLowerCase() == "true") {
-                $("#IsRolling").prop('checked', true);
-            } else {
-                $("#IsRolling").prop('checked', false);
-            }
+        //    if (isRolling.toLowerCase() == "true") {
+        //        $("#IsRolling").prop('checked', true);
+        //    } else {
+        //        $("#IsRolling").prop('checked', false);
+        //    }
 
-            showEditorButton("EditCourseSession");
-        }
+        //    showEditorButton("EditCourseSession");
+        //}
 
-        function showCourseSessionDelete($invoker) {
-            $("#EditorTitle").html("Are you sure you want to delete this session?");
+        //function showCourseSessionDelete($invoker) {
+        //    $("#EditorTitle").html("Are you sure you want to delete this session?");
 
-            var sessionTableRow = $invoker.parent().parent();
-            var startDate = sessionTableRow.find(".startDate").html();
-            var endDate = sessionTableRow.find(".endDate").html();
-            var isRolling = sessionTableRow.find(".isRolling").html();
+        //    var sessionTableRow = $invoker.parent().parent();
+        //    var startDate = sessionTableRow.find(".startDate").html();
+        //    var endDate = sessionTableRow.find(".endDate").html();
+        //    var isRolling = sessionTableRow.find(".isRolling").html();
 
-            $("#EditStartDate").val(startDate);
-            $("#EditEndDate").val(endDate);
+        //    $("#EditStartDate").val(startDate);
+        //    $("#EditEndDate").val(endDate);
 
-            if (isRolling.toLowerCase() == "true") {
-                $("#IsRolling").prop('checked', true);
-            } else {
-                $("#IsRolling").prop('checked', false);
-            }
+        //    if (isRolling.toLowerCase() == "true") {
+        //        $("#IsRolling").prop('checked', true);
+        //    } else {
+        //        $("#IsRolling").prop('checked', false);
+        //    }
 
-            // make the form read-only
-            $("#EditStartDate").prop("readonly", true);
-            $("#EditEndDate").prop("readonly", true);
-            $("#IsRolling").prop("disabled", true);
+        //    // make the form read-only
+        //    $("#EditStartDate").prop("readonly", true);
+        //    $("#EditEndDate").prop("readonly", true);
+        //    $("#IsRolling").prop("disabled", true);
 
-            showEditorButton("DeleteCourseSession");
-        }
+        //    showEditorButton("DeleteCourseSession");
+        //}
 
-        function showEditorButton(elementId) {
-            $("#AddCourseSession").addClass("hidden");
-            $("#EditCourseSession").addClass("hidden");
-            $("#DeleteCourseSession").addClass("hidden");
-            $("#" + elementId).removeClass("hidden");
-        }
+        //function showEditorButton(elementId) {
+        //    $("#AddCourseSession").addClass("hidden");
+        //    $("#EditCourseSession").addClass("hidden");
+        //    $("#DeleteCourseSession").addClass("hidden");
+        //    $("#" + elementId).removeClass("hidden");
+        //}
 
-        @*function populateSessionTable() {
-            var table = $("#CourseSessions");
-            table.empty();
-            $.ajax({
-                url: API_URL + "/CourseSessions/GetCourseSessions/" + @Model.CourseId,
-                beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-                },
-                success: function (courseSessions) {
-                    $.each(courseSessions, function (i, item) {
-                        var row = '<tr>';
-                        row += '<td class="text-center"><input type="radio" name="session" value="' + item.CourseSessionId + '" /></td>';
-                        row += '<td class="startDate">' + formatDate(item.StartDate) + '</td>';
-                        row += '<td class="endDate">' + formatDate(item.EndDate) + '</td>';
-                        row += '<td class="isRolling">' + item.IsRolling + '</td>';
-                        row += '<td data-id="' + item.CourseSessionId + '">';
-                        row += '<a href="#" data-val="editCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal">Edit</a> | ';
-                        row += '<a href="#" data-val="deleteCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal">Delete</a> | ';
-                        row += '<a href="#" data-toggle="modal" data-target="#EditUsersInSessionModal">Remove Users</a></td>';
-                        row += '</tr>';
+        //function populateSessionTable() {
+        //    var table = $("#CourseSessions");
+        //    table.empty();
+        //    $.ajax({
+        //        url: API_URL + "/CourseSessions/GetCourseSessions/" + COURSE_ID,
+        //        beforeSend: function (request) {
+        //            request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+        //        },
+        //        success: function (courseSessions) {
+        //            $.each(courseSessions, function (i, item) {
+        //                var row = '<tr>';
+        //                row += '<td class="text-center"><input type="radio" name="session" value="' + item.CourseSessionId + '" /></td>';
+        //                row += '<td class="startDate">' + formatDate(item.StartDate) + '</td>';
+        //                row += '<td class="endDate">' + formatDate(item.EndDate) + '</td>';
+        //                row += '<td class="isRolling">' + item.IsRolling + '</td>';
+        //                row += '<td data-id="' + item.CourseSessionId + '">';
+        //                row += '<a href="#" data-val="editCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal">Edit</a> | ';
+        //                row += '<a href="#" data-val="deleteCourseSession" data-toggle="modal" data-target="#EditCourseSessionModal">Delete</a> | ';
+        //                row += '<a href="#" data-toggle="modal" data-target="#EditUsersInSessionModal">Remove Users</a></td>';
+        //                row += '</tr>';
 
-                        table.append(row);
-                    });
+        //                table.append(row);
+        //            });
 
-                    $("#LoadingContainer").slideUp(function() {
-                        $("#CourseSessionsContainer").slideDown();
-                    });
-                }
-            });
-        }*@
+        //            $("#LoadingContainer").slideUp(function() {
+        //                $("#CourseSessionsContainer").slideDown();
+        //            });
+        //        }
+        //    });
+        //}
 
-        function showCourseCategorySuccess() {
-            var msg = "Course session successfully created!";
+        //function showCourseCategorySuccess() {
+        //    var msg = "Course session successfully created!";
 
-            $(".alert-success .msg")
-                .html(msg)
-                .parent()
-                .removeClass("hidden")
-                .slideDown();
-        }
+        //    $(".alert-success .msg")
+        //        .html(msg)
+        //        .parent()
+        //        .removeClass("hidden")
+        //        .slideDown();
+        //}
 
-        function showCourseCategoryUpdate() {
-            var msg = "Course session successfully updated!";
+        //function showCourseCategoryUpdate() {
+        //    var msg = "Course session successfully updated!";
 
-            $(".alert-success .msg")
-                .html(msg)
-                .parent()
-                .removeClass("hidden")
-                .slideDown();
-        }
+        //    $(".alert-success .msg")
+        //        .html(msg)
+        //        .parent()
+        //        .removeClass("hidden")
+        //        .slideDown();
+        //}
 
-        function showCourseCategoryDelete() {
-            var msg = "Course session successfully deleted!";
+        //function showCourseCategoryDelete() {
+        //    var msg = "Course session successfully deleted!";
 
-            $(".alert-success .msg")
-                .html(msg)
-                .parent()
-                .removeClass("hidden")
-                .slideDown();
-        }
+        //    $(".alert-success .msg")
+        //        .html(msg)
+        //        .parent()
+        //        .removeClass("hidden")
+        //        .slideDown();
+        //}
     </script>
     <script type="text/javascript">
-    (function () {
-        var app = angular.module("LMS", ["kendo.directives"]);
+        (function() {
+            var app = angular.module("LMS", ["kendo.directives"]);
 
-        var CourseSessionController = function ($scope, $http) {
+            var CourseSessionController = function($scope, $http) {
 
-            courseSessionScope = $scope;
-            courseSessionScope.httpService = $http;
-            courseSessionScope.treeData = [{ id: -1, text: "" }];
-            courseSessionScope.selectedUsers = [];//[{ id: -1, text: "" }];
-            courseSessionScope.courseSessionsList =  [];//[{CourseSessionId: -1, StartDate: null, EndDate: null, IsRolling: false}];
-            courseSessionScope.currentCourseSession = {}; //{CourseSessionId: -1, StartDate: null, EndDate: null, IsRolling: false}
-            courseSessionScope.usersInSessionList = [];
-            courseSessionScope.SelectAll = false;
+                courseSessionScope = $scope;
+                courseSessionScope.httpService = $http;
+                courseSessionScope.treeData = [{ id: -1, text: "" }];
+                courseSessionScope.selectedUsers = []; //[{ id: -1, text: "" }];
+                courseSessionScope.courseSessionsList = []; //[{CourseSessionId: -1, StartDate: null, EndDate: null, IsRolling: false}];
+                courseSessionScope.currentCourseSession = {}; //{CourseSessionId: -1, StartDate: null, EndDate: null, IsRolling: false}
+                courseSessionScope.usersInSessionList = [];
+                courseSessionScope.SelectAll = false;
+                courseSessionScope.EditorTitle = "";
 
-            courseSessionScope.loadData = function () {
-                courseSessionScope.httpService({
-                    method: "GET",
-                    url: API_URL + "/UsersInUserGroups/GetUserGroupsAndUsers/",
-                    headers: {
-                        "Authorization": "Bearer " + TOKEN
-                    }
-                })
-                .success(function (data) {
-                    $(".tree-view").hide();
-                    courseSessionScope.treeData = JSON.parse(data);
-                    $(".k-loading").parent().slideUp(function () {
-                        $(".tree-view").slideDown(function () {
-                            // style the group elements - this needs to be done as late as possible so the DOM items exist.
-                            $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
-                        });
-                    });
-                })
-                .error(function (data, status) {
-                    courseSessionScope.showSessionFailure(data);
-                });
-            };
-
-            courseSessionScope.treeOptions = {
-                checkboxes: {
-                    checkChildren: true
-                },
-                dataBound: function(e) {
-                    courseSessionScope.attachChangeEvent(e);
-                }
-            };
-
-            courseSessionScope.attachChangeEvent = function(e) {
-                var dataSource = e.sender.dataSource;
-                dataSource.bind("change", function(e) {
-                    var selectedNodes = 0;
-                    var checkedNodes = [];
-                    courseSessionScope.checkedNodeIds(dataSource.view(), checkedNodes);
-                    // clear the contents of the selected user array before repopulating
-                    courseSessionScope.selectedUsers.length = 0;
-                    for (var i = 0; i < checkedNodes.length; i++) {
-                        var nd = checkedNodes[i];
-                        if (nd.checked) {
-                            // only add users to the array (ignore user groups)
-                            //console.log("item " + nd.id + ": " + nd.text + " checked.");
-                            if(!nd.hasOwnProperty("spriteCssClass")) {
-                                courseSessionScope.selectedUsers.push({id: nd.id, text: nd.text});
+                courseSessionScope.loadData = function() {
+                    courseSessionScope.httpService({
+                            method: "GET",
+                            url: API_URL + "/UsersInUserGroups/GetUserGroupsAndUsers/",
+                            headers: {
+                                "Authorization": "Bearer " + TOKEN
                             }
-                            selectedNodes++;
+                        })
+                        .success(function(data) {
+                            $(".tree-view").hide();
+                            courseSessionScope.treeData = JSON.parse(data);
+                            $(".k-loading").parent().slideUp(function() {
+                                $(".tree-view").slideDown(function() {
+                                    // style the group elements - this needs to be done as late as possible so the DOM items exist.
+                                    $(".k-sprite.group").parent().css({ "background-color": "#e7e7e7", "padding-right": "15px" });
+                                });
+                            });
+                        })
+                        .error(function(data, status) {
+                            courseSessionScope.showSessionFailure(data);
+                        });
+                };
+
+                courseSessionScope.treeOptions = {
+                    checkboxes: {
+                        checkChildren: true
+                    },
+                    dataBound: function(e) {
+                        courseSessionScope.attachChangeEvent(e);
+                    }
+                };
+
+                courseSessionScope.attachChangeEvent = function(e) {
+                    var dataSource = e.sender.dataSource;
+                    dataSource.bind("change", function(e) {
+                        var selectedNodes = 0;
+                        var checkedNodes = [];
+                        courseSessionScope.checkedNodeIds(dataSource.view(), checkedNodes);
+                        // clear the contents of the selected user array before repopulating
+                        courseSessionScope.selectedUsers.length = 0;
+                        for (var i = 0; i < checkedNodes.length; i++) {
+                            var nd = checkedNodes[i];
+                            if (nd.checked) {
+                                // only add users to the array (ignore user groups)
+                                //console.log("item " + nd.id + ": " + nd.text + " checked.");
+                                if (!nd.hasOwnProperty("spriteCssClass")) {
+                                    courseSessionScope.selectedUsers.push({ id: nd.id, text: nd.text });
+                                }
+                                selectedNodes++;
+                            }
+                        }
+                        //console.log(courseSessionScope.selectedUsers);
+                    });
+                };
+
+                courseSessionScope.checkedNodeIds = function(nodes, checkedNodes) {
+                    for (var i = 0; i < nodes.length; i++) {
+                        var ndo = nodes[i];
+                        checkedNodes.push(ndo);
+                        if (ndo.hasChildren) {
+                            courseSessionScope.checkedNodeIds(ndo.children.view(), checkedNodes);
                         }
                     }
-                    //console.log(courseSessionScope.selectedUsers);
-                });
-            };
+                };
 
-            courseSessionScope.checkedNodeIds = function(nodes, checkedNodes) {
-                for (var i = 0; i < nodes.length; i++) {
-                    var ndo = nodes[i];
-                    checkedNodes.push(ndo);
-                    if (ndo.hasChildren) {
-                        courseSessionScope.checkedNodeIds(ndo.children.view(), checkedNodes);
+                courseSessionScope.populateSessionTable = function() {
+                    courseSessionScope.httpService({
+                            method: "GET",
+                            url: API_URL + "/CourseSessions/GetCourseSessions/" + COURSE_ID,
+                            headers: {
+                                "Authorization": "Bearer " + TOKEN
+                            }
+                        })
+                        .success(function(data) {
+                            courseSessionScope.courseSessionsList = JSON.parse(data);
+                        })
+                        .error(function(data, status) {
+                            courseSessionScope.showSessionFailure(data);
+                        });
+                }
+
+                courseSessionScope.setCourseSession = function(dataItem) {
+                    courseSessionScope.currentCourseSession = dataItem;
+                    // try and convert the Microsoft ajax date string. i.e. "/Date(1421712000000)"
+                    if (courseSessionScope.currentCourseSession.StartDate.indexOf("/Date") !== -1) {
+                        courseSessionScope.currentCourseSession.StartDate = courseSessionScope.getDateFromJSONString(dataItem.StartDate);
+                        courseSessionScope.currentCourseSession.EndDate = courseSessionScope.getDateFromJSONString(dataItem.EndDate);
                     }
                 }
-            };
 
-            courseSessionScope.populateSessionTable = function() {
-                courseSessionScope.httpService({
-                    method: "GET",
-                    url: API_URL + "/CourseSessions/GetCourseSessions/" + @Model.CourseId,
-                    headers: {
-                        "Authorization": "Bearer " + TOKEN
-                    }
-                })
-                .success(function (data) {
-                    courseSessionScope.courseSessionsList = JSON.parse(data);
-                })
-                .error(function (data, status) {
-                    courseSessionScope.showSessionFailure(data);
-                });
-            }
+                courseSessionScope.getDefaultCourseSession = function() {
 
-            courseSessionScope.setCourseSession = function(dataItem) {
-                courseSessionScope.currentCourseSession = dataItem;
-                // try and convert the Microsoft ajax date string. i.e. "/Date(1421712000000)"
-                if (courseSessionScope.currentCourseSession.StartDate.indexOf("/Date") !== -1) {
-                    courseSessionScope.currentCourseSession.StartDate = courseSessionScope.getDateFromJSONString(dataItem.StartDate);
-                    courseSessionScope.currentCourseSession.EndDate = courseSessionScope.getDateFromJSONString(dataItem.EndDate);
+                    var defaultCourseSession = { CourseId: -1, CourseSessionId: -1, EndDate: null, IsRolling: false, StartDate: null };
+
+                    return JSON.parse(JSON.stringify(defaultCourseSession));
                 }
-            }
 
-            courseSessionScope.getDefaultCourseSession = function() {
+                courseSessionScope.showCourseSessionCreator = function() {
+                    courseSessionScope.currentCourseSession = courseSessionScope.getDefaultCourseSession();
+                    courseSessionScope.EditorTitle = "Add Course Session";
+                    $("#AddCourseSession").removeClass("hidden");
+                    $("#EditCourseSession").addClass("hidden");
+                    $("#DeleteCourseSession").addClass("hidden");
+                }
 
-                var defaultCourseSession = { CourseId: -1, CourseSessionId: -1, EndDate: null, IsRolling: false, StartDate: null };
+                courseSessionScope.showCourseSessionEditor = function(dataItem) {
+                    courseSessionScope.setCourseSession(dataItem);
+                    courseSessionScope.EditorTitle = "Edit Course Session";
+                    $("#AddCourseSession").addClass("hidden");
+                    $("#EditCourseSession").removeClass("hidden");
+                    $("#DeleteCourseSession").addClass("hidden");
+                }
 
-                return JSON.parse(JSON.stringify(defaultCourseSession));
-            }
+                courseSessionScope.showCourseSessionRemover = function(dataItem) {
+                    courseSessionScope.setCourseSession(dataItem);
+                    courseSessionScope.EditorTitle = "Are you sure you want to delete this session?";
+                    $("#AddCourseSession").addClass("hidden");
+                    $("#EditCourseSession").addClass("hidden");
+                    $("#DeleteCourseSession").removeClass("hidden");
+                }
 
-            courseSessionScope.clearCourseSession = function() {
-                courseSessionScope.currentCourseSession = courseSessionScope.getDefaultCourseSession();
-            }
+                courseSessionScope.getDateFromJSONString = function(JSONString) {
+                    var dateString = JSONString.match(/[0-9]+/g)[0];
+                    var formattedDate = new Date(parseInt(dateString, 10));
+                    var d = formattedDate.getDate();
+                    var m = formattedDate.getMonth();
+                    m += 1; // JavaScript months are 0-11
+                    var y = formattedDate.getFullYear();
 
-            courseSessionScope.getDateFromJSONString = function(JSONString) {
-                var dateString = JSONString.match(/[0-9]+/g)[0];
-                var formattedDate = new Date(parseInt(dateString, 10));
-                var d = formattedDate.getDate();
-                var m = formattedDate.getMonth();
-                m += 1;  // JavaScript months are 0-11
-                var y = formattedDate.getFullYear();
+                    // prepend single day/month with zero
+                    d = ('0' + d).slice(-2);
+                    m = ('0' + m).slice(-2);
 
-                // prepend single day/month with zero
-                d = ('0' + d).slice(-2);
-                m = ('0' + m).slice(-2);
+                    return d + "/" + m + "/" + y;
+                }
 
-                return d + "/" + m + "/" + y;
-            }
+                courseSessionScope.covertToISODateString = function(dateString) {
+                    var ISODate = parseDate(dateString);
+                    var d = ISODate.getDate();
+                    var m = ISODate.getMonth();
+                    m += 1; // JavaScript months are 0-11
+                    var y = ISODate.getFullYear();
 
-            courseSessionScope.enrolUsers = function() {
+                    // The .NET framework expecs yyyy-MM-dd
+                    return y + "-" + m + "-" + d;
+                }
 
-                var userData = [];
+                // parse a date from dd/mm/yyyy format
+                courseSessionScope.parseDate = function(input) {
+                    var parts = input.split('/');
+                    // new Date(year, month [, day [, hours[, minutes[, seconds[, ms]]]]])
+                    return new Date(parts[2], parts[1] - 1, parts[0]); // Note: months are 0-based
+                }
 
-                $.each(courseSessionScope.selectedUsers, function(i, user) {
-                    userData.push({UserId: user.id });
-                });
+                courseSessionScope.enrolUsers = function() {
 
-                courseSessionScope.httpService({
-                    method: "POST",
-                    url: API_URL + "/UsersInCourseSessions/AddUsersToCourseSession/" + courseSessionScope.currentCourseSession.CourseSessionId,
-                    data: userData,
-                    headers: {
-                        "Authorization": "Bearer " + TOKEN
-                    }
-                })
-                .success(function (data) {
-                    $("#EnrolUsersModal").modal("hide");
-                    courseSessionScope.showEnrolUsersSuccess();
-                })
-                .error(function (data, status) {
-                    $("#EnrolUsersModal").modal("hide");
-                    courseSessionScope.showSessionFailure(data);
-                });
-            }
+                    var userData = [];
 
-            courseSessionScope.getUsersInSession = function(dataItem) {
-
-                courseSessionScope.setCourseSession(dataItem);
-                courseSessionScope.httpService({
-                    method: "GET",
-                    url: API_URL + "/UsersInCourseSessions/GetUsersInCourseSession/" + dataItem.CourseSessionId,
-                    headers: {
-                        "Authorization": "Bearer " + TOKEN
-                    }
-                })
-                .success(function (data) {                   
-                    var tempUsers = JSON.parse(data);
-                    // add an isEnrolled property to the user object
-                    $.each(tempUsers, function(i, user) {
-                        tempUsers[i].IsEnrolled = false;
+                    $.each(courseSessionScope.selectedUsers, function(i, user) {
+                        userData.push({ UserId: user.id });
                     });
 
-                    courseSessionScope.usersInSessionList = tempUsers;
-                })
-                .error(function (data, status) {
-                    courseSessionScope.showSessionFailure(data);
-                });                
-            }
+                    courseSessionScope.httpService({
+                            method: "POST",
+                            url: API_URL + "/UsersInCourseSessions/AddUsersToCourseSession/" + courseSessionScope.currentCourseSession.CourseSessionId,
+                            data: userData,
+                            headers: {
+                                "Authorization": "Bearer " + TOKEN
+                            }
+                        })
+                        .success(function(data) {
+                            $("#EnrolUsersModal").modal("hide");
+                            courseSessionScope.showEnrolUsersSuccess();
+                        })
+                        .error(function(data, status) {
+                            $("#EnrolUsersModal").modal("hide");
+                            courseSessionScope.showSessionFailure(data);
+                        });
+                }
 
-            courseSessionScope.SelectAllUsers = function() {
-                if(courseSessionScope.SelectAll === true) {
+                courseSessionScope.getUsersInSession = function(dataItem) {
+
+                    courseSessionScope.setCourseSession(dataItem);
+                    courseSessionScope.httpService({
+                            method: "GET",
+                            url: API_URL + "/UsersInCourseSessions/GetUsersInCourseSession/" + dataItem.CourseSessionId,
+                            headers: {
+                                "Authorization": "Bearer " + TOKEN
+                            }
+                        })
+                        .success(function(data) {
+                            var tempUsers = JSON.parse(data);
+                            // add an isEnrolled property to the user object
+                            $.each(tempUsers, function(i, user) {
+                                tempUsers[i].IsEnrolled = false;
+                            });
+
+                            courseSessionScope.usersInSessionList = tempUsers;
+                        })
+                        .error(function(data, status) {
+                            courseSessionScope.showSessionFailure(data);
+                        });
+                }
+
+                courseSessionScope.SelectAllUsers = function() {
+                    if (courseSessionScope.SelectAll === true) {
+                        $.each(courseSessionScope.usersInSessionList, function(i, user) {
+                            courseSessionScope.usersInSessionList[i].IsEnrolled = true;
+                        });
+                    } else {
+                        $.each(courseSessionScope.usersInSessionList, function(i, user) {
+                            courseSessionScope.usersInSessionList[i].IsEnrolled = false;
+                        });
+                    }
+                }
+
+                courseSessionScope.removeSelectedUsers = function() {
+
+                    var userData = [];
+
                     $.each(courseSessionScope.usersInSessionList, function(i, user) {
-                        courseSessionScope.usersInSessionList[i].IsEnrolled = true;
+                        if (user.IsEnrolled) {
+                            userData.push({ UserId: courseSessionScope.usersInSessionList[i].UserId });
+                        }
                     });
-                } else {
-                    $.each(courseSessionScope.usersInSessionList, function(i, user) {
-                        courseSessionScope.usersInSessionList[i].IsEnrolled = false;
+
+                    courseSessionScope.httpService({
+                            method: "POST",
+                            url: API_URL + "/UsersInCourseSessions/RemoveUsersFromCourseSession/" + courseSessionScope.currentCourseSession.CourseSessionId,
+                            data: userData,
+                            headers: {
+                                "Authorization": "Bearer " + TOKEN
+                            }
+                        })
+                        .success(function(data) {
+                            $("#EditUsersInSessionModal").modal("hide");
+                            courseSessionScope.showEnrolUsersUpdate();
+                        })
+                        .error(function(data, status) {
+                            $("#EditUsersInSessionModal").modal("hide");
+                            courseSessionScope.showSessionFailure(data);
+                        });
+                }
+
+                courseSessionScope.createCourseSession = function() {
+
+                    courseSessionScope.httpService({
+                            method: "POST",
+                            url: API_URL + "/CourseSessions/CreateCourseSession/",
+                            data: {
+                                CourseId: COURSE_ID,
+                                StartDate: courseSessionScope.covertToISODateString(courseSessionScope.currentCourseSession.StartDate),
+                                EndDate: courseSessionScope.covertToISODateString(courseSessionScope.currentCourseSession.EndDate),
+                                IsRolling: courseSessionScope.currentCourseSession.IsRolling,
+                            },
+                            headers: {
+                                "Authorization": "Bearer " + TOKEN
+                            }
+                        })
+                        .success(function(data) {
+                            $("#EditCourseSessionModal").modal("hide");
+                            courseSessionScope.showCourseCategorySuccess();
+                            courseSessionScope.populateSessionTable();
+                        })
+                        .error(function(data, status) {
+                            $("#EditCourseSessionModal").modal("hide");
+                            courseSessionScope.showSessionFailure(data);
+                        });
+                }
+
+                courseSessionScope.editCourseSession = function() {
+
+                    courseSessionScope.httpService({
+                            method: "PUT",
+                            url: API_URL + "/CourseSessions/UpdateCourseSession/" + courseSessionScope.currentCourseSession.CourseSessionId,
+                            data: {
+                                CourseSessionId: courseSessionScope.currentCourseSession.CourseSessionId,
+                                CourseId: COURSE_ID,
+                                StartDate: courseSessionScope.covertToISODateString(courseSessionScope.currentCourseSession.StartDate),
+                                EndDate: courseSessionScope.covertToISODateString(courseSessionScope.currentCourseSession.EndDate),
+                                IsRolling: courseSessionScope.currentCourseSession.IsRolling,
+                            },
+                            headers: {
+                                "Authorization": "Bearer " + TOKEN
+                            }
+                        })
+                        .success(function(data) {
+                            $("#EditCourseSessionModal").modal("hide");
+                            courseSessionScope.showCourseCategoryUpdate();
+                            courseSessionScope.populateSessionTable();
+                        })
+                        .error(function(data, status) {
+                            $("#EditCourseSessionModal").modal("hide");
+                            courseSessionScope.showSessionFailure(data);
+                        });
+                }
+
+                courseSessionScope.deleteCourseSession = function() {
+
+                    courseSessionScope.httpService({
+                        method: "DELETE",
+                        url: API_URL + "/CourseSessions/DeleteCourseSession/" + courseSessionScope.currentCourseSession.CourseSessionId,
+                        headers: {
+                            "Authorization": "Bearer " + TOKEN
+                        }
+                    })
+                    .success(function(data) {
+                        $("#EditCourseSessionModal").modal("hide");
+                        courseSessionScope.showCourseCategoryDelete();
+                        courseSessionScope.populateSessionTable();
+                    })
+                    .error(function(data, status) {
+                        $("#EditCourseSessionModal").modal("hide");
+                        courseSessionScope.showSessionFailure(data);
                     });
                 }
-            }
+                
+                courseSessionScope.showEnrolUsersSuccess = function() {
+                    var usersAdded = [];
 
-            courseSessionScope.removeSelectedUsers = function() {
+                    $.each(courseSessionScope.selectedUsers, function(i, user) {
+                        usersAdded.push(user.text);
+                    });
 
-                var userData = [];
+                    var msg = "Users: <b>" + usersAdded.join(", ") + "</b> successfully added to session!";
 
-                $.each(courseSessionScope.usersInSessionList, function(i, user) {
-                    if(user.IsEnrolled) {
-                        userData.push({UserId: courseSessionScope.usersInSessionList[i].UserId });
-                    }                    
-                });
-
-                courseSessionScope.httpService({
-                    method: "POST",
-                    url: API_URL + "/UsersInCourseSessions/RemoveUsersFromCourseSession/" + courseSessionScope.currentCourseSession.CourseSessionId,
-                    data: userData,
-                    headers: {
-                        "Authorization": "Bearer " + TOKEN
-                    }
-                })
-                .success(function (data) {
-                    $("#EditUsersInSessionModal").modal("hide");
-                    courseSessionScope.showEnrolUsersUpdate();
-                })
-                .error(function (data, status) {
-                    $("#EditUsersInSessionModal").modal("hide");
-                    courseSessionScope.showSessionFailure(data);
-                });
-            }
-
-            courseSessionScope.createCourseSession = function() {
-                console.log("creating...");
-            }
-
-            courseSessionScope.editCourseSession = function() {
-                console.log("editting...");
-            }
-
-            courseSessionScope.deleteCourseSession = function() {
-                console.log("deleting...");
-            }
-
-            courseSessionScope.showEnrolUsersSuccess = function() {
-                var usersAdded = [];
-
-                $.each(courseSessionScope.selectedUsers, function(i, user) {
-                    usersAdded.push(user.text);
-                });
-
-                var msg = "Users: <b>" + usersAdded.join(", ") + "</b> successfully added to session!";
-
-                $(".alert-success .msg")
-                    .html(msg)
-                    .parent()
+                    $(".alert-success .msg")
+                        .html(msg)
+                        .parent()
                         .removeClass("hidden")
                         .slideDown();
-            }
+                }
 
-            courseSessionScope.showEnrolUsersUpdate = function() {
-                var usersRemoved = [];
+                courseSessionScope.showEnrolUsersUpdate = function() {
+                    var usersRemoved = [];
 
-                $.each(courseSessionScope.usersInSessionList, function(i, user) {
-                    if(user.IsEnrolled) {
-                        usersRemoved.push(user.Name);
-                    }                    
-                });
+                    $.each(courseSessionScope.usersInSessionList, function(i, user) {
+                        if (user.IsEnrolled) {
+                            usersRemoved.push(user.Name);
+                        }
+                    });
 
-                var msg = "Users: <b>" + usersRemoved.join(", ") + "</b> successfully removed to session!";
+                    var msg = "Users: <b>" + usersRemoved.join(", ") + "</b> successfully removed to session!";
 
-                $(".alert-warning .msg")
-                    .html(msg)
-                    .parent()
+                    $(".alert-warning .msg")
+                        .html(msg)
+                        .parent()
                         .removeClass("hidden")
                         .slideDown();
-            }            
+                }
 
-            courseSessionScope.showSessionFailure = function (data) {
+                courseSessionScope.showCourseCategorySuccess = function() {
+                    var msg = "Course session successfully created!";
 
-                $(".alert-danger .msg")
-                    .html(data.ExceptionMessage)
-                    .parent()
-                    .removeClass("hidden")
-                    .slideDown();
+                    $(".alert-success .msg")
+                        .html(msg)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+                }
+
+                courseSessionScope.showCourseCategoryUpdate = function() {
+                    var msg = "Course session successfully updated!";
+
+                    $(".alert-success .msg")
+                        .html(msg)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+                }
+
+                courseSessionScope.showCourseCategoryDelete = function() {
+                    var msg = "Course session successfully deleted!";
+
+                    $(".alert-danger .msg")
+                        .html(msg)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+                }
+
+                courseSessionScope.showSessionFailure = function(data) {
+
+                    $(".alert-danger .msg")
+                        .html(data.ExceptionMessage)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+                }
+
+                // run the initialize method
+                courseSessionScope.loadData();
+                courseSessionScope.populateSessionTable();
+
             }
-
-            // run the initialize method
-            courseSessionScope.loadData();
-            courseSessionScope.populateSessionTable();
-
-        }
-        app.controller("CourseSessionController", ["$scope", "$http", CourseSessionController]);
-    }());
-</script>
+            app.controller("CourseSessionController", ["$scope", "$http", CourseSessionController]);
+        }());
+    </script>
 }
