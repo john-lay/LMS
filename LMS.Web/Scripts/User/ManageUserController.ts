@@ -40,7 +40,7 @@ module ManageUserModule {
                         });
                     });
                 })
-                .error(function (data, status) {
+                .error(function (data: IErrorData, status: number) {
                     userManageScope.showUserFailure(data);
                 });
             };
@@ -67,7 +67,7 @@ module ManageUserModule {
                     .success(function (data) {
                         userManageScope.showUserSuccess();
                     })
-                    .error(function (data, status) {
+                    .error(function (data: IErrorData, status: number) {
                         userManageScope.showUserFailure(data);
                     });
                 }
@@ -107,7 +107,7 @@ module ManageUserModule {
                     $("#UpdateUserModal").modal("show");
 
                 })
-                .error(function (data, status) {
+                .error(function (data: IErrorData, status: number) {
                     userManageScope.showUserFailure(data);
                 });
             }
@@ -130,7 +130,7 @@ module ManageUserModule {
                     userManageScope.showUserUpdate();
 
                 })
-                .error(function (data, status) {
+                .error(function (data: IErrorData, status: number) {
                     userManageScope.showUserFailure(data);
                 });
             }
@@ -148,15 +148,16 @@ module ManageUserModule {
                     userManageScope.showUserDelete();
 
                 })
-                .error(function (data, status) {
+                .error(function (data: IErrorData, status: number) {
                     userManageScope.showUserFailure(data);
                 });
             }
 
             userManageScope.getDefaultUser = function () {
 
-                var defaultUser = {
+                var defaultUser: IUser = {
                     id: -1,
+                    UserId: -1,
                     ClientId: -1,
                     FirstName: "",
                     LastName: "",

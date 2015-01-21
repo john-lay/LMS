@@ -1774,6 +1774,8 @@
     <TypeScriptCompile Include="Scripts\Client\ManageController.ts" />
     <TypeScriptCompile Include="Scripts\Contact\IEmailScope.ts" />
     <TypeScriptCompile Include="Scripts\Contact\EmailController.ts" />
+    <TypeScriptCompile Include="Scripts\Course\IManageCourseScope.ts" />
+    <TypeScriptCompile Include="Scripts\Course\ManageCourseController.ts" />
     <TypeScriptCompile Include="Scripts\LMSapp.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-animate.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-cookies.d.ts" />
