@@ -1786,7 +1786,9 @@
     <TypeScriptCompile Include="Scripts\typings\custom.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\kendo\kendo.simplified.d.ts" />
+    <TypeScriptCompile Include="Scripts\User\IManageUserScope.ts" />
     <TypeScriptCompile Include="Scripts\User\IManageAdminScope.ts" />
+    <TypeScriptCompile Include="Scripts\User\ManageUserController.ts" />
     <TypeScriptCompile Include="Scripts\User\ManageAdminController.ts" />
   </ItemGroup>
   <PropertyGroup>
