@@ -21,7 +21,7 @@
 }
 <div class="row col-md-12" data-ng-controller="CourseSessionController">
     <div class="col-md-3">
-        <a href="#" id="Enrol" data-ng-class="{disabled: selectedUsers.length === 0 && currentCourseSession.CourseSessionId === undefined}" data-toggle="modal" data-target="#EnrolUsersModal" class="btn btn-sm btn-primary">Enrol Selected Users &raquo;</a>
+        <a href="#" id="Enrol" data-ng-class="{'disabled': selectedUsers.length === 0 && currentCourseSession.CourseSessionId === undefined}" data-toggle="modal" data-target="#EnrolUsersModal" class="btn btn-sm btn-primary">Enrol Selected Users &raquo;</a>
         <div>
             <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
         </div>
@@ -89,5 +89,5 @@
             });
         });
     </script>
-    <script src="~/Scripts/Course/CourseSessionController.js"></script>
+    <script src="~/Scripts/Course/SessionController.js"></script>
 }

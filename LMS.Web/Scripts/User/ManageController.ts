@@ -1,6 +1,6 @@
 ﻿/// <reference path="../typings/angularjs/angular.d.ts" />
 /// <reference path="../typings/kendo/kendo.simplified.d.ts" />
-/// <reference path="imanageuserscope.ts" />
+/// <reference path="imanagescope.ts" />
 
 module ManageUserModule {
     'use strict';

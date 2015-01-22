@@ -15,11 +15,11 @@
         </div>
         <div class="tree-view" kendo-tree-view="tree" k-data-source="treeData" k-template="itemTemplate" k-on-change="selectedItem=dataItem"></div>
     </div>
-    @Html.Partial("_ManageUser.create")
-    @Html.Partial("_ManageUser.edit")
+    @Html.Partial("_Manage.create")
+    @Html.Partial("_Manage.edit")
 </div>
 @section scripts {
     <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>  
     <script src="~/Scripts/Library/kendo-js/kendo.angular.min.js"></script>
-    <script src="~/Scripts/User/ManageUserController.js"></script>
+    <script src="~/Scripts/User/ManageController.js"></script>
 }

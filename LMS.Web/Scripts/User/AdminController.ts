@@ -1,6 +1,6 @@
 ﻿/// <reference path="../typings/angularjs/angular.d.ts" />
 /// <reference path="../typings/kendo/kendo.simplified.d.ts" />
-/// <reference path="imanageadminscope.ts" />
+/// <reference path="iadminscope.ts" />
 
 module ManageAdminModule {
     'use strict';

@@ -1,0 +1,38 @@
+﻿@{
+    ViewBag.Title = "Manage Course Sessions";
+}
+@section head {
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.common.min.css" rel="stylesheet" />
+    <link href="~/Content/kendo-styles/kendo.silver.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.default.min.css" rel="stylesheet" />
+}
+<div class="row col-md-12" data-ng-controller="CourseSelectController">
+    <div class="col-md-3">
+        <div>
+            <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
+        </div>
+        <div class="tree-view" kendo-tree-view="tree" k-data-source="treeData" k-template="itemTemplate" k-on-change="selectedItem=dataItem"></div>
+    </div>
+    <div class="col-md-9 form-horizontal">
+        <div class="form-group">
+            <div class="col-md-offset-1">
+                <p class="lead">Choose your course from the list in the left hand panel.</p>
+                <p class="lead">When you're done hit the <u>Manage Course Session</u> button below.</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-2 col-md-offset-10">
+                <a href="#" id="ManageCourseSession" class="btn btn-primary pull-right">Manage Course Session &raquo;</a>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
+    <script src="~/Scripts/Library/kendo-js/kendo.angular.min.js"></script>
+    <script type="text/javascript">
+        var SESSION_URL = "@Url.Action("Session", "Course")" + "/";
+    </script>
+    <script src="~/Scripts/Course/SelectController.js"></script>
+}

@@ -1,6 +1,6 @@
 ﻿/// <reference path="../typings/angularjs/angular.d.ts" />
 /// <reference path="../typings/kendo/kendo.simplified.d.ts" />
-/// <reference path="icoursesessionscope.ts" />
+/// <reference path="isessionscope.ts" />
 
 module CourseSessionModule {
     'use strict';

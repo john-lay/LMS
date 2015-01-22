@@ -29,7 +29,7 @@ namespace LMS.Web.Controllers
             return View(model);
         }
 
-        public ActionResult SessionChooseCourse()
+        public ActionResult SelectCourse()
         {
             return View();
         }

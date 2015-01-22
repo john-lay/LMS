@@ -14,7 +14,7 @@ namespace LMS.Web.Controllers
             return View();
         }
 
-        public ActionResult ManageAdmin()
+        public ActionResult Admin()
         {
             return View();
         }
