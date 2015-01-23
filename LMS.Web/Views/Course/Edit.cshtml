@@ -25,7 +25,7 @@
                         @Html.ValidationMessageFor(m => m.Name)
                     </div>
                     <div class="col-md-6">
-                        <button id="SaveCourse" class="btn btn-primary pull-right">Save</button>
+                        <a href="javascript:void(0)" id="SaveCourse" class="btn btn-primary pull-right">Save</a>
                     </div>
                 </div>
                 <div class="form-group row col-md-12">
@@ -72,6 +72,8 @@
     }
 </div>
 @section scripts {
+<script src="~/Scripts/Library/jQuery/jquery.validate.min.js"></script>
+<script src="~/Scripts/Library/jQuery/jquery.validate.unobtrusive.min.js"></script>
     <script type="text/javascript">
         var COURSE_ID = @Model.CourseId;
     </script>

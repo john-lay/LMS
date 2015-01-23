@@ -1199,6 +1199,11 @@
     <Content Include="Scripts\Library\angular\i18n\angular-locale_zu-za.js" />
     <Content Include="Scripts\Library\angular\i18n\angular-locale_zu.js" />
     <Content Include="Scripts\Library\jquery-1.11.1.min.js" />
+    <None Include="Scripts\Library\jQuery\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\Library\jQuery\jquery.validate.js" />
+    <Content Include="Scripts\Library\jQuery\jquery.validate.min.js" />
+    <Content Include="Scripts\Library\jQuery\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\Library\jQuery\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\Library\kendo-js\angular.min.js" />
     <Content Include="Scripts\Library\kendo-js\cultures\kendo.culture.af-ZA.min.js" />
     <Content Include="Scripts\Library\kendo-js\cultures\kendo.culture.af.min.js" />
