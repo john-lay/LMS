@@ -64,18 +64,15 @@ namespace LMS.Web.Controllers
                 var server = System.Web.HttpContext.Current.Server;
                 string clientId = user.ClientId.ToString();
                 string courseId = model.CourseId.ToString();
-   
+
                 // check folders exist - UPLOADS FOLDER
-                if(!Directory.Exists(server.MapPath("~/uploads")))
-                    Directory.CreateDirectory(server.MapPath("~/uploads"));
+                if (!Directory.Exists(server.MapPath("~/uploads"))) Directory.CreateDirectory(server.MapPath("~/uploads"));
 
                 // CLIENT FOLDER
-                if (!Directory.Exists(server.MapPath("~/uploads/" + clientId)))
-                    Directory.CreateDirectory(server.MapPath("~/uploads/" + clientId));
+                if (!Directory.Exists(server.MapPath("~/uploads/" + clientId))) Directory.CreateDirectory(server.MapPath("~/uploads/" + clientId));
 
                 // COURSE FOLDER
-                if (!Directory.Exists(server.MapPath("~/uploads/" + clientId + "/" + courseId)))
-                    Directory.CreateDirectory(server.MapPath("~/uploads/" + "/" + clientId + "/" + courseId));
+                if (!Directory.Exists(server.MapPath("~/uploads/" + clientId + "/" + courseId))) Directory.CreateDirectory(server.MapPath("~/uploads/" + "/" + clientId + "/" + courseId));
 
                 string targetFolder = server.MapPath("~/uploads/" + clientId + "/" + courseId + "/");
                 string targetPath = Path.Combine(targetFolder, model.Content.FileName);
@@ -84,18 +81,23 @@ namespace LMS.Web.Controllers
                 model.Content.SaveAs(targetPath);
 
                 // update record
-                fileUploadSuccess = AddContentToDb(model.Content.FileName, targetFolder, courseId);                
-            }
+                fileUploadSuccess = AddContentToDb(model.Content.FileName, targetFolder, courseId);
 
-            if (fileUploadSuccess)
-            {
-                ViewBag.AlertStatus = "success";
-                ViewBag.AlertMessage = "File: " + model.Content.FileName + " successfully uploaded.";
+                if (fileUploadSuccess)
+                {
+                    ViewBag.AlertStatus = "success";
+                    ViewBag.AlertMessage = "File: " + model.Content.FileName + " successfully uploaded.";
+                }
+                else
+                {
+                    ViewBag.AlertStatus = "danger";
+                    ViewBag.AlertMessage = "File: " + model.Content.FileName + " could not be saved.";
+                }
             }
             else
             {
                 ViewBag.AlertStatus = "danger";
-                ViewBag.AlertMessage = "File: " + model.Content.FileName + " could not be saved.";
+                ViewBag.AlertMessage = "Please check the form for errors and try again.";
             }
 
             model.CourseTypeList = GetCourseTypeList();

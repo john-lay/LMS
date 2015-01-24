@@ -327,6 +327,7 @@
     </Content>
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
+    <Content Include="Scripts\Course\EditController.js" />
     <Content Include="Scripts\Library\angular\angular-animate.js" />
     <Content Include="Scripts\Library\angular\angular-animate.min.js" />
     <Content Include="Scripts\Library\angular\angular-aria.js" />
@@ -1198,6 +1199,11 @@
     <Content Include="Scripts\Library\angular\i18n\angular-locale_zu-za.js" />
     <Content Include="Scripts\Library\angular\i18n\angular-locale_zu.js" />
     <Content Include="Scripts\Library\jquery-1.11.1.min.js" />
+    <None Include="Scripts\Library\jQuery\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\Library\jQuery\jquery.validate.js" />
+    <Content Include="Scripts\Library\jQuery\jquery.validate.min.js" />
+    <Content Include="Scripts\Library\jQuery\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\Library\jQuery\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\Library\kendo-js\angular.min.js" />
     <Content Include="Scripts\Library\kendo-js\cultures\kendo.culture.af-ZA.min.js" />
     <Content Include="Scripts\Library\kendo-js\cultures\kendo.culture.af.min.js" />
@@ -1621,6 +1627,7 @@
     <Content Include="Scripts\Library\modernizr-2.6.2.js" />
     <Content Include="Scripts\Site\DateLib.js" />
     <Content Include="Scripts\Site\Home\WelcomeUser.js" />
+    <Content Include="Scripts\User\GroupController.js" />
     <Content Include="Web.config" />
     <Content Include="Views\Shared\_Html5shiv.cshtml" />
   </ItemGroup>
@@ -1755,6 +1762,8 @@
     <Content Include="Views\Course\_Session.edit.user.cshtml" />
     <Content Include="Views\User\_Manage.edit.cshtml" />
     <Content Include="Views\User\_Manage.create.cshtml" />
+    <Content Include="Views\User\_Group.create.cshtml" />
+    <Content Include="Views\User\_Group.edit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
