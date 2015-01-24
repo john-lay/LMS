@@ -63,11 +63,11 @@
             // fix angular binding error, only needs one ng controller
             var app = angular.module("LMS", []);
             var SuperAdminDashboard = function ($scope) { }
-            //var AdminDashboard = function ($scope) { }
-            //var UserDashboard = function ($scope) { }
+            var AdminDashboard = function ($scope) { }
+            var UserDashboard = function ($scope) { }
             app.controller("SuperAdminDashboard", ["$scope", SuperAdminDashboard]);
-            //app.controller("AdminDashboard", ["$scope", AdminDashboard]);
-            //app.controller("UserDashboard", ["$scope", UserDashboard]);
+            app.controller("AdminDashboard", ["$scope", AdminDashboard]);
+            app.controller("UserDashboard", ["$scope", UserDashboard]);
         }());
     </script>
 }

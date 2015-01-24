@@ -76,12 +76,13 @@ namespace LMS.Web.Controllers
 
                 string targetFolder = server.MapPath("~/uploads/" + clientId + "/" + courseId + "/");
                 string targetPath = Path.Combine(targetFolder, model.Content.FileName);
+                string linkToFile = "/uploads/" + clientId + "/" + courseId + "/" + model.Content.FileName;
 
                 // save file to disk
                 model.Content.SaveAs(targetPath);
 
                 // update record
-                fileUploadSuccess = AddContentToDb(model.Content.FileName, targetFolder, courseId);
+                fileUploadSuccess = AddContentToDb(model.Content.FileName, linkToFile, courseId);
 
                 if (fileUploadSuccess)
                 {
