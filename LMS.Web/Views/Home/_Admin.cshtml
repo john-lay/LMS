@@ -1,24 +1,62 @@
-﻿<div data-ng-controller="AdminDashboard">
+﻿<div data-ng-controller="AdminDashboard" class="admin-dashboard">
     <p class="lead">
-        admin
+        As the administrator you can create new users and sort them into departments and roles
+        with the group feature. Additionally, you can add courses, sessions and generate reports.
+        Click on one of the buttons below to begin.
     </p>
-    <p class="lead">
-        <ul>
-            <li><a href="@Url.Action("Manage", "Course")">manage Courses</a></li>
-            <li><a href="@Url.Action("SelectCourse", "Course")">manage Sessions</a></li>
-            <li><a href="@Url.Action("Index", "Report")">reports</a></li>
-            <li>
-                <ul>
-                    <li><a href="@Url.Action("Manage", "User")">Manage Users</a></li>
-                    <li><a href="@Url.Action("Group", "User")">Group Users</a></li>
-                </ul>
-            </li>
-            <li>
-                <ul>
-                    <li><a href="@Url.Action("Email", "Contact")">Email</a></li>
-                    <li><a class="disabled" href="#">SMS</a></li>
-                </ul>
-            </li>
-        </ul>
-    </p> 
+    <div class="form-group row col-md-12">
+        <div class="col-md-6">
+            <div class="btn-group btn-group-justified">
+                <a role="button" class="btn btn-default" href="@Url.Action("Manage", "User")">
+                    <span class="glyphicon glyphicon-user"></span>
+                    <hr />
+                    <span class="lead">manage users</span>
+                </a>
+                <a role="button" class="btn btn-default" href="@Url.Action("Group", "User")">
+                    <span class="glyphicon glyphicon-duplicate"></span>
+                    <hr />
+                    <span class="lead">group users</span>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="btn-group btn-group-justified">
+                <a role="button" class="btn btn-default" href="@Url.Action("Manage", "Course")">
+                    <span class="glyphicon glyphicon-education"></span>
+                    <hr />
+                    <span class="lead">manage courses</span>
+                </a>
+                <a role="button" class="btn btn-default" href="@Url.Action("SelectCourse", "Course")">
+                    <span class="glyphicon glyphicon-cloud"></span>
+                    <hr />
+                    <span class="lead">manage course session</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row col-md-12">
+        <div class="col-md-6">
+            <div class="btn-group btn-group-justified">
+                <a role="button" class="btn btn-default" href="@Url.Action("Email", "Contact")">
+                    <span class="glyphicon glyphicon-envelope"></span>
+                    <hr />
+                    <span class="lead">email</span>
+                </a>
+                <a role="button" class="btn btn-default disabled" href="javascript:void(0)">
+                    <span class="glyphicon glyphicon-phone"></span>
+                    <hr />
+                    <span class="lead">SMS</span>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-3 col-md-offset-3">
+            <div class="btn-group btn-group-justified">
+                <a role="button" class="btn btn-default" href="@Url.Action("Index", "Report")">
+                    <span class="glyphicon glyphicon-stats"></span>
+                    <hr />
+                    <span class="lead">run reports</span>
+                </a>
+            </div>
+        </div>
+    </div>
 </div>

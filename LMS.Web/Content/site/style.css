@@ -38,6 +38,21 @@ html body .footer {
   display: block;
   margin-bottom: 0.6em;
 }
+.admin-dashboard p.lead {
+  padding-left: 30px;
+}
+.admin-dashboard .glyphicon {
+  font-size: 4em;
+  display: block;
+  margin: 0.2em 0 0.2em 0;
+}
+.admin-dashboard hr {
+  border-color: #cccccc;
+}
+.admin-dashboard .btn .lead {
+  display: block;
+  margin-bottom: 0.6em;
+}
 .email-recipients {
   height: 100%;
   padding-top: 10px;

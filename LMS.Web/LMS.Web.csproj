@@ -436,6 +436,7 @@
     <Content Include="Content\site\style.css.map">
       <DependentUpon>style.css</DependentUpon>
     </Content>
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff2" />
     <None Include="Properties\PublishProfiles\somee.LMS.Web.pubxml" />
     <Content Include="Scripts\Library\angular\errors.json" />
     <Content Include="Scripts\Library\angular\angular-touch.min.js.map" />
