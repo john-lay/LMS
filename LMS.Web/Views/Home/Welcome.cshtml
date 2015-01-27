@@ -28,47 +28,186 @@
     }
 }
 @section scripts {
-    <script src="~/Scripts/Site/DateLib.js"></script>
-    <script type="text/javascript">
-        var g;
-        $(function () {
-            $("#CourseContainer").hide();
-            $.ajax({
-                url: "@this.GetApiUrl()" + "/Courses/GetCoursesByUser/" + "@profile.UserId",
-                beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + "@this.GetToken()");
-                },
-                success: function (result) {
-                    var courses = JSON.parse(result);
-                    if (courses.length > 0)
-                    {
-                        $("#CourseContainer").show();
-                        // this should be a loop foreach piece of e-learning
-                        var course = courses[0];
-                        g = course;
-                        $("#CourseName").html(course.CourseName);
-                        $("#CourseDescription").html(course.CourseDescription);
-                        $("#CourseContent").attr("href", course.CourseContentResource);
-                        $("#CourseContent").html(course.CourseContentName);
-                        $("#CourseSessionId").val(course.CourseSessionId);
-                        $("#CourseSessionStartDate").html(getDateFromJSONString(course.CourseSessionStartDate));
-                        $("#CourseSessionEndDate").html(getDateFromJSONString(course.CourseSessionEndDate));
-                    }                    
-                }
+    @*<script src="~/Scripts/Site/DateLib.js"></script>
+        <script type="text/javascript">
+            var g;
+            $(function() {
+                $("#CourseContainer").hide();
+                $.ajax({
+                    url: API_URL + "/Courses/GetCoursesByUser/" + "@profile.UserId",
+                    beforeSend: function(request) {
+                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+                    },
+                    success: function(result) {
+                        var courses = JSON.parse(result);
+                        if (courses.length > 0) {
+                            $("#CourseContainer").show();
+                            // this should be a loop foreach piece of e-learning
+                            var course = courses[0];
+                            g = course;
+                            $("#CourseName").html(course.CourseName);
+                            $("#CourseDescription").html(course.CourseDescription);
+                            $("#CourseContent").attr("href", course.CourseContentResource);
+                            $("#CourseContent").html(course.CourseContentName);
+                            $("#CourseSessionId").val(course.CourseSessionId);
+                            $("#CourseSessionStartDate").html(getDateStringFromJSONString(course.CourseSessionStartDate));
+                            $("#CourseSessionEndDate").html(getDateFromJSONString(course.CourseSessionEndDate));
+                        }
+                    }
+                });
             });
-        });
-    </script>
+        </script>*@
     <script type="text/javascript">
-        (function () {
+        var USER_ID = @profile.UserId;
+        (function() {
             // fix angular binding error, only needs one ng controller
             var app = angular.module("LMS", []);
-            var SuperAdminDashboard = function ($scope) { }
-            var AdminDashboard = function ($scope) { }
-            var UserDashboard = function ($scope) { }
+            var SuperAdminDashboard = function($scope) {}
+            var AdminDashboard = function($scope) {}
             app.controller("SuperAdminDashboard", ["$scope", SuperAdminDashboard]);
             app.controller("AdminDashboard", ["$scope", AdminDashboard]);
-            app.controller("UserDashboard", ["$scope", UserDashboard]);
         }());
     </script>
-}
+    <script type="text/javascript">
+        (function() {
+            var app = angular.module("LMS", []);
+            var UserDashboardController = function($scope, $http) {
 
+                userDashboardScope = $scope;
+                userDashboardScope.httpService = $http;
+                userDashboardScope.CoursesList = [];
+                //{ Confirm: false, CourseName: "", CourseDescription: "", CourseContentResource: "", CourseContentName: "", CourseSessionId: "", CourseSessionStartDate: null, CourseSessionEndDate: null, CourseSessionStartDateString: "", CourseSessionEndDateString: ""}
+
+                userDashboardScope.loadData = function() {
+                    userDashboardScope.httpService({
+                            method: "GET",
+                            url: API_URL + "/Courses/GetCoursesByUser/" + USER_ID,
+                            headers: {
+                                "Authorization": "Bearer " + TOKEN
+                            }
+                        })
+                        .success(function(data) {
+                            userDashboardScope.CoursesList = JSON.parse(data);
+
+                            // populate CourseSessionStartDateString and CourseSessionEndDateString
+                            $.each(userDashboardScope.CoursesList, function(i, value) {
+                                userDashboardScope.CoursesList[i].CourseSessionStartDateString = userDashboardScope.getDateStringFromJSONString(value.CourseSessionStartDate);
+                                userDashboardScope.CoursesList[i].CourseSessionEndDateString = userDashboardScope.getDateStringFromJSONString(value.CourseSessionEndDate);
+                                userDashboardScope.CoursesList[i].SubmittedWithoutCheck = false;
+                                userDashboardScope.calculateTimeRemaining(userDashboardScope.CoursesList[0]);
+                            });
+                        })
+                        .error(function(data, status) {
+                            userDashboardScope.showUserFailure(data);
+                        });
+                };
+
+                userDashboardScope.calculateTimeRemaining = function(course) {
+                    var startDate = userDashboardScope.getDateObjectFromJSONString(course.CourseSessionEndDate);
+                    var endDate = userDashboardScope.getDateObjectFromJSONString(course.CourseSessionEndDate);
+                    var today = new Date();
+                    //startDate.setDate(startDate.getDate() - 45);
+                    //endDate.setDate(endDate.getDate() + 45);
+
+                    if (today > endDate) {
+                        course.PercentRemaining = 100;
+                        course.DaysRemaining = "0 days remaining";
+                    } else {
+                    
+                        var totalMilliseconds = Math.floor(endDate - startDate);
+                        var totalDays = totalMilliseconds / (1000 * 60 * 60 * 24);
+                        var timeRemainingMilliseconds = Math.floor(endDate - today);
+                        var timeRemainingDays = Math.floor(timeRemainingMilliseconds / (1000 * 60 * 60 * 24));
+                        var timeRemainingPercent = Math.floor(timeRemainingDays / totalDays * 100);
+
+                        course.PercentRemaining = timeRemainingPercent;
+                        course.DaysRemaining = timeRemainingDays === 1 ? "1 day remaining" : timeRemainingDays + " days remaining";
+                        //console.log("start date = " + startDate);
+                        //console.log("end date = " + endDate);
+                        //console.log("total days = " + totalDays);
+                        //console.log("remaining = " + timeRemainingDays);
+                        //console.log("perc = " + timeRemainingPercent);
+                    }
+                }
+
+                userDashboardScope.checkUserInput = function(course) {
+                    course.SubmittedWithoutCheck = !course.LearningComplete;
+                }
+
+                userDashboardScope.submit = function(course) {
+                    if (!course.LearningComplete) {
+                        course.SubmittedWithoutCheck = true;
+                    } else {
+                        course.SubmittedWithoutCheck = false;
+                        console.log("submitting...");
+                        console.log(course);
+
+                        userDashboardScope.httpService({
+                                method: "PATCH",
+                                url: API_URL + "/UsersInCourseSessions/UpdateUserResultInCourseSession/" + course.CourseSessionId,
+                                data: {
+                                    CourseSessionId: course.CourseSessionId,
+                                    UserId: USER_ID,
+                                    LearningComplete: course.LearningComplete
+                                },
+                                headers: {
+                                    "Authorization": "Bearer " + TOKEN
+                                }
+                            })
+                            .success(function(data) {
+                                userDashboardScope.showCourseUpdate(course);
+
+                            })
+                            .error(function(data, status) {
+                                userDashboardScope.showUserFailure(data);
+                            });
+                    }
+                }
+
+                userDashboardScope.getDateStringFromJSONString = function(JSONString) {
+                    var dateString = JSONString.match(/[0-9]+/g)[0];
+                    var formattedDate = new Date(parseInt(dateString, 10));
+                    var d = formattedDate.getDate().toString();
+                    var m = formattedDate.getMonth().toString();
+                    m += 1; // JavaScript months are 0-11
+                    var y = formattedDate.getFullYear();
+
+                    // prepend single day/month with zero
+                    d = ('0' + d).slice(-2);
+                    m = ('0' + m).slice(-2);
+
+                    return d + "/" + m + "/" + y;
+                }
+
+                userDashboardScope.getDateObjectFromJSONString = function(JSONString) {
+                    var dateString = JSONString.match(/[0-9]+/g)[0];
+                    return new Date(parseInt(dateString, 10));
+                }
+
+                userDashboardScope.showCourseUpdate = function(course) {
+                    var msg = "Congratulations, course: <b>" + course.CourseName + "</b> successfully completed!";
+
+                    $(".alert-success .msg")
+                        .html(msg)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+                }
+
+                userDashboardScope.showUserFailure = function(data) {
+
+                    $(".alert-danger .msg")
+                        .html(data.ExceptionMessage)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+                }
+
+                // initialize data
+                userDashboardScope.loadData();
+            }
+            app.controller("UserDashboardController", ["$scope", "$http", UserDashboardController]);
+        }());
+    </script>
+
+}

@@ -111,8 +111,8 @@ module CourseSessionModule {
                 courseSessionScope.currentCourseSession = dataItem;
                 // try and convert the Microsoft ajax date string. i.e. "/Date(1421712000000)"
                 if (courseSessionScope.currentCourseSession.StartDate.indexOf("/Date") !== -1) {
-                    courseSessionScope.currentCourseSession.StartDate = courseSessionScope.getDateFromJSONString(dataItem.StartDate);
-                    courseSessionScope.currentCourseSession.EndDate = courseSessionScope.getDateFromJSONString(dataItem.EndDate);
+                    courseSessionScope.currentCourseSession.StartDate = courseSessionScope.getDateStringFromJSONString(dataItem.StartDate);
+                    courseSessionScope.currentCourseSession.EndDate = courseSessionScope.getDateStringFromJSONString(dataItem.EndDate);
                 }
             }
 
@@ -152,7 +152,7 @@ module CourseSessionModule {
                 $("#DeleteCourseSession").removeClass("hidden");
             }
 
-            courseSessionScope.getDateFromJSONString = function (JSONString) {
+            courseSessionScope.getDateStringFromJSONString = function (JSONString) {
                 var dateString = JSONString.match(/[0-9]+/g)[0];
                 var formattedDate = new Date(parseInt(dateString, 10));
                 var d = formattedDate.getDate().toString();

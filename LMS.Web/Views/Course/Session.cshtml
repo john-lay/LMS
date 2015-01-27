@@ -52,8 +52,8 @@
                         <tbody id="CourseSessions">
                             <tr data-ng-repeat="courseSession in courseSessionsList">
                                 <td class="text-center"><input data-ng-click="setCourseSession(courseSession)" setcoursesession type="radio" name="session" value="{{::courseSession.CourseSessionId}}" /></td>
-                                <td class="startDate">{{::getDateFromJSONString(courseSession.StartDate)}}</td>
-                                <td class="endDate">{{::getDateFromJSONString(courseSession.EndDate)}}</td>
+                                <td class="startDate">{{::getDateStringFromJSONString(courseSession.StartDate)}}</td>
+                                <td class="endDate">{{::getDateStringFromJSONString(courseSession.EndDate)}}</td>
                                 <td class="isRolling">{{::courseSession.IsRolling}}</td>
                                 <td>
                                     <a href="#" data-ng-click="showCourseSessionEditor(courseSession)" data-toggle="modal" data-target="#EditCourseSessionModal">Edit</a> |

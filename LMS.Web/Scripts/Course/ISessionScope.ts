@@ -27,7 +27,7 @@ module CourseSessionModule {
         showCourseSessionCreator(): void;
         showCourseSessionEditor(dataItem: ICourseSession): void;
         showCourseSessionRemover(dataItem: ICourseSession): void;
-        getDateFromJSONString(JSONString: string): string;
+        getDateStringFromJSONString(JSONString: string): string;
         covertToISODateString(dateString: string): string;
         parseDate(input: string): Date;
         enrolUsers(): void;

@@ -87,6 +87,43 @@ namespace LMS.API.Controllers
             return Ok();
         }
 
+        [HttpPatch]
+        public IHttpActionResult UpdateUserResultInCourseSession(int id, [FromBody] UsersInCourseSession userInCourseSession)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != userInCourseSession.CourseSessionId)
+            {
+                return BadRequest();
+            }
+
+            // grab the user details from a existing record. Don't want to overwrite AspNetUserId or email
+            UsersInCourseSession existingUser = db.UsersInCourseSessions.First(u => u.CourseSessionId == userInCourseSession.CourseSessionId && u.UserId == userInCourseSession.UserId);
+
+            existingUser.LearningComplete = userInCourseSession.LearningComplete;
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UsersInCourseSessionExists(id, userInCourseSession.UserId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
