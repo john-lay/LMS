@@ -70,7 +70,9 @@ namespace LMS.API.Controllers
                             CourseSessionStartDate = courseSession.StartDate,
                             CourseSessionEndDate = courseSession.EndDate,
                             LearningComplete = usersInCourseSession.LearningComplete
-                        }).ToArray();
+                        })
+                        .Distinct()
+                        .ToArray();
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             return serializer.Serialize(query);
