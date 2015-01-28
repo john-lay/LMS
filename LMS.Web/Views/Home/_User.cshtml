@@ -1,12 +1,13 @@
-﻿<div class="row col-md-12" data-ng-controller="UserDashboardController">
+﻿<div class="row col-md-12" data-ng-controller="UserDashboardController" class="user-dashboard">
     <div class="col-md-3">
-        calendar here...
+        @*<kendo-calendar ng-model="startDate" k-rebind="endDate" max="endDate"></kendo-calendar>*@
+        <div id="calendar" kendo-calendar="calendar" data-k-options="calendarConfig"></div>
     </div>
     <div class="col-md-9">
         <div id="CourseContainer" class="panel panel-default" data-ng-repeat="course in CoursesList">
             <div class="panel-heading">{{course.CourseName}}</div>
             @* INCOMPLETE LEARNING *@
-            <div data-ng-if="course.LearningComplete" class="panel-body">
+            <div data-ng-if="!course.LearningComplete" class="panel-body">
                 <div>{{course.CourseDescription}}</div>
                 <br />
                 <a href="{{course.CourseContentResource}}" class="lead">{{course.CourseContentName}}</a>
