@@ -35,11 +35,6 @@
 }
 @section scripts {
     <script type="text/javascript">
-        $(function() {
-            setTimeout(function() {
-                $(".highlight-day").parent().parent().addClass("highlight-day-cell");
-            }, 100);
-        });
         var USER_ID = @profile.UserId;
         (function() {
             // fix angular binding error, only needs one ng controller
@@ -60,8 +55,8 @@
                 userDashboardScope = $scope;
                 userDashboardScope.httpService = $http;
                 userDashboardScope.CoursesList = [];
+                userDashboardScope.calendarDates = [];
                 //{ Confirm: false, CourseName: "", CourseDescription: "", CourseContentResource: "", CourseContentName: "", CourseSessionId: "", CourseSessionStartDate: null, CourseSessionEndDate: null, CourseSessionStartDateString: "", CourseSessionEndDateString: ""}
-
                 userDashboardScope.loadData = function() {
                     userDashboardScope.httpService({
                             method: "GET",
@@ -87,48 +82,53 @@
                 };
 
                 userDashboardScope.calendarConfig = {
-                    dates: [], //[new Date(2015, 0, 11).getTime()],
                     value: new Date(), // today
-                    //dates: events,
+                    dates: userDashboardScope.calendarDates,
                     month: {
                         // template for dates in month view
-                        content: '# if ($.inArray(data.date.getTime(), data.dates) != -1) { #' +
+                        content: '# if ($.inArray(data.date.getTime(), userDashboardScope.calendarDates) != -1) { #' +
                             '<div class="highlight-day">#= data.value #</div>' +
                             '# } else { #' +
                             '#= data.value #' +
                             '# } #'
                     },
-                    footer: false
+                    footer: '<div class="highlight-day-cell highlight-day-legend">&nbsp;</div> Completed by dates'//false
                 }
 
                 userDashboardScope.calculateTimeRemaining = function(course) {
-                    var startDate = userDashboardScope.getDateObjectFromJSONString(course.CourseSessionEndDate);
+                    var startDate = userDashboardScope.getDateObjectFromJSONString(course.CourseSessionStartDate);
                     var endDate = userDashboardScope.getDateObjectFromJSONString(course.CourseSessionEndDate);
+                    //endDate.setDate(endDate.getDate() + 2);
                     var today = new Date();
-                    //startDate.setDate(startDate.getDate() - 45);
-                    //endDate.setDate(endDate.getDate() + 45);
 
                     if (today >= endDate) {
-                        course.PercentRemaining = 100;
-                        course.DaysRemaining = "0 days remaining";
+                        course.PercentToFill = 100;
+                        course.DaysRemaining = 0;
+                        course.DaysRemainingString = "0 days remaining";
                     } else {
 
-                        var totalMilliseconds = Math.floor(endDate - startDate);
+                        var totalMilliseconds = Math.ceil(endDate - startDate);
                         var totalDays = totalMilliseconds / (1000 * 60 * 60 * 24);
-                        var timeRemainingMilliseconds = Math.floor(endDate - today);
-                        var timeRemainingDays = Math.floor(timeRemainingMilliseconds / (1000 * 60 * 60 * 24));
-                        var timeRemainingPercent = Math.floor(timeRemainingDays / totalDays * 100);
+                        var timeRemainingMilliseconds = Math.ceil(endDate - today);
+                        var timeRemainingDays = Math.ceil(timeRemainingMilliseconds / (1000 * 60 * 60 * 24));
+                        var timeRemainingPercent = Math.ceil(timeRemainingDays / totalDays * 100);
 
-                        course.PercentRemaining = timeRemainingPercent;
-                        course.DaysRemaining = timeRemainingDays === 1 ? "1 day remaining" : timeRemainingDays + " days remaining";
+                        course.PercentToFill = 100 - timeRemainingPercent;
+                        course.DaysRemaining = timeRemainingDays;
+                        course.DaysRemainingString = timeRemainingDays === 1 ? "1 day remaining" : timeRemainingDays + " days remaining";
                         //console.log("start date = " + startDate);
                         //console.log("end date = " + endDate);
                         //console.log("total days = " + totalDays);
                         //console.log("remaining = " + timeRemainingDays);
                         //console.log("perc = " + timeRemainingPercent);
 
-                        // push the end date to the calendar (push as getTime int for $.inArray comparison
-                        userDashboardScope.dates.push(endDate.getTime());
+                        // push the end date to the calendar (push as getTime integer for $.inArray comparison)
+                        userDashboardScope.calendarDates.push(endDate.getTime());
+                        
+                        // reinitialise calendar and highlight events
+                        $("#calendar").data('kendoCalendar').navigateToPast();
+                        $("#calendar").data('kendoCalendar').navigateToFuture();
+                        $(".highlight-day").parent().parent().addClass("highlight-day-cell");
                     }
                 }
 

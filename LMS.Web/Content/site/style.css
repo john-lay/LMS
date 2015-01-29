@@ -60,6 +60,11 @@ html body .footer {
   color: #fff;
   background-color: #70c114;
 }
+.user-dashboard #calendar .highlight-day-legend {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+}
 .email-recipients {
   height: 100%;
   padding-top: 10px;
