@@ -66,6 +66,8 @@
                             }
                         })
                         .success(function(data) {
+                            userDashboardScope.CoursesList.length = 0;
+                            userDashboardScope.calendarDates.length = 0;
                             userDashboardScope.CoursesList = JSON.parse(data);
 
                             // populate CourseSessionStartDateString and CourseSessionEndDateString
@@ -73,7 +75,9 @@
                                 userDashboardScope.CoursesList[i].CourseSessionStartDateString = userDashboardScope.getDateStringFromJSONString(value.CourseSessionStartDate);
                                 userDashboardScope.CoursesList[i].CourseSessionEndDateString = userDashboardScope.getDateStringFromJSONString(value.CourseSessionEndDate);
                                 userDashboardScope.CoursesList[i].SubmittedWithoutCheck = false;
-                                userDashboardScope.calculateTimeRemaining(userDashboardScope.CoursesList[0]);
+                                if(!value.LearningComplete) {
+                                    userDashboardScope.calculateTimeRemaining(userDashboardScope.CoursesList[i]);
+                                }                                
                             });
                         })
                         .error(function(data, status) {
@@ -106,14 +110,13 @@
                         course.DaysRemaining = 0;
                         course.DaysRemainingString = "0 days remaining";
                     } else {
-
                         var totalMilliseconds = Math.ceil(endDate - startDate);
                         var totalDays = totalMilliseconds / (1000 * 60 * 60 * 24);
                         var timeRemainingMilliseconds = Math.ceil(endDate - today);
                         var timeRemainingDays = Math.ceil(timeRemainingMilliseconds / (1000 * 60 * 60 * 24));
                         var timeRemainingPercent = Math.ceil(timeRemainingDays / totalDays * 100);
 
-                        course.PercentToFill = 100 - timeRemainingPercent;
+                        course.PercentToFill = 99 - timeRemainingPercent; // we really want 100 - x. But 1% progress looks better on the UI
                         course.DaysRemaining = timeRemainingDays;
                         course.DaysRemainingString = timeRemainingDays === 1 ? "1 day remaining" : timeRemainingDays + " days remaining";
                         //console.log("start date = " + startDate);
@@ -121,19 +124,23 @@
                         //console.log("total days = " + totalDays);
                         //console.log("remaining = " + timeRemainingDays);
                         //console.log("perc = " + timeRemainingPercent);
-
-                        // push the end date to the calendar (push as getTime integer for $.inArray comparison)
-                        userDashboardScope.calendarDates.push(endDate.getTime());
-                        
-                        // reinitialise calendar and highlight events
-                        $("#calendar").data('kendoCalendar').navigateToPast();
-                        $("#calendar").data('kendoCalendar').navigateToFuture();
-                        $(".highlight-day").parent().parent().addClass("highlight-day-cell");
                     }
+
+                    // push the end date to the calendar (push as getTime integer for $.inArray comparison)
+                    userDashboardScope.calendarDates.push(endDate.getTime());
+                        
+                    // reinitialise calendar and highlight events
+                    userDashboardScope.updateCalendar();
                 }
 
                 userDashboardScope.checkUserInput = function(course) {
                     course.SubmittedWithoutCheck = !course.LearningComplete;
+                }
+
+                userDashboardScope.updateCalendar = function() {                   
+                    $("#calendar").data('kendoCalendar').navigateToPast();
+                    $("#calendar").data('kendoCalendar').navigateToFuture();
+                    $(".highlight-day").parent().parent().addClass("highlight-day-cell");
                 }
 
                 userDashboardScope.submit = function(course) {
@@ -141,28 +148,27 @@
                         course.SubmittedWithoutCheck = true;
                     } else {
                         course.SubmittedWithoutCheck = false;
-                        console.log("submitting...");
-                        console.log(course);
-
                         userDashboardScope.httpService({
-                                method: "PATCH",
-                                url: API_URL + "/UsersInCourseSessions/UpdateUserResultInCourseSession/" + course.CourseSessionId,
-                                data: {
-                                    CourseSessionId: course.CourseSessionId,
-                                    UserId: USER_ID,
-                                    LearningComplete: course.LearningComplete
-                                },
-                                headers: {
-                                    "Authorization": "Bearer " + TOKEN
-                                }
-                            })
-                            .success(function(data) {
-                                userDashboardScope.showCourseUpdate(course);
-
-                            })
-                            .error(function(data, status) {
-                                userDashboardScope.showUserFailure(data);
-                            });
+                            method: "PATCH",
+                            url: API_URL + "/UsersInCourseSessions/UpdateUserResultInCourseSession/" + course.CourseSessionId,
+                            data: {
+                                CourseSessionId: course.CourseSessionId,
+                                UserId: USER_ID,
+                                LearningComplete: course.LearningComplete
+                            },
+                            headers: {
+                                "Authorization": "Bearer " + TOKEN
+                            }
+                        })
+                        .success(function(data) {
+                            userDashboardScope.showCourseUpdate(course);
+                            userDashboardScope.loadData();
+                            // reinitialise calendar and highlight events
+                            userDashboardScope.updateCalendar();
+                        })
+                        .error(function(data, status) {
+                            userDashboardScope.showUserFailure(data);
+                        });
                     }
                 }
 
@@ -197,7 +203,6 @@
                 }
 
                 userDashboardScope.showUserFailure = function(data) {
-
                     $(".alert-danger .msg")
                         .html(data.ExceptionMessage)
                         .parent()
@@ -211,5 +216,4 @@
             app.controller("UserDashboardController", ["$scope", "$http", UserDashboardController]);
         }());
     </script>
-
 }

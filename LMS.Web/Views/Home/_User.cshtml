@@ -7,7 +7,7 @@
         <div id="CourseContainer" class="panel panel-default" data-ng-repeat="course in CoursesList">
             <div class="panel-heading">{{course.CourseName}}</div>
             @* INCOMPLETE LEARNING *@
-            <div data-ng-if="!course.LearningComplete" class="panel-body">
+            <div data-ng-if="::!course.LearningComplete" class="panel-body">
                 <div>{{course.CourseDescription}}</div>
                 <br />
                 <a href="{{course.CourseContentResource}}" class="lead">{{course.CourseContentName}}</a>
@@ -35,7 +35,7 @@
                 <button data-ng-click="submit(course)" type="button" class="editor-btn btn btn-primary pull-right">Submit &raquo;</button>
             </div>
             @* COMPLETED LEARNING *@
-            <div data-ng-if="course.LearningComplete" class="panel-body">
+            <div data-ng-if="::course.LearningComplete" class="panel-body">
                 <div>Thank you, this course is complete. You can review the document below:</div>
                 <br />
                 <a href="{{course.CourseContentResource}}" class="lead">{{course.CourseContentName}}</a>
