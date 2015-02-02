@@ -8,19 +8,25 @@ namespace LMS.API.DataAccess
 {
     public class ReportsDbAccess
     {
-        public IEnumerable<Client> GetClients()
+        public IEnumerable<BasicReport> GetBasicReport(int clientId)
         {
             var sqlAccess = new SqlServerAccess("stp_getBasicReport");
+            sqlAccess.AddParameter("client_id", clientId);
 
-            return sqlAccess.ToListByConvertFunctionFromReader(r =>
+            return sqlAccess.ToListByConvertFunctionFromReader(r => new BasicReport
             {
-                return new Client
-                {
-                    ClientId = r.To<int>("ClientId"),
-                    Name = r.To<string>("Name"),
-                    LogoTitle = r.To<string>("LogoTitle"),
-                    LogoResource = r.To<string>("LogoResource")
-                };
+                LearningComplete = r.To<bool>("LearningComplete"),
+                UserId = r.To<int>("UserId"),
+                FirstName = r.To<string>("FirstName"),
+                LastName = r.To<string>("LastName"),
+                EmailAddress = r.To<string>("EmailAddress"),
+                UserGroupName = r.To<string>("UserGroupName"),
+                StartDate = r.To<DateTime>("StartDate"),
+                EndDate = r.To<DateTime>("EndDate"),
+                IsRolling = r.To<bool>("IsRolling"),
+                CourseName = r.To<string>("CourseName"),
+                CourseType = r.To<string>("CourseType"),
+                CourseCategoryName = r.To<string>("CourseCategoryName")
             });
         }
     }

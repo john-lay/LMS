@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace LMS.Web.Controllers
 {
-    public class ReportController : Controller
+    public class ReportController : LMSBaseController
     {
         // GET: Report
         public ActionResult Index()

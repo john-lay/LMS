@@ -10,7 +10,7 @@
     <link href="~/Content/DataTables/jquery.dataTables.min.css" rel="stylesheet" />
     <link href="~/Content/DataTables/dataTables.tableTools.min.css" rel="stylesheet" />
 }
-<div>
+<div data-ng-controller="ReportController">
     <div class="col-md-3">
         select course<br />
         how do you group by user?
@@ -74,51 +74,58 @@
     <div class="clearfix" style="margin-bottom: 3em;"></div>
     <hr />
     <div style="margin-bottom: 5em;"></div>
-    <table id="example" class="display" cellspacing="0" width="100%" >
+    <div data-ng-show="ResultsList.length === 0"  class="panel panel-default">
+        <div class="panel-body">
+            Sorry there were no results for your query, please refine your search and try again.
+        </div>
+    </div>
+    <table data-ng-show="ResultsList.length > 0" id="example" class="display" cellspacing="0" width="100%">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Position</th>
-                <th>Office</th>
-                <th>Age</th>
-                <th>Start date</th>
-                <th>Salary</th>
+                <th>LearningComplete</th>
+                <th>UserId</th>
+                <th>FirstName</th>
+                <th>LastName</th>
+                <th>EmailAddress</th>
+                <th>UserGroupName</th>
+                <th>StartDate</th>
+                <th>EndDate</th>
+                <th>IsRolling</th>
+                <th>CourseName</th>
+                <th>CourseType</th>
+                <th>CourseCategoryName</th>
             </tr>
         </thead>
         <tfoot>
             <tr>
-                <th>Name</th>
-                <th>Position</th>
-                <th>Office</th>
-                <th>Age</th>
-                <th>Start date</th>
-                <th>Salary</th>
+                <th>LearningComplete</th>
+                <th>UserId</th>
+                <th>FirstName</th>
+                <th>LastName</th>
+                <th>EmailAddress</th>
+                <th>UserGroupName</th>
+                <th>StartDate</th>
+                <th>EndDate</th>
+                <th>IsRolling</th>
+                <th>CourseName</th>
+                <th>CourseType</th>
+                <th>CourseCategoryName</th>
             </tr>
         </tfoot>
         <tbody>
-            <tr>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>Edinburgh</td>
-                <td>61</td>
-                <td>2011/04/25</td>
-                <td>$320,800</td>
-            </tr>
-            <tr>
-                <td>Garrett Winters</td>
-                <td>Accountant</td>
-                <td>Tokyo</td>
-                <td>63</td>
-                <td>2011/07/25</td>
-                <td>$170,750</td>
-            </tr>
-            <tr>
-                <td>Ashton Cox</td>
-                <td>Junior Technical Author</td>
-                <td>San Francisco</td>
-                <td>66</td>
-                <td>2009/01/12</td>
-                <td>$86,000</td>
+            <tr data-ng-repeat="result in ResultsList">
+                <th>{{result.LearningComplete}}</th>
+                <th>{{result.UserId}}</th>
+                <th>{{result.FirstName}}</th>
+                <th>{{result.LastName}}</th>
+                <th>{{result.EmailAddress}}</th>
+                <th>{{result.UserGroupName}}</th>
+                <th>{{getDateStringFromJSONString(result.StartDate)}}</th>
+                <th>{{getDateStringFromJSONString(result.EndDate)}}</th>
+                <th>{{result.IsRolling}}</th>
+                <th>{{result.CourseName}}</th>
+                <th>{{result.CourseType}}</th>
+                <th>{{result.CourseCategoryName}}</th>
             </tr>
         </tbody>
     </table>
@@ -157,6 +164,52 @@
 
                 // removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope
                 reportScope = $scope;
+                reportScope.httpService = $http;
+                reportScope.ResultsList = [];
+
+                reportScope.loadData = function () {
+                    reportScope.httpService({
+                        method: "GET",
+                        url: API_URL + "/Reports/GetBasicReport/",
+                        headers: {
+                            "Authorization": "Bearer " + TOKEN
+                        }
+                    })
+                    .success(function (data) {
+                        console.log("loading...");
+                        reportScope.ResultsList = JSON.parse(data);
+                        console.log(reportScope.ResultsList);
+                    })
+                    .error(function (data, status) {
+                        reportScope.showReportFailure(data);
+                    });
+                };
+
+                reportScope.getDateStringFromJSONString = function (JSONString) {
+                    var dateString = JSONString.match(/[0-9]+/g)[0];
+                    var formattedDate = new Date(parseInt(dateString, 10));
+                    var d = formattedDate.getDate().toString();
+                    var m = formattedDate.getMonth().toString();
+                    m += 1; // JavaScript months are 0-11
+                    var y = formattedDate.getFullYear();
+
+                    // prepend single day/month with zero
+                    d = ('0' + d).slice(-2);
+                    m = ('0' + m).slice(-2);
+
+                    return d + "/" + m + "/" + y;
+                }
+
+                reportScope.showReportFailure = function (data) {
+                    $(".alert-danger .msg")
+                        .html(data.ExceptionMessage)
+                        .parent()
+                        .removeClass("hidden")
+                        .slideDown();
+                }
+
+                // initialize data
+                reportScope.loadData();
 
             }
             app.controller("ReportController", ["$scope", "$http", ReportController]);
