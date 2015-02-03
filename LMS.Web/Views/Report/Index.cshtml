@@ -11,65 +11,59 @@
     <link href="~/Content/DataTables/dataTables.tableTools.min.css" rel="stylesheet" />
 }
 <div data-ng-controller="ReportController">
-    <div class="col-md-3">
-        select course<br />
-        how do you group by user?
+    <div class="row col-md-12 form-horizontal">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label col-md-4">Start Date</label>
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <input id="EditStartDate" type="text" class="form-control datepicker" placeholder="Select date" />
+                        <label for="EditStartDate" class="input-group-addon">
+                            <i class="input-append glyphicon glyphicon-calendar"></i>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label col-md-4">End Date</label>
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <input id="EditEndDate" type="text" class="form-control datepicker" placeholder="Select date" />
+                        <label for="EditEndDate" class="input-group-addon">
+                            <i class="input-append glyphicon glyphicon-calendar"></i>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-md-9 form-horizontal">
-        <div class="row col-md-12">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label class="control-label col-md-4">Start Date</label>
-                    <div class="col-md-8">
-                        <div class="input-group">
-                            <input id="EditStartDate" type="text" class="form-control datepicker" placeholder="Select date" />
-                            <label for="EditStartDate" class="input-group-addon">
-                                <i class="input-append glyphicon glyphicon-calendar"></i>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label class="control-label col-md-4">End Date</label>
-                    <div class="col-md-8">
-                        <div class="input-group">
-                            <input id="EditEndDate" type="text" class="form-control datepicker" placeholder="Select date" />
-                            <label for="EditEndDate" class="input-group-addon">
-                                <i class="input-append glyphicon glyphicon-calendar"></i>
-                            </label>
-                        </div>
-                    </div>
+    <div class="row col-md-12">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-md-4 control-label">Course type</label>
+                <div class="col-md-8">
+                    <select class="form-control">
+                        <option>e-learning</option>
+                    </select>
                 </div>
             </div>
         </div>
-        <div class="row col-md-12">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label class="col-md-4 control-label">Course type</label>
-                    <div class="col-md-8">
-                        <select class="form-control">
-                            <option>e-learning</option>
-                        </select>
-                    </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-md-4 control-label">Status</label>
+                <div class="col-md-8">
+                    <select class="form-control">
+                        <option>complete</option>
+                        <option>due</option>
+                        <option>overdue</option>
+                        <option>pending</option>
+                    </select>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label class="col-md-4 control-label">Status</label>
-                    <div class="col-md-8">
-                        <select class="form-control">
-                            <option>complete</option>
-                            <option>due</option>
-                            <option>overdue</option>
-                            <option>pending</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="clearfix"><br /></div>
         </div>
+        <div class="clearfix"><br /></div>
     </div>
     <div class="clearfix" style="margin-bottom: 3em;"></div>
     <hr />
@@ -79,53 +73,47 @@
             Sorry there were no results for your query, please refine your search and try again.
         </div>
     </div>
-    <table data-ng-show="ResultsList.length > 0" id="example" class="display" cellspacing="0" width="100%">
+    <table data-ng-show="ResultsList.length > 0" id="ReportResults" class="display" cellspacing="0" width="100%">
         <thead>
             <tr>
-                <th>LearningComplete</th>
-                <th>UserId</th>
-                <th>FirstName</th>
-                <th>LastName</th>
-                <th>EmailAddress</th>
-                <th>UserGroupName</th>
-                <th>StartDate</th>
-                <th>EndDate</th>
-                <th>IsRolling</th>
-                <th>CourseName</th>
-                <th>CourseType</th>
-                <th>CourseCategoryName</th>
+                <th width="8%" class="text-center">Selected</th>
+                <th width="14%">First Name</th>
+                <th width="14%">Last Name</th>
+                <th width="14%">In Group</th>
+                <th width="8%">Learning Complete</th>
+                <th width="18%">Course</th>
+                <th width="8%">Start Date</th>
+                <th width="8%">End Date</th>
+                <th width="8%">Rolling Course</th>
             </tr>
         </thead>
         <tfoot>
             <tr>
-                <th>LearningComplete</th>
-                <th>UserId</th>
-                <th>FirstName</th>
-                <th>LastName</th>
-                <th>EmailAddress</th>
-                <th>UserGroupName</th>
-                <th>StartDate</th>
-                <th>EndDate</th>
-                <th>IsRolling</th>
-                <th>CourseName</th>
-                <th>CourseType</th>
-                <th>CourseCategoryName</th>
+                <th width="8%" class="text-center">Selected</th>
+                <th width="14%">First Name</th>
+                <th width="14%">Last Name</th>
+                <th width="14%">In Group</th>
+                <th width="8%">Learning Complete</th>
+                <th width="18%">Course</th>
+                <th width="8%">Start Date</th>
+                <th width="8%">End Date</th>
+                <th width="8%">Rolling Course</th>
             </tr>
         </tfoot>
         <tbody>
             <tr data-ng-repeat="result in ResultsList">
-                <th>{{result.LearningComplete}}</th>
-                <th>{{result.UserId}}</th>
-                <th>{{result.FirstName}}</th>
-                <th>{{result.LastName}}</th>
-                <th>{{result.EmailAddress}}</th>
-                <th>{{result.UserGroupName}}</th>
-                <th>{{getDateStringFromJSONString(result.StartDate)}}</th>
-                <th>{{getDateStringFromJSONString(result.EndDate)}}</th>
-                <th>{{result.IsRolling}}</th>
-                <th>{{result.CourseName}}</th>
-                <th>{{result.CourseType}}</th>
-                <th>{{result.CourseCategoryName}}</th>
+                <td width="8%" class="text-center"><input data-ng-click="addSelectedResult(result)" type="checkbox" name="result" /></td>
+                <td width="14%">{{result.FirstName}}</td>
+                <td width="14%">{{result.LastName}}</td>
+                <td width="14%">{{result.UserGroupName}}</td>
+                <td width="8%">{{result.LearningComplete}}</td>
+                <td width="18%">{{result.CourseCategoryName !== "" ? result.CourseCategoryName + " &gt; " : "" }}{{result.CourseName}}</td>
+                <td width="8%">{{getDateStringFromJSONString(result.StartDate)}}</td>
+                <td width="8%">{{getDateStringFromJSONString(result.EndDate)}}</td>
+                <td width="8%">{{result.IsRolling}}</td>
+                <!--<td>{{result.UserId}}</td>-->
+                <!--<td>{{result.EmailAddress}}</td>-->
+                <!--<td>{{result.CourseType}}</td>-->
             </tr>
         </tbody>
     </table>
@@ -135,8 +123,8 @@
     <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
     <script src="~/Scripts/Library/bootstrap/bootstrap-datepicker.js"></script>
     <!-- Data Tables -->
-<script src="~/Scripts/Library/DataTables/jquery.dataTables.min.js"></script>
-<script src="~/Scripts/Library/DataTables/dataTables.tableTools.min.js"></script>
+    <script src="~/Scripts/Library/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/Library/DataTables/dataTables.tableTools.min.js"></script>
     <script type="text/javascript">
         $(function() {
             $('.datepicker').datepicker({
@@ -147,45 +135,56 @@
             });
 
             // data tables
-            $('#example').DataTable({
+            $('#ReportResults').DataTable({
                 dom: 'T<"clear">lfrtip',
                 tableTools: {
                     "sSwfPath": "@Url.Content("~/Scripts/Library/DataTables/swf/copy_csv_xls_pdf.swf")"
                 }
             });
+
+            //$('.dataTables_empty').parent().hide();
+            //$('#ReportResults_filter').parent().hide();
         });
     </script>
     <script type="text/javascript">
-        (function () {
+        (function() {
             //var app = angular.module("LMS", ["kendo.directives"]);
             var app = angular.module("LMS", []);
 
-            var ReportController = function ($scope, $http) {
+            var ReportController = function($scope, $http) {
 
                 // removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope
                 reportScope = $scope;
                 reportScope.httpService = $http;
                 reportScope.ResultsList = [];
 
-                reportScope.loadData = function () {
+                reportScope.loadData = function() {
                     reportScope.httpService({
-                        method: "GET",
-                        url: API_URL + "/Reports/GetBasicReport/",
-                        headers: {
-                            "Authorization": "Bearer " + TOKEN
-                        }
-                    })
-                    .success(function (data) {
-                        console.log("loading...");
-                        reportScope.ResultsList = JSON.parse(data);
-                        console.log(reportScope.ResultsList);
-                    })
-                    .error(function (data, status) {
-                        reportScope.showReportFailure(data);
-                    });
+                            method: "GET",
+                            url: API_URL + "/Reports/GetBasicReport/",
+                            headers: {
+                                "Authorization": "Bearer " + TOKEN
+                            }
+                        })
+                        .success(function(data) {
+                            reportScope.ResultsList = JSON.parse(data);
+                            //var filteredResults = reportScope.ResultsList;
+                            //$.each(filteredResults, function(i, item) {
+                            //    delete filteredResults[i].UserId;
+                            //    delete filteredResults[i].EmailAddress;
+                            //    delete filteredResults[i].CourseType;
+                            //});
+                            //$('#ReportResults').dataTable({
+                            //    "ajax": { "data": filteredResults }
+                            //});
+                            console.log(reportScope.ResultsList);
+                        })
+                        .error(function(data, status) {
+                            reportScope.showReportFailure(data);
+                        });
                 };
 
-                reportScope.getDateStringFromJSONString = function (JSONString) {
+                reportScope.getDateStringFromJSONString = function(JSONString) {
                     var dateString = JSONString.match(/[0-9]+/g)[0];
                     var formattedDate = new Date(parseInt(dateString, 10));
                     var d = formattedDate.getDate().toString();
@@ -200,7 +199,7 @@
                     return d + "/" + m + "/" + y;
                 }
 
-                reportScope.showReportFailure = function (data) {
+                reportScope.showReportFailure = function(data) {
                     $(".alert-danger .msg")
                         .html(data.ExceptionMessage)
                         .parent()
