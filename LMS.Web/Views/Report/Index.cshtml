@@ -127,9 +127,9 @@
     <!-- Data Tables -->
     <script src="~/Scripts/Library/DataTables/jquery.dataTables.min.js"></script>
     <script src="~/Scripts/Library/DataTables/dataTables.tableTools.min.js"></script>
-<script src="~/Scripts/Library/DataTables/angular-datatables.min.js"></script>
-<script src="~/Scripts/Library/DataTables/angular-datatables.tabletools.min.js"></script>
-<script src="~/Scripts/Library/angular/angular-resource.min.js"></script>
+    <script src="~/Scripts/Library/DataTables/angular-datatables.min.js"></script>
+    <script src="~/Scripts/Library/DataTables/angular-datatables.tabletools.min.js"></script>
+    <script src="~/Scripts/Library/angular/angular-resource.min.js"></script>
     @*<script type="text/javascript">
         var REPORT_DATA;
         $(function() {
@@ -195,70 +195,86 @@
             //var app = angular.module("LMS", ["kendo.directives"]);
             var app = angular.module("LMS", ['ngResource', 'datatables', 'datatables.tabletools']);
 
-            var ReportController = function ($scope, DTOptionsBuilder, DTColumnBuilder, $q, $http, $resource) {
+            var ReportController = function($scope, DTOptionsBuilder, DTColumnBuilder, $q, $http, $resource) {
 
                 // removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope
                 reportScope = $scope;
                 reportScope.httpService = $http;
                 reportScope.ResultsList = [];
+                reportScope.selected = {};
 
-                $scope.dtOptions = DTOptionsBuilder.fromFnPromise(function () {
-                    var defer = $q.defer();
-                    reportScope.httpService({
-                        method: "GET",
-                        url: API_URL + "/Reports/GetBasicReport/",
-                        headers: {
-                            "Authorization": "Bearer " + TOKEN
-                        }
+                reportScope.addUser = function(data) {
+                    console.log("adding user data...");
+                    console.log(data);
+                }
+
+                $scope.dtOptions = DTOptionsBuilder.fromFnPromise(function() {
+                        var defer = $q.defer();
+                        reportScope.httpService({
+                                method: "GET",
+                                url: API_URL + "/Reports/GetBasicReport/",
+                                headers: {
+                                    "Authorization": "Bearer " + TOKEN
+                                }
+                            })
+                            .success(function(data) {
+                                defer.resolve(JSON.parse(data));
+                            });
+                        return defer.promise;
                     })
-                    .success(function (data) {
-                        defer.resolve(JSON.parse(data));
-                    });
-                    return defer.promise;
-                })
-                .withPaginationType('full_numbers')
-                .withTableTools('@Url.Content("~/Scripts/Library/DataTables/swf/copy_csv_xls_pdf.swf")')
-                .withTableToolsButtons([
-                    'copy',
-                    'print', {
-                        'sExtends': 'collection',
-                        'sButtonText': 'Save',
-                        'aButtons': ['csv', 'xls', 'pdf']
-                    }
-                ]);
+                    .withPaginationType('full_numbers')
+                    .withTableTools('@Url.Content("~/Scripts/Library/DataTables/swf/copy_csv_xls_pdf.swf")')
+                    .withTableToolsButtons([
+                        'copy',
+                        'print', {
+                            'sExtends': 'collection',
+                            'sButtonText': 'Save',
+                            'aButtons': ['csv', 'xls', 'pdf']
+                        }
+                    ]);
 
                 $scope.dtColumns = [
-                    DTColumnBuilder.newColumn('UserId').withTitle('ID'),
-                    DTColumnBuilder.newColumn('FirstName').withTitle('First name'),
-                    DTColumnBuilder.newColumn('LastName').withTitle('Last name').notVisible()
+                    DTColumnBuilder.newColumn(null).withTitle('Selected').notSortable()
+                    .renderWith(function(data, type, full, meta) {
+                        return '<input type="checkbox" data-ng-change="addUser(' + data.UserId + ')"/>';
+                    }),
+                    DTColumnBuilder.newColumn('UserId').withTitle('ID').notVisible(),
+                    DTColumnBuilder.newColumn('FirstName').withTitle('First Name'),
+                    DTColumnBuilder.newColumn('LastName').withTitle('Last Name'),
+                    DTColumnBuilder.newColumn('UserGroupName').withTitle('In Group'),
+                    DTColumnBuilder.newColumn('LearningComplete').withTitle('Learning Complete'),
+                    DTColumnBuilder.newColumn('CourseName').withTitle('Course'),
+                    DTColumnBuilder.newColumn('StartDate').withTitle('Start Date'),
+                    DTColumnBuilder.newColumn('EndDate').withTitle('End Date'),
+                    DTColumnBuilder.newColumn('IsRolling').withTitle('Rolling Course')
                 ];
 
-                reportScope.loadData = function() {
-                    reportScope.httpService({
-                            method: "GET",
-                            url: API_URL + "/Reports/GetBasicReport/",
-                            headers: {
-                                "Authorization": "Bearer " + TOKEN
-                            }
-                        })
-                        .success(function(data) {
-                            reportScope.ResultsList = JSON.parse(data);
-                            REPORT_DATA = reportScope.ResultsList;
-                            //var filteredResults = reportScope.ResultsList;
-                            //$.each(filteredResults, function(i, item) {
-                            //    delete filteredResults[i].UserId;
-                            //    delete filteredResults[i].EmailAddress;
-                            //    delete filteredResults[i].CourseType;
-                            //});
-                            //$('#ReportResults').dataTable({
-                            //    "ajax": { "data": filteredResults }
-                            //});
-                            console.log(reportScope.ResultsList);
-                        })
-                        .error(function(data, status) {
-                            reportScope.showReportFailure(data);
-                        });
-                };
+                //reportScope.loadData = function() {
+                //    reportScope.httpService({
+                //            method: "GET",
+                //            url: API_URL + "/Reports/GetBasicReport/",
+                //            headers: {
+                //                "Authorization": "Bearer " + TOKEN
+                //            }
+                //        })
+                //        .success(function(data) {
+                //            reportScope.ResultsList = JSON.parse(data);
+                //            REPORT_DATA = reportScope.ResultsList;
+                //            //var filteredResults = reportScope.ResultsList;
+                //            //$.each(filteredResults, function(i, item) {
+                //            //    delete filteredResults[i].UserId;
+                //            //    delete filteredResults[i].EmailAddress;
+                //            //    delete filteredResults[i].CourseType;
+                //            //});
+                //            //$('#ReportResults').dataTable({
+                //            //    "ajax": { "data": filteredResults }
+                //            //});
+                //            console.log(reportScope.ResultsList);
+                //        })
+                //        .error(function(data, status) {
+                //            reportScope.showReportFailure(data);
+                //        });
+                //};
 
                 reportScope.getDateStringFromJSONString = function(JSONString) {
                     var dateString = JSONString.match(/[0-9]+/g)[0];
