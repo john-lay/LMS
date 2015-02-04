@@ -39,17 +39,25 @@
             </div>
         </div>
     </div>
-    <div class="row col-md-12">
+    <div class="row col-md-12 form-horizontal">
         <div class="col-md-6">
             <div class="form-group">
-                <label class="col-md-4 control-label">Course type</label>
+                <label class="col-md-4 control-label">User Group</label>
                 <div class="col-md-8">
-                    <select class="form-control">
-                        <option>e-learning</option>
-                    </select>
+                    <select class="form-control" data-ng-options="userGroup in UserGroupList" data-ng-model="Filter.UserGroup"></select>
                 </div>
             </div>
         </div>
+        @*<div class="col-md-6">
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Course type</label>
+                    <div class="col-md-8">
+                        <select class="form-control">
+                            <option>e-learning</option>
+                        </select>
+                    </div>
+                </div>
+            </div>*@
         <div class="col-md-6">
             <div class="form-group">
                 <label class="col-md-4 control-label">Status</label>
@@ -60,6 +68,42 @@
                         <option>overdue</option>
                         <option>pending</option>
                     </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row col-md-12 form-horizontal">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-md-4 control-label">Course Category</label>
+                <div class="col-md-8">
+                    <select class="form-control" data-ng-options="courseCategory as courseCategory.Name for courseCategory in CourseCategoryList" data-ng-model="Filter.CourseCategory"></select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-md-4 control-label">Course</label>
+                <div class="col-md-8">
+                    <select class="form-control" data-ng-options="course as course.Name for course in in CourseList" data-ng-model="Filter.Course"></select>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"><br /></div>
+    </div>
+    <div class="row col-md-12 form-horizontal">
+        <div class="col-md-6">
+            <div class="form-group">
+                <div class="col-md-offset-4 col-md-8">
+                    <button data-ng-click="emailSelectedUsers()" type="button" class="btn btn-default btn-primary pull-right">Email Selected Users</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <div class="col-md-offset-4 col-md-8">                    
+                    <button data-ng-click="applyReportFilter()" type="button" class="btn btn-default btn-success pull-right" style="margin-left: 6px">Apply Filter</button>
+                    <button data-ng-click="resetReportFilter()" type="button" class="btn btn-default pull-right">Reset</button>
                 </div>
             </div>
         </div>
@@ -203,12 +247,17 @@
                 reportScope.ResultsList = [];
                 reportScope.selected = {};
 
+                reportScope.UserGroupList = [];
+                reportScope.CourseCategoryList = [];
+                reportScope.CourseList = [];
+                reportScope.Filter = {UserGroup: "", CourseCategory: "", Course: ""}
+
                 reportScope.addUser = function(data) {
                     console.log("adding user data...");
                     console.log(data);
                 }
 
-                $scope.dtOptions = DTOptionsBuilder.fromFnPromise(function() {
+                reportScope.dtOptions = DTOptionsBuilder.fromFnPromise(function () {
                         var defer = $q.defer();
                         reportScope.httpService({
                                 method: "GET",
@@ -217,8 +266,10 @@
                                     "Authorization": "Bearer " + TOKEN
                                 }
                             })
-                            .success(function(data) {
-                                defer.resolve(JSON.parse(data));
+                            .success(function (data) {
+                                var result = JSON.parse(data);
+                                reportScope.populateDropDowns(result);
+                                defer.resolve(reportScope.formatData(result));
                             });
                         return defer.promise;
                     })
@@ -233,7 +284,7 @@
                         }
                     ]);
 
-                $scope.dtColumns = [
+                reportScope.dtColumns = [
                     DTColumnBuilder.newColumn(null).withTitle('Selected').notSortable()
                     .renderWith(function(data, type, full, meta) {
                         return '<input type="checkbox" data-ng-change="addUser(' + data.UserId + ')"/>';
@@ -245,9 +296,26 @@
                     DTColumnBuilder.newColumn('LearningComplete').withTitle('Learning Complete'),
                     DTColumnBuilder.newColumn('CourseName').withTitle('Course'),
                     DTColumnBuilder.newColumn('StartDate').withTitle('Start Date'),
-                    DTColumnBuilder.newColumn('EndDate').withTitle('End Date'),
-                    DTColumnBuilder.newColumn('IsRolling').withTitle('Rolling Course')
+                    DTColumnBuilder.newColumn('EndDate').withTitle('End Date')
                 ];
+
+                reportScope.populateDropDowns = function (data) {
+                    $.each(data, function (i, item) {
+                        if (item.UserGroupName !== null && reportScope.UserGroupList.indexOf(item.UserGroupName) !== -1) reportScope.UserGroupList.push(item.UserGroupName);
+                        if (item.CourseCategoryName !== null && reportScope.CourseCategoryList.indexOf(item.CourseCategoryName) !== -1) reportScope.CourseCategoryList.push(item.CourseCategoryName);
+                        if (item.CourseName !== null && reportScope.CourseList.indexOf(item.CourseName) !== -1) reportScope.CourseList.push(item.CourseName);
+                    });
+                }
+
+                reportScope.formatData = function (data) {
+                    var result = data;
+                    $.each(result, function (i, item) {
+                        result[i].StartDate = reportScope.getDateStringFromJSONString(result[i].StartDate);
+                        result[i].EndDate = reportScope.getDateStringFromJSONString(result[i].EndDate);
+                    });
+
+                    return result;
+                }
 
                 //reportScope.loadData = function() {
                 //    reportScope.httpService({
