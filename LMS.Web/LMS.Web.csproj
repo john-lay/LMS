@@ -449,6 +449,8 @@
     <Content Include="Scripts\Library\angular\angular-aria.min.js.map" />
     <Content Include="Scripts\Library\angular\angular-animate.min.js.map" />
     <Content Include="Scripts\Library\angular\angular.min.js.map" />
+    <Content Include="Scripts\Library\DataTables\angular-datatables.min.js" />
+    <Content Include="Scripts\Library\DataTables\angular-datatables.tabletools.min.js" />
     <Content Include="Scripts\Library\DataTables\dataTables.tableTools.js" />
     <Content Include="Scripts\Library\DataTables\dataTables.tableTools.min.js" />
     <Content Include="Scripts\Library\DataTables\jquery.dataTables.js" />

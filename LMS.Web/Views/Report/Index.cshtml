@@ -68,13 +68,15 @@
     <div class="clearfix" style="margin-bottom: 3em;"></div>
     <hr />
     <div style="margin-bottom: 5em;"></div>
-    <div data-ng-show="ResultsList.length === 0"  class="panel panel-default">
+    @*<div data-ng-show="ResultsList.length === 0"  class="panel panel-default">
         <div class="panel-body">
             Sorry there were no results for your query, please refine your search and try again.
         </div>
     </div>
-    <table data-ng-show="ResultsList.length > 0" id="ReportResults" class="display" cellspacing="0" width="100%">
-        <thead>
+    <table data-ng-show="ResultsList.length > 0" id="ReportResults" class="display" cellspacing="0" width="100%">*@
+    <table id="ReportResults" datatable="" dt-options="dtOptions" dt-columns="dtColumns" class="display" cellspacing="0" width="100%">
+        @*<table id="ReportResults" class="display" cellspacing="0" width="100%">*@
+        @*<thead>
             <tr>
                 <th width="8%" class="text-center">Selected</th>
                 <th width="14%">First Name</th>
@@ -99,23 +101,23 @@
                 <th width="8%">End Date</th>
                 <th width="8%">Rolling Course</th>
             </tr>
-        </tfoot>
-        <tbody>
-            <tr data-ng-repeat="result in ResultsList">
-                <td width="8%" class="text-center"><input data-ng-click="addSelectedResult(result)" type="checkbox" name="result" /></td>
-                <td width="14%">{{result.FirstName}}</td>
-                <td width="14%">{{result.LastName}}</td>
-                <td width="14%">{{result.UserGroupName}}</td>
-                <td width="8%">{{result.LearningComplete}}</td>
-                <td width="18%">{{result.CourseCategoryName !== "" ? result.CourseCategoryName + " &gt; " : "" }}{{result.CourseName}}</td>
-                <td width="8%">{{getDateStringFromJSONString(result.StartDate)}}</td>
-                <td width="8%">{{getDateStringFromJSONString(result.EndDate)}}</td>
-                <td width="8%">{{result.IsRolling}}</td>
-                <!--<td>{{result.UserId}}</td>-->
-                <!--<td>{{result.EmailAddress}}</td>-->
-                <!--<td>{{result.CourseType}}</td>-->
-            </tr>
-        </tbody>
+        </tfoot>*@
+        @*<tbody>
+                <tr data-ng-repeat="result in ResultsList">
+                    <td width="8%" class="text-center"><input data-ng-click="addSelectedResult(result)" type="checkbox" name="result" /></td>
+                    <td width="14%">{{result.FirstName}}</td>
+                    <td width="14%">{{result.LastName}}</td>
+                    <td width="14%">{{result.UserGroupName}}</td>
+                    <td width="8%">{{result.LearningComplete}}</td>
+                    <td width="18%">{{result.CourseCategoryName !== "" ? result.CourseCategoryName + " &gt; " : "" }}{{result.CourseName}}</td>
+                    <td width="8%">{{getDateStringFromJSONString(result.StartDate)}}</td>
+                    <td width="8%">{{getDateStringFromJSONString(result.EndDate)}}</td>
+                    <td width="8%">{{result.IsRolling}}</td>
+                    <!--<td>{{result.UserId}}</td>-->
+                    <!--<td>{{result.EmailAddress}}</td>-->
+                    <!--<td>{{result.CourseType}}</td>-->
+                </tr>
+            </tbody>*@
     </table>
     <div style="margin-bottom: 5em;"></div>
 </div>
@@ -125,7 +127,11 @@
     <!-- Data Tables -->
     <script src="~/Scripts/Library/DataTables/jquery.dataTables.min.js"></script>
     <script src="~/Scripts/Library/DataTables/dataTables.tableTools.min.js"></script>
-    <script type="text/javascript">
+<script src="~/Scripts/Library/DataTables/angular-datatables.min.js"></script>
+<script src="~/Scripts/Library/DataTables/angular-datatables.tabletools.min.js"></script>
+<script src="~/Scripts/Library/angular/angular-resource.min.js"></script>
+    @*<script type="text/javascript">
+        var REPORT_DATA;
         $(function() {
             $('.datepicker').datepicker({
                 todayHighlight: true,
@@ -137,6 +143,44 @@
             // data tables
             $('#ReportResults').DataTable({
                 dom: 'T<"clear">lfrtip',
+                ajax: {
+                    url: API_URL + "/Reports/GetBasicReport/",
+                    type: "GET",
+                    beforeSend: function(request) {
+                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+                    },
+                    dataSrc: function(result) {
+                        var ret = { data: [] };
+                        ret.data = JSON.parse(result);
+                        //$.each(ret.data, function(i, item) {
+                        //    delete ret.data[i].EmailAddress;
+                        //    delete ret.data[i].CourseType;
+                        //    ret.data[i].CourseName = ret.data[i].CourseCategoryName !== "" ? ret.data[i].CourseCategoryName + " > " + ret.data[i].CourseName : ret.data[i].CourseName;
+                        //    delete ret.data[i].CourseCategoryName;
+                        //    if (!ret.data[i].IsRolling) ret.data[i].IsRolling = "no";
+                        //    if (!ret.data[i].LearningComplete) ret.data[i].LearningComplete = "no";
+                        //    ret.data[i].UserId = "no";
+
+                        //});
+                        //ret.data = ret.data[2];
+                        //ret.aaData = ret.data;
+                        //ret.aoData = ret.data;
+                        //console.log(ret);
+                        return ret;
+                    }
+                },
+                columns: [
+                    { data: "UserId" },
+                    { data: "FirstName" },
+                    { data: "LastName" },
+                    { data: "UserGroupName" },
+                    { data: "LearningComplete" },
+                    { data: "CourseName" },
+                    { data: "StartDate" },
+                    { data: "EndDate" },
+                    { data: "IsRolling" }
+                ],
+                deferRender: true,
                 tableTools: {
                     "sSwfPath": "@Url.Content("~/Scripts/Library/DataTables/swf/copy_csv_xls_pdf.swf")"
                 }
@@ -145,18 +189,49 @@
             //$('.dataTables_empty').parent().hide();
             //$('#ReportResults_filter').parent().hide();
         });
-    </script>
+    </script>*@
     <script type="text/javascript">
         (function() {
             //var app = angular.module("LMS", ["kendo.directives"]);
-            var app = angular.module("LMS", []);
+            var app = angular.module("LMS", ['ngResource', 'datatables', 'datatables.tabletools']);
 
-            var ReportController = function($scope, $http) {
+            var ReportController = function ($scope, DTOptionsBuilder, DTColumnBuilder, $q, $http, $resource) {
 
                 // removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope
                 reportScope = $scope;
                 reportScope.httpService = $http;
                 reportScope.ResultsList = [];
+
+                $scope.dtOptions = DTOptionsBuilder.fromFnPromise(function () {
+                    var defer = $q.defer();
+                    reportScope.httpService({
+                        method: "GET",
+                        url: API_URL + "/Reports/GetBasicReport/",
+                        headers: {
+                            "Authorization": "Bearer " + TOKEN
+                        }
+                    })
+                    .success(function (data) {
+                        defer.resolve(JSON.parse(data));
+                    });
+                    return defer.promise;
+                })
+                .withPaginationType('full_numbers')
+                .withTableTools('@Url.Content("~/Scripts/Library/DataTables/swf/copy_csv_xls_pdf.swf")')
+                .withTableToolsButtons([
+                    'copy',
+                    'print', {
+                        'sExtends': 'collection',
+                        'sButtonText': 'Save',
+                        'aButtons': ['csv', 'xls', 'pdf']
+                    }
+                ]);
+
+                $scope.dtColumns = [
+                    DTColumnBuilder.newColumn('UserId').withTitle('ID'),
+                    DTColumnBuilder.newColumn('FirstName').withTitle('First name'),
+                    DTColumnBuilder.newColumn('LastName').withTitle('Last name').notVisible()
+                ];
 
                 reportScope.loadData = function() {
                     reportScope.httpService({
@@ -168,6 +243,7 @@
                         })
                         .success(function(data) {
                             reportScope.ResultsList = JSON.parse(data);
+                            REPORT_DATA = reportScope.ResultsList;
                             //var filteredResults = reportScope.ResultsList;
                             //$.each(filteredResults, function(i, item) {
                             //    delete filteredResults[i].UserId;
@@ -208,10 +284,10 @@
                 }
 
                 // initialize data
-                reportScope.loadData();
+                //reportScope.loadData();
 
             }
-            app.controller("ReportController", ["$scope", "$http", ReportController]);
+            app.controller("ReportController", ["$scope", "DTOptionsBuilder", "DTColumnBuilder", "$q", "$http", "$resource", ReportController]);
         }());
     </script>
 }
