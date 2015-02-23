@@ -11,8 +11,9 @@ using System.Web.Http.Cors;
 
 namespace LMS.API.Controllers
 {
-    [EnableCors(origins: "http://localhost:58733", headers: "*", methods: "*")]
+    //[EnableCors(origins: "http://localhost:58733", headers: "*", methods: "*")]
     //[EnableCors(origins: "http://www.avemtec.somee.com/", headers: "*", methods: "*")]
+    [EnableCors(origins: "http://avemtec.azurewebsites.net/", headers: "*", methods: "*")]
     public class ApiBaseController : ApiController
     {
         public int ClientId { get; set; }

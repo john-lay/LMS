@@ -121,7 +121,9 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <Content Include="SQL\stp_getBasicReport.sql" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
@@ -174,6 +176,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <None Include="Properties\PublishProfiles\avemtec.pubxml" />
+    <None Include="Properties\PublishProfiles\avemtecapi %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\avemtecapi %283%29.pubxml" />
+    <None Include="Properties\PublishProfiles\avemtecapi.pubxml" />
+    <None Include="Properties\PublishProfiles\azure.lms.api.pubxml" />
     <None Include="Properties\PublishProfiles\somee.lms.api.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
