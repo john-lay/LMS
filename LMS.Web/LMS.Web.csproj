@@ -1789,7 +1789,11 @@
     <TypeScriptCompile Include="Scripts\Course\SelectController.ts" />
     <TypeScriptCompile Include="Scripts\Course\SessionController.ts" />
     <TypeScriptCompile Include="Scripts\Course\ManageController.ts" />
+    <TypeScriptCompile Include="Scripts\Home\UserDashboardController.ts" />
+    <TypeScriptCompile Include="Scripts\Home\IUserDashboardScope.ts" />
     <TypeScriptCompile Include="Scripts\LMSapp.ts" />
+    <TypeScriptCompile Include="Scripts\Report\IBasicController.ts" />
+    <TypeScriptCompile Include="Scripts\Report\IBasicScope.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-animate.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-cookies.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-mocks.d.ts" />

@@ -44,7 +44,9 @@
             <div class="form-group">
                 <label class="col-md-4 control-label">User Group</label>
                 <div class="col-md-8">
-                    <select class="form-control" data-ng-options="userGroup in UserGroupList" data-ng-model="Filter.UserGroup"></select>
+                    <select class="form-control" data-ng-options="userGroup for userGroup in UserGroupList" data-ng-model="Filter.UserGroup">
+                        <option value=''>Please select a user group...</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -62,7 +64,7 @@
             <div class="form-group">
                 <label class="col-md-4 control-label">Status</label>
                 <div class="col-md-8">
-                    <select class="form-control">
+                    <select placeholder="Please select a status..." class="form-control">
                         <option>complete</option>
                         <option>due</option>
                         <option>overdue</option>
@@ -77,7 +79,9 @@
             <div class="form-group">
                 <label class="col-md-4 control-label">Course Category</label>
                 <div class="col-md-8">
-                    <select class="form-control" data-ng-options="courseCategory as courseCategory.Name for courseCategory in CourseCategoryList" data-ng-model="Filter.CourseCategory"></select>
+                    <select class="form-control" data-ng-options="courseCategory for courseCategory in CourseCategoryList" data-ng-model="Filter.CourseCategory">
+                        <option value=''>Please select a course category...</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -85,7 +89,9 @@
             <div class="form-group">
                 <label class="col-md-4 control-label">Course</label>
                 <div class="col-md-8">
-                    <select class="form-control" data-ng-options="course as course.Name for course in in CourseList" data-ng-model="Filter.Course"></select>
+                    <select class="form-control" data-ng-options="course for course in CourseList" data-ng-model="Filter.Course">
+                        <option value=''>Please select a course...</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -245,7 +251,7 @@
                 reportScope = $scope;
                 reportScope.httpService = $http;
                 reportScope.ResultsList = [];
-                reportScope.selected = {};
+                reportScope.SelectedUsersList = [];
 
                 reportScope.UserGroupList = [];
                 reportScope.CourseCategoryList = [];
@@ -287,7 +293,7 @@
                 reportScope.dtColumns = [
                     DTColumnBuilder.newColumn(null).withTitle('Selected').notSortable()
                     .renderWith(function(data, type, full, meta) {
-                        return '<input type="checkbox" data-ng-change="addUser(' + data.UserId + ')"/>';
+                        return '<input type="checkbox" value="' + data.EmailAddress + '" />';
                     }),
                     DTColumnBuilder.newColumn('UserId').withTitle('ID').notVisible(),
                     DTColumnBuilder.newColumn('FirstName').withTitle('First Name'),
@@ -301,9 +307,9 @@
 
                 reportScope.populateDropDowns = function (data) {
                     $.each(data, function (i, item) {
-                        if (item.UserGroupName !== null && reportScope.UserGroupList.indexOf(item.UserGroupName) !== -1) reportScope.UserGroupList.push(item.UserGroupName);
-                        if (item.CourseCategoryName !== null && reportScope.CourseCategoryList.indexOf(item.CourseCategoryName) !== -1) reportScope.CourseCategoryList.push(item.CourseCategoryName);
-                        if (item.CourseName !== null && reportScope.CourseList.indexOf(item.CourseName) !== -1) reportScope.CourseList.push(item.CourseName);
+                        if (item.UserGroupName !== null && reportScope.UserGroupList.indexOf(item.UserGroupName) === -1) reportScope.UserGroupList.push(item.UserGroupName);
+                        if (item.CourseCategoryName !== null && reportScope.CourseCategoryList.indexOf(item.CourseCategoryName) === -1) reportScope.CourseCategoryList.push(item.CourseCategoryName);
+                        if (item.CourseName !== null && reportScope.CourseList.indexOf(item.CourseName) === -1) reportScope.CourseList.push(item.CourseName);
                     });
                 }
 
