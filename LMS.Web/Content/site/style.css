@@ -85,4 +85,8 @@ html body .footer {
   text-decoration: none;
   color: #333333;
 }
+#ReportResults .user {
+  margin: 0 auto;
+  display: block;
+}
 /*# sourceMappingURL=style.css.map */

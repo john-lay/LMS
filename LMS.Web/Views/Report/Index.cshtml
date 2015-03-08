@@ -2,10 +2,6 @@
     ViewBag.Title = "Report";
 }
 @section head {
-    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.common.min.css" rel="stylesheet" />
-    <link href="~/Content/kendo-styles/kendo.silver.min.css" rel="stylesheet" />
-    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.min.css" rel="stylesheet" />
-    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.default.min.css" rel="stylesheet" />
     <!-- Data Tables -->
     <link href="~/Content/DataTables/jquery.dataTables.min.css" rel="stylesheet" />
     <link href="~/Content/DataTables/dataTables.tableTools.min.css" rel="stylesheet" />
@@ -44,7 +40,7 @@
             <div class="form-group">
                 <label class="col-md-4 control-label">User Group</label>
                 <div class="col-md-8">
-                    <select class="form-control" data-ng-options="userGroup for userGroup in UserGroupList" data-ng-model="Filter.UserGroup">
+                    <select class="form-control" id="UserGroup">
                         <option value=''>Please select a user group...</option>
                     </select>
                 </div>
@@ -79,7 +75,7 @@
             <div class="form-group">
                 <label class="col-md-4 control-label">Course Category</label>
                 <div class="col-md-8">
-                    <select class="form-control" data-ng-options="courseCategory for courseCategory in CourseCategoryList" data-ng-model="Filter.CourseCategory">
+                    <select class="form-control" id="CourseCategory">
                         <option value=''>Please select a course category...</option>
                     </select>
                 </div>
@@ -89,7 +85,7 @@
             <div class="form-group">
                 <label class="col-md-4 control-label">Course</label>
                 <div class="col-md-8">
-                    <select class="form-control" data-ng-options="course for course in CourseList" data-ng-model="Filter.Course">
+                    <select class="form-control" id="Course">
                         <option value=''>Please select a course...</option>
                     </select>
                 </div>
@@ -101,15 +97,15 @@
         <div class="col-md-6">
             <div class="form-group">
                 <div class="col-md-offset-4 col-md-8">
-                    <button data-ng-click="emailSelectedUsers()" type="button" class="btn btn-default btn-primary pull-right">Email Selected Users</button>
+                    <button id="EmailSelectedUsers" type="button" class="btn btn-default btn-primary pull-right">Email Selected Users</button>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 <div class="col-md-offset-4 col-md-8">                    
-                    <button data-ng-click="applyReportFilter()" type="button" class="btn btn-default btn-success pull-right" style="margin-left: 6px">Apply Filter</button>
-                    <button data-ng-click="resetReportFilter()" type="button" class="btn btn-default pull-right">Reset</button>
+                    <button id="ApplyReportFilter" type="button" class="btn btn-default btn-success pull-right" style="margin-left: 6px">Apply Filter</button>
+                    <button id="ResetReportFilter" type="button" class="btn btn-default pull-right">Reset</button>
                 </div>
             </div>
         </div>
@@ -124,64 +120,20 @@
         </div>
     </div>
     <table data-ng-show="ResultsList.length > 0" id="ReportResults" class="display" cellspacing="0" width="100%">*@
-    <table id="ReportResults" datatable="" dt-options="dtOptions" dt-columns="dtColumns" class="display" cellspacing="0" width="100%">
-        @*<table id="ReportResults" class="display" cellspacing="0" width="100%">*@
-        @*<thead>
-            <tr>
-                <th width="8%" class="text-center">Selected</th>
-                <th width="14%">First Name</th>
-                <th width="14%">Last Name</th>
-                <th width="14%">In Group</th>
-                <th width="8%">Learning Complete</th>
-                <th width="18%">Course</th>
-                <th width="8%">Start Date</th>
-                <th width="8%">End Date</th>
-                <th width="8%">Rolling Course</th>
-            </tr>
-        </thead>
-        <tfoot>
-            <tr>
-                <th width="8%" class="text-center">Selected</th>
-                <th width="14%">First Name</th>
-                <th width="14%">Last Name</th>
-                <th width="14%">In Group</th>
-                <th width="8%">Learning Complete</th>
-                <th width="18%">Course</th>
-                <th width="8%">Start Date</th>
-                <th width="8%">End Date</th>
-                <th width="8%">Rolling Course</th>
-            </tr>
-        </tfoot>*@
-        @*<tbody>
-                <tr data-ng-repeat="result in ResultsList">
-                    <td width="8%" class="text-center"><input data-ng-click="addSelectedResult(result)" type="checkbox" name="result" /></td>
-                    <td width="14%">{{result.FirstName}}</td>
-                    <td width="14%">{{result.LastName}}</td>
-                    <td width="14%">{{result.UserGroupName}}</td>
-                    <td width="8%">{{result.LearningComplete}}</td>
-                    <td width="18%">{{result.CourseCategoryName !== "" ? result.CourseCategoryName + " &gt; " : "" }}{{result.CourseName}}</td>
-                    <td width="8%">{{getDateStringFromJSONString(result.StartDate)}}</td>
-                    <td width="8%">{{getDateStringFromJSONString(result.EndDate)}}</td>
-                    <td width="8%">{{result.IsRolling}}</td>
-                    <!--<td>{{result.UserId}}</td>-->
-                    <!--<td>{{result.EmailAddress}}</td>-->
-                    <!--<td>{{result.CourseType}}</td>-->
-                </tr>
-            </tbody>*@
-    </table>
+    <table id="ReportResults"class="display" cellspacing="0" width="100%"></table>
     <div style="margin-bottom: 5em;"></div>
 </div>
 @section scripts {
-    <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
     <script src="~/Scripts/Library/bootstrap/bootstrap-datepicker.js"></script>
     <!-- Data Tables -->
     <script src="~/Scripts/Library/DataTables/jquery.dataTables.min.js"></script>
     <script src="~/Scripts/Library/DataTables/dataTables.tableTools.min.js"></script>
-    <script src="~/Scripts/Library/DataTables/angular-datatables.min.js"></script>
-    <script src="~/Scripts/Library/DataTables/angular-datatables.tabletools.min.js"></script>
-    <script src="~/Scripts/Library/angular/angular-resource.min.js"></script>
-    @*<script type="text/javascript">
-        var REPORT_DATA;
+    <script type="text/javascript">
+        var REPORT_DATA = [],
+            USER_GROUP_LIST = [],
+            COURSE_CATEGORY_LIST = [],
+            COURSE_LIST = [];
+
         $(function() {
             $('.datepicker').datepicker({
                 todayHighlight: true,
@@ -190,194 +142,117 @@
                 format: 'dd/mm/yyyy'
             });
 
-            // data tables
-            $('#ReportResults').DataTable({
-                dom: 'T<"clear">lfrtip',
-                ajax: {
-                    url: API_URL + "/Reports/GetBasicReport/",
-                    type: "GET",
-                    beforeSend: function(request) {
-                        request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-                    },
-                    dataSrc: function(result) {
-                        var ret = { data: [] };
-                        ret.data = JSON.parse(result);
-                        //$.each(ret.data, function(i, item) {
-                        //    delete ret.data[i].EmailAddress;
-                        //    delete ret.data[i].CourseType;
-                        //    ret.data[i].CourseName = ret.data[i].CourseCategoryName !== "" ? ret.data[i].CourseCategoryName + " > " + ret.data[i].CourseName : ret.data[i].CourseName;
-                        //    delete ret.data[i].CourseCategoryName;
-                        //    if (!ret.data[i].IsRolling) ret.data[i].IsRolling = "no";
-                        //    if (!ret.data[i].LearningComplete) ret.data[i].LearningComplete = "no";
-                        //    ret.data[i].UserId = "no";
-
-                        //});
-                        //ret.data = ret.data[2];
-                        //ret.aaData = ret.data;
-                        //ret.aoData = ret.data;
-                        //console.log(ret);
-                        return ret;
-                    }
+            $.ajax({
+                url: API_URL + "/Reports/GetBasicReport/",
+                type: "GET",
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + TOKEN);
                 },
-                columns: [
-                    { data: "UserId" },
-                    { data: "FirstName" },
-                    { data: "LastName" },
-                    { data: "UserGroupName" },
-                    { data: "LearningComplete" },
-                    { data: "CourseName" },
-                    { data: "StartDate" },
-                    { data: "EndDate" },
-                    { data: "IsRolling" }
-                ],
-                deferRender: true,
-                tableTools: {
-                    "sSwfPath": "@Url.Content("~/Scripts/Library/DataTables/swf/copy_csv_xls_pdf.swf")"
+                success: function (result) {
+                    REPORT_DATA = formatDatesInData(JSON.parse(result));
+                    populateDropDowns();
+                    initialiseReport();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    showReportError(jqXHR);
                 }
             });
 
-            //$('.dataTables_empty').parent().hide();
-            //$('#ReportResults_filter').parent().hide();
+            function showReportError(data) {
+                $(".alert-danger .msg")
+                    .html(data.ExceptionMessage)
+                    .parent()
+                    .removeClass("hidden")
+                    .slideDown();
+            }
+
+            function initialiseReport() {
+                $('#ReportResults').dataTable({
+                    dom: 'T<"clear">lfrtip',
+                    data: REPORT_DATA,
+                    columns: [
+                        {
+                            title: "Selected",
+                            data: "UserId",
+                            render: function (data, type, row) {
+                                return '<input type="checkbox" class="user" value="' + data + '" />';
+                            }
+                        },
+                        { title: "First Name", data: "FirstName" },
+                        { title: "Last Name", data: "LastName" },
+                        { title: "In Group", data: "UserGroupName" },
+                        { title: "Learning Complete", data: "LearningComplete" },
+                        { title: "Course", data: "CourseName" },
+                        { title: "Start Date", data: "StartDate" },
+                        { title: "End Date", data: "EndDate" },
+                        { title: "Rolling Course", data: "IsRolling" }
+                    ],
+                    tableTools: {
+                        "sSwfPath": "@Url.Content("~/Scripts/Library/DataTables/swf/copy_csv_xls_pdf.swf")"
+                    }
+                });
+            }
+
+            function populateDropDowns() {
+                $.each(REPORT_DATA, function (i, item) {                    
+                    if (item.UserGroupName !== null && USER_GROUP_LIST.indexOf(item.UserGroupName) === -1) USER_GROUP_LIST.push(item.UserGroupName);
+                    if (item.CourseCategoryName !== null && COURSE_CATEGORY_LIST.indexOf(item.CourseCategoryName) === -1) COURSE_CATEGORY_LIST.push(item.CourseCategoryName);
+                    if (item.CourseName !== null && COURSE_LIST.indexOf(item.CourseName) === -1) COURSE_LIST.push(item.CourseName);
+                });
+
+                // populate user group
+                var userOption = '';
+                for (var i = 0; i < USER_GROUP_LIST.length; i++) {
+                    userOption += '<option value="' + USER_GROUP_LIST[i] + '">' + USER_GROUP_LIST[i] + '</option>';
+                }
+                $('#UserGroup').append(userOption);
+
+                // populate course categories
+                var catOption = '';
+                for (var i = 0; i < COURSE_CATEGORY_LIST.length; i++) {
+                    catOption += '<option value="' + COURSE_CATEGORY_LIST[i] + '">' + COURSE_CATEGORY_LIST[i] + '</option>';
+                }
+                $('#CourseCategory').append(catOption);
+
+                // populate courses
+                var courseOption = '';
+                for (var i = 0; i < COURSE_LIST.length; i++) {
+                    courseOption += '<option value="' + COURSE_LIST[i] + '">' + COURSE_LIST[i] + '</option>';
+                }
+                $('#Course').append(courseOption);
+            }
+
+            function formatDatesInData(data) {
+                var result = data;
+                $.each(result, function (i, item) {
+                    result[i].StartDate = getDateStringFromJSONString(result[i].StartDate);
+                    result[i].EndDate = getDateStringFromJSONString(result[i].EndDate);
+                });
+
+                return result;
+            }
+
+            function getDateStringFromJSONString(JSONString) {
+                var dateString = JSONString.match(/[0-9]+/g)[0];
+                var formattedDate = new Date(parseInt(dateString, 10));
+                var d = formattedDate.getDate().toString();
+                var m = formattedDate.getMonth().toString();
+                m += 1; // JavaScript months are 0-11
+                var y = formattedDate.getFullYear();
+
+                // prepend single day/month with zero
+                d = ('0' + d).slice(-2);
+                m = ('0' + m).slice(-2);
+
+                return d + "/" + m + "/" + y;
+            }
         });
-    </script>*@
+    </script>
     <script type="text/javascript">
         (function() {
-            //var app = angular.module("LMS", ["kendo.directives"]);
-            var app = angular.module("LMS", ['ngResource', 'datatables', 'datatables.tabletools']);
-
-            var ReportController = function($scope, DTOptionsBuilder, DTColumnBuilder, $q, $http, $resource) {
-
-                // removing var here allows us to debug in the browsers console. Alternatively we could do window.emailScope = $scope
-                reportScope = $scope;
-                reportScope.httpService = $http;
-                reportScope.ResultsList = [];
-                reportScope.SelectedUsersList = [];
-
-                reportScope.UserGroupList = [];
-                reportScope.CourseCategoryList = [];
-                reportScope.CourseList = [];
-                reportScope.Filter = {UserGroup: "", CourseCategory: "", Course: ""}
-
-                reportScope.addUser = function(data) {
-                    console.log("adding user data...");
-                    console.log(data);
-                }
-
-                reportScope.dtOptions = DTOptionsBuilder.fromFnPromise(function () {
-                        var defer = $q.defer();
-                        reportScope.httpService({
-                                method: "GET",
-                                url: API_URL + "/Reports/GetBasicReport/",
-                                headers: {
-                                    "Authorization": "Bearer " + TOKEN
-                                }
-                            })
-                            .success(function (data) {
-                                var result = JSON.parse(data);
-                                reportScope.populateDropDowns(result);
-                                defer.resolve(reportScope.formatData(result));
-                            });
-                        return defer.promise;
-                    })
-                    .withPaginationType('full_numbers')
-                    .withTableTools('@Url.Content("~/Scripts/Library/DataTables/swf/copy_csv_xls_pdf.swf")')
-                    .withTableToolsButtons([
-                        'copy',
-                        'print', {
-                            'sExtends': 'collection',
-                            'sButtonText': 'Save',
-                            'aButtons': ['csv', 'xls', 'pdf']
-                        }
-                    ]);
-
-                reportScope.dtColumns = [
-                    DTColumnBuilder.newColumn(null).withTitle('Selected').notSortable()
-                    .renderWith(function(data, type, full, meta) {
-                        return '<input type="checkbox" value="' + data.EmailAddress + '" />';
-                    }),
-                    DTColumnBuilder.newColumn('UserId').withTitle('ID').notVisible(),
-                    DTColumnBuilder.newColumn('FirstName').withTitle('First Name'),
-                    DTColumnBuilder.newColumn('LastName').withTitle('Last Name'),
-                    DTColumnBuilder.newColumn('UserGroupName').withTitle('In Group'),
-                    DTColumnBuilder.newColumn('LearningComplete').withTitle('Learning Complete'),
-                    DTColumnBuilder.newColumn('CourseName').withTitle('Course'),
-                    DTColumnBuilder.newColumn('StartDate').withTitle('Start Date'),
-                    DTColumnBuilder.newColumn('EndDate').withTitle('End Date')
-                ];
-
-                reportScope.populateDropDowns = function (data) {
-                    $.each(data, function (i, item) {
-                        if (item.UserGroupName !== null && reportScope.UserGroupList.indexOf(item.UserGroupName) === -1) reportScope.UserGroupList.push(item.UserGroupName);
-                        if (item.CourseCategoryName !== null && reportScope.CourseCategoryList.indexOf(item.CourseCategoryName) === -1) reportScope.CourseCategoryList.push(item.CourseCategoryName);
-                        if (item.CourseName !== null && reportScope.CourseList.indexOf(item.CourseName) === -1) reportScope.CourseList.push(item.CourseName);
-                    });
-                }
-
-                reportScope.formatData = function (data) {
-                    var result = data;
-                    $.each(result, function (i, item) {
-                        result[i].StartDate = reportScope.getDateStringFromJSONString(result[i].StartDate);
-                        result[i].EndDate = reportScope.getDateStringFromJSONString(result[i].EndDate);
-                    });
-
-                    return result;
-                }
-
-                //reportScope.loadData = function() {
-                //    reportScope.httpService({
-                //            method: "GET",
-                //            url: API_URL + "/Reports/GetBasicReport/",
-                //            headers: {
-                //                "Authorization": "Bearer " + TOKEN
-                //            }
-                //        })
-                //        .success(function(data) {
-                //            reportScope.ResultsList = JSON.parse(data);
-                //            REPORT_DATA = reportScope.ResultsList;
-                //            //var filteredResults = reportScope.ResultsList;
-                //            //$.each(filteredResults, function(i, item) {
-                //            //    delete filteredResults[i].UserId;
-                //            //    delete filteredResults[i].EmailAddress;
-                //            //    delete filteredResults[i].CourseType;
-                //            //});
-                //            //$('#ReportResults').dataTable({
-                //            //    "ajax": { "data": filteredResults }
-                //            //});
-                //            console.log(reportScope.ResultsList);
-                //        })
-                //        .error(function(data, status) {
-                //            reportScope.showReportFailure(data);
-                //        });
-                //};
-
-                reportScope.getDateStringFromJSONString = function(JSONString) {
-                    var dateString = JSONString.match(/[0-9]+/g)[0];
-                    var formattedDate = new Date(parseInt(dateString, 10));
-                    var d = formattedDate.getDate().toString();
-                    var m = formattedDate.getMonth().toString();
-                    m += 1; // JavaScript months are 0-11
-                    var y = formattedDate.getFullYear();
-
-                    // prepend single day/month with zero
-                    d = ('0' + d).slice(-2);
-                    m = ('0' + m).slice(-2);
-
-                    return d + "/" + m + "/" + y;
-                }
-
-                reportScope.showReportFailure = function(data) {
-                    $(".alert-danger .msg")
-                        .html(data.ExceptionMessage)
-                        .parent()
-                        .removeClass("hidden")
-                        .slideDown();
-                }
-
-                // initialize data
-                //reportScope.loadData();
-
-            }
-            app.controller("ReportController", ["$scope", "DTOptionsBuilder", "DTColumnBuilder", "$q", "$http", "$resource", ReportController]);
+            var app = angular.module("LMS", []);
+            var ReportController = function($scope) {}
+            app.controller("ReportController", ["$scope", ReportController]);
         }());
     </script>
 }
