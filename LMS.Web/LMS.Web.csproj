@@ -1629,6 +1629,7 @@
     <Content Include="Scripts\Library\kendo-js\kendo.view.min.js" />
     <Content Include="Scripts\Library\kendo-js\kendo.window.min.js" />
     <Content Include="Scripts\Library\modernizr-2.6.2.js" />
+    <Content Include="Scripts\Report\BasicController.js" />
     <Content Include="Scripts\Site\DateLib.js" />
     <Content Include="Scripts\Site\Home\WelcomeUser.js" />
     <Content Include="Scripts\User\GroupController.js" />
@@ -1792,8 +1793,6 @@
     <TypeScriptCompile Include="Scripts\Home\UserDashboardController.ts" />
     <TypeScriptCompile Include="Scripts\Home\IUserDashboardScope.ts" />
     <TypeScriptCompile Include="Scripts\LMSapp.ts" />
-    <TypeScriptCompile Include="Scripts\Report\IBasicController.ts" />
-    <TypeScriptCompile Include="Scripts\Report\IBasicScope.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-animate.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-cookies.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-mocks.d.ts" />

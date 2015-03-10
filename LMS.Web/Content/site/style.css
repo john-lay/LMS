@@ -89,4 +89,13 @@ html body .footer {
   margin: 0 auto;
   display: block;
 }
+.table-loading .spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  top: 0;
+  left: 0;
+  background-image: url('/Content/kendo-styles/Silver/loading.gif');
+  background-position: 50% 50%;
+}
 /*# sourceMappingURL=style.css.map */

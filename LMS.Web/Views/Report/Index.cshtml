@@ -60,7 +60,7 @@
             <div class="form-group">
                 <label class="col-md-4 control-label">Status</label>
                 <div class="col-md-8">
-                    <select placeholder="Please select a status..." class="form-control">
+                    <select id="LearningStatus" placeholder="Please select a status..." class="form-control" disabled="disabled">
                         <option>complete</option>
                         <option>due</option>
                         <option>overdue</option>
@@ -114,12 +114,9 @@
     <div class="clearfix" style="margin-bottom: 3em;"></div>
     <hr />
     <div style="margin-bottom: 5em;"></div>
-    @*<div data-ng-show="ResultsList.length === 0"  class="panel panel-default">
-        <div class="panel-body">
-            Sorry there were no results for your query, please refine your search and try again.
-        </div>
+    <div class="table-loading">
+        <div class="spinner"></div>&nbsp;Loading...
     </div>
-    <table data-ng-show="ResultsList.length > 0" id="ReportResults" class="display" cellspacing="0" width="100%">*@
     <table id="ReportResults"class="display" cellspacing="0" width="100%"></table>
     <div style="margin-bottom: 5em;"></div>
 </div>
@@ -132,127 +129,8 @@
         var REPORT_DATA = [],
             USER_GROUP_LIST = [],
             COURSE_CATEGORY_LIST = [],
-            COURSE_LIST = [];
-
-        $(function() {
-            $('.datepicker').datepicker({
-                todayHighlight: true,
-                startDate: new Date(),
-                autoclose: true,
-                format: 'dd/mm/yyyy'
-            });
-
-            $.ajax({
-                url: API_URL + "/Reports/GetBasicReport/",
-                type: "GET",
-                beforeSend: function (request) {
-                    request.setRequestHeader("Authorization", "Bearer " + TOKEN);
-                },
-                success: function (result) {
-                    REPORT_DATA = formatDatesInData(JSON.parse(result));
-                    populateDropDowns();
-                    initialiseReport();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    showReportError(jqXHR);
-                }
-            });
-
-            function showReportError(data) {
-                $(".alert-danger .msg")
-                    .html(data.ExceptionMessage)
-                    .parent()
-                    .removeClass("hidden")
-                    .slideDown();
-            }
-
-            function initialiseReport() {
-                $('#ReportResults').dataTable({
-                    dom: 'T<"clear">lfrtip',
-                    data: REPORT_DATA,
-                    columns: [
-                        {
-                            title: "Selected",
-                            data: "UserId",
-                            render: function (data, type, row) {
-                                return '<input type="checkbox" class="user" value="' + data + '" />';
-                            }
-                        },
-                        { title: "First Name", data: "FirstName" },
-                        { title: "Last Name", data: "LastName" },
-                        { title: "In Group", data: "UserGroupName" },
-                        { title: "Learning Complete", data: "LearningComplete" },
-                        { title: "Course", data: "CourseName" },
-                        { title: "Start Date", data: "StartDate" },
-                        { title: "End Date", data: "EndDate" },
-                        { title: "Rolling Course", data: "IsRolling" }
-                    ],
-                    tableTools: {
-                        "sSwfPath": "@Url.Content("~/Scripts/Library/DataTables/swf/copy_csv_xls_pdf.swf")"
-                    }
-                });
-            }
-
-            function populateDropDowns() {
-                $.each(REPORT_DATA, function (i, item) {                    
-                    if (item.UserGroupName !== null && USER_GROUP_LIST.indexOf(item.UserGroupName) === -1) USER_GROUP_LIST.push(item.UserGroupName);
-                    if (item.CourseCategoryName !== null && COURSE_CATEGORY_LIST.indexOf(item.CourseCategoryName) === -1) COURSE_CATEGORY_LIST.push(item.CourseCategoryName);
-                    if (item.CourseName !== null && COURSE_LIST.indexOf(item.CourseName) === -1) COURSE_LIST.push(item.CourseName);
-                });
-
-                // populate user group
-                var userOption = '';
-                for (var i = 0; i < USER_GROUP_LIST.length; i++) {
-                    userOption += '<option value="' + USER_GROUP_LIST[i] + '">' + USER_GROUP_LIST[i] + '</option>';
-                }
-                $('#UserGroup').append(userOption);
-
-                // populate course categories
-                var catOption = '';
-                for (var i = 0; i < COURSE_CATEGORY_LIST.length; i++) {
-                    catOption += '<option value="' + COURSE_CATEGORY_LIST[i] + '">' + COURSE_CATEGORY_LIST[i] + '</option>';
-                }
-                $('#CourseCategory').append(catOption);
-
-                // populate courses
-                var courseOption = '';
-                for (var i = 0; i < COURSE_LIST.length; i++) {
-                    courseOption += '<option value="' + COURSE_LIST[i] + '">' + COURSE_LIST[i] + '</option>';
-                }
-                $('#Course').append(courseOption);
-            }
-
-            function formatDatesInData(data) {
-                var result = data;
-                $.each(result, function (i, item) {
-                    result[i].StartDate = getDateStringFromJSONString(result[i].StartDate);
-                    result[i].EndDate = getDateStringFromJSONString(result[i].EndDate);
-                });
-
-                return result;
-            }
-
-            function getDateStringFromJSONString(JSONString) {
-                var dateString = JSONString.match(/[0-9]+/g)[0];
-                var formattedDate = new Date(parseInt(dateString, 10));
-                var d = formattedDate.getDate().toString();
-                var m = formattedDate.getMonth().toString();
-                m += 1; // JavaScript months are 0-11
-                var y = formattedDate.getFullYear();
-
-                // prepend single day/month with zero
-                d = ('0' + d).slice(-2);
-                m = ('0' + m).slice(-2);
-
-                return d + "/" + m + "/" + y;
-            }
-        });
+            COURSE_LIST = [],
+            SWF_PATH = "@Url.Content("~/Scripts/Library/DataTables/swf/copy_csv_xls_pdf.swf")";
     </script>
-    <script type="text/javascript">
-        (function() {
-            var app = angular.module("LMS", []);
-            var ReportController = function($scope) {}
-            app.controller("ReportController", ["$scope", ReportController]);
-        }());
-    </script>
+    <script src="~/Scripts/Report/BasicController.js"></script>
 }
