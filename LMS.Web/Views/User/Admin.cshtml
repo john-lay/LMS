@@ -2,10 +2,10 @@
     ViewBag.Title = "Manage Administrators";
 }
 @section head {
-    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.common.min.css" rel="stylesheet" />
+    <link href="~/Content/kendo-styles/kendo.common.min.css" rel="stylesheet" />
     <link href="~/Content/kendo-styles/kendo.silver.min.css" rel="stylesheet" />
-    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.min.css" rel="stylesheet" />
-    <link href="http://cdn.kendostatic.com/2014.2.903/styles/kendo.dataviz.default.min.css" rel="stylesheet" />
+    <link href="~/Content/kendo-styles/kendo.dataviz.min.css" rel="stylesheet" />
+    <link href="~/Content/kendo-styles/kendo.dataviz.default.min.css" rel="stylesheet" />
 }
 <div data-ng-controller="UserManageAdminController" class="row col-md-12">
     <div class="col-md-3">
@@ -36,7 +36,7 @@
     @Html.Partial("_Admin.edit")
 </div>
 @section scripts {
-    <script type="text/javascript" src="http://cdn.kendostatic.com/2014.2.903/js/kendo.all.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/Library/kendo-js/kendo.all.min.js"></script>
     <script src="~/Scripts/Library/kendo-js/kendo.angular.min.js"></script>
     <script src="~/Scripts/User/AdminController.js"></script>
 }

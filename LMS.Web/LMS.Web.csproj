@@ -226,6 +226,8 @@
     <Content Include="Content\kendo-styles\kendo.common-bootstrap.min.css" />
     <Content Include="Content\kendo-styles\kendo.common.core.min.css" />
     <Content Include="Content\kendo-styles\kendo.common.min.css" />
+    <Content Include="Content\kendo-styles\kendo.dataviz.default.min.css" />
+    <Content Include="Content\kendo-styles\kendo.dataviz.min.css" />
     <Content Include="Content\kendo-styles\kendo.default.min.css" />
     <Content Include="Content\kendo-styles\kendo.default.mobile.min.css" />
     <Content Include="Content\kendo-styles\kendo.flat.min.css" />
@@ -1568,6 +1570,7 @@
     <Content Include="Scripts\Library\kendo-js\cultures\kendo.culture.zu-ZA.min.js" />
     <Content Include="Scripts\Library\kendo-js\cultures\kendo.culture.zu.min.js" />
     <Content Include="Scripts\Library\kendo-js\jquery.min.js" />
+    <Content Include="Scripts\Library\kendo-js\kendo.all.min.js" />
     <Content Include="Scripts\Library\kendo-js\kendo.angular.min.js" />
     <Content Include="Scripts\Library\kendo-js\kendo.autocomplete.min.js" />
     <Content Include="Scripts\Library\kendo-js\kendo.binder.min.js" />
@@ -1637,7 +1640,9 @@
     <Content Include="Scripts\Site\DateLib.js" />
     <Content Include="Scripts\Site\Home\WelcomeUser.js" />
     <Content Include="Scripts\User\GroupController.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\Shared\_Html5shiv.cshtml" />
   </ItemGroup>
   <ItemGroup>

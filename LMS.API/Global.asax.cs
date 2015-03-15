@@ -18,6 +18,7 @@ namespace LMS.API
     {
         protected void Application_Start()
         {
+            RouteTable.Routes.Ignore("{resource}.axd/{*pathInfo}");
             GlobalConfiguration.Configure(WebApiConfig.Register);
             Database.SetInitializer(new DatabaseInitializer());
         }     
