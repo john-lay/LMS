@@ -39,7 +39,7 @@ namespace LMS.API.Controllers
 
             if (errorResult != null)
             {
-                return Ok(result.Errors.ElementAt(0));
+                throw new Exception(result.Errors.ElementAt(0));
             }
 
             return Ok();

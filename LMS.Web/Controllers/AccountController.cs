@@ -41,9 +41,12 @@ namespace LMS.Web.Controllers
 
                     return RedirectToAction("Welcome", "Home");
                 }
+
+                ModelState.AddModelError("Username", "There was an error logging you in, please try again.");
+                return View("../Home/Index", model);
             }
 
-            ModelState.AddModelError(string.Empty, "There was an error logging you in, please try again.");
+            ModelState.AddModelError("Username", "There was an error logging you in, please try again.");
             return View("../Home/Index", model);
         }
 

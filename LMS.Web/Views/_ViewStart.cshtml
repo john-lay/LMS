@@ -2,8 +2,8 @@
 @{
     Layout = "~/Views/Shared/_Layout.user.cshtml";
     UserProfile profile = Session["UserInfo"] as UserProfile;
-    
-    if (profile != null)
+
+    if (profile != null && profile.Role != null)
     {
         switch (profile.Role.ToLower()) 
         {
