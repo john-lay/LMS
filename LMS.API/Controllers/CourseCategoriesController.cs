@@ -102,6 +102,11 @@ namespace LMS.API.Controllers
 
             try
             {
+                // try removing associated courses before deleting course category
+                var ccc = db.CoursesInCourseCategories.Where(c => c.CourseCategoryId == id);
+                db.Courses.RemoveRange(db.Courses.Where(c => ccc.Any(x => x.CourseId == c.CourseId)));
+                db.SaveChanges();
+
                 db.CourseCategories.Remove(courseCategory);
                 db.SaveChanges();
             }
