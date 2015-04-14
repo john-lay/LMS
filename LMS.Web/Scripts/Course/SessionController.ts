@@ -156,8 +156,9 @@ module CourseSessionModule {
                 var dateString = JSONString.match(/[0-9]+/g)[0];
                 var formattedDate = new Date(parseInt(dateString, 10));
                 var d = formattedDate.getDate().toString();
-                var m = formattedDate.getMonth().toString();
-                m += 1; // JavaScript months are 0-11
+                var month = formattedDate.getMonth();
+                month += 1; // JavaScript months are 0-11
+                var m = month.toString();
                 var y = formattedDate.getFullYear();
 
                 // prepend single day/month with zero
