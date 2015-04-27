@@ -10,7 +10,7 @@
 $(function () {
     $('.datepicker').datepicker({
         todayHighlight: true,
-        startDate: new Date(),
+        startDate: '-10y',
         autoclose: true,
         format: 'dd/mm/yyyy'
     });
