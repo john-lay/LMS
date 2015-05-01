@@ -28,10 +28,10 @@ BEGIN
 		course.Name AS CourseName,
 		course.CourseType,
 		category.Name AS CourseCategoryName
-	FROM [LMS].[dbo].UsersInCourseSession usersinsession
+	FROM [avemtecDB1].[dbo].UsersInCourseSession usersinsession
 	INNER JOIN [User] [user] ON usersinsession.UserId = [user].UserId
 	INNER JOIN UsersInUserGroup uugroup ON usersinsession.UserId = uugroup.UserId
-	INNER JOIN UserGroup ugroup ON usersinsession.UserId = [user].UserId
+	INNER JOIN UserGroup ugroup ON uugroup.UserGroupId = ugroup.UserGroupId
 	INNER JOIN CourseSession [session] ON [session].CourseSessionId = usersinsession.CourseSessionId
 	INNER JOIN Course course ON [session].CourseId = course.CourseId
 	INNER JOIN CoursesInCourseGroup ccg ON course.CourseId = ccg.CourseId
