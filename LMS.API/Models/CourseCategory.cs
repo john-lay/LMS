@@ -19,5 +19,10 @@ namespace LMS.API.Models
 
         [StringLength(500)]
         public string Notes { get; set; }
+
+        [ForeignKey("Client")]
+        public int ClientId { get; set; }
+
+        public virtual Client Client { get; set; }
     }
 }

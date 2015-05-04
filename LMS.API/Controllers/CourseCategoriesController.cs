@@ -22,6 +22,7 @@ namespace LMS.API.Controllers
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             return serializer.Serialize(
                 db.CourseCategories
+                .Where(cc => cc.ClientId == this.ClientId)
                 .Select(x => new { id = x.CourseCategoryId, text = x.Name })
                 .ToArray());
         }
@@ -43,6 +44,8 @@ namespace LMS.API.Controllers
         [HttpPut]
         public IHttpActionResult UpdateCourseCategory(int id, CourseCategory courseCategory)
         {
+            courseCategory.ClientId = this.ClientId;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -78,6 +81,8 @@ namespace LMS.API.Controllers
         [HttpPost]
         public IHttpActionResult CreateCourseCategory(CourseCategory courseCategory)
         {
+            courseCategory.ClientId = this.ClientId;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

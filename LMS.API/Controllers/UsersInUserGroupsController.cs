@@ -28,7 +28,7 @@ namespace LMS.API.Controllers
             List<UserGroupNode> userGroupTree = new List<UserGroupNode>();
             List<int> userIdList = new List<int>();
 
-            var groups = db.UserGroups;
+            var groups = db.UserGroups.Where(g => g.ClientId == this.ClientId);
 
             foreach (var grp in groups)
             {

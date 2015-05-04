@@ -19,7 +19,7 @@ namespace LMS.API.Controllers
         public string GetCourseCategoriesAndCourses()
         {
             List<CourseCategoryNode> courseCategoryTree = new List<CourseCategoryNode>();
-            var categories = db.CourseCategories;
+            var categories = db.CourseCategories.Where(cc => cc.ClientId == this.ClientId);
 
             foreach (var cat in categories)
             {

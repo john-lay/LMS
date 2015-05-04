@@ -89,7 +89,7 @@ namespace LMS.API.Utilities
             db.Contents.Add(content);
 
             //course group
-            CourseCategory cg = new CourseCategory { CourseCategoryId = 1, Name = "Web technology" };
+            CourseCategory cg = new CourseCategory { CourseCategoryId = 1, Name = "Web technology", ClientId = 1 };
             db.CourseCategories.Add(cg);
             CoursesInCourseCategory ccg = new CoursesInCourseCategory { CourseCategoryId = 1, CourseId = 1 };
             db.CoursesInCourseCategories.Add(ccg);
