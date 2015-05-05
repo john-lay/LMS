@@ -82,7 +82,7 @@ $(function () {
             columns: [
                 {
                     title: "Selected",
-                    data: "UserId",
+                    data: "EmailAddress",
                     render: function (data, type, row) {
                         return '<input type="checkbox" class="user" value="' + data + '" />';
                     }
@@ -163,4 +163,56 @@ $(function () {
         // new Date(year, month [, day [, hours[, minutes[, seconds[, ms]]]]])
         return new Date(parts[2], parts[1] - 1, parts[0]); // Note: months are 0-based
     }
+
+    // populate the email recipients when the email users dialog opens
+    $('#EmailUsersModal').on('shown.bs.modal', function () {
+        var recipientsList = [];
+        $('#ReportResults input:checkbox').each(function () {
+            recipientsList.push($(this).val());
+        });
+        $('#Recipients').val(recipientsList.join(','));
+        $('#Subject').val('');
+        $('#EmailMessage').val('');
+    });
+
+    $("#SendEmail").click(function () {
+        $.ajax({
+            url: API_URL + "/Contact/SendEmail/",
+            beforeSend: function (request) {
+                request.setRequestHeader("Authorization", "Bearer " + TOKEN);
+            },
+            data: {
+                "recipients": $('#Recipients').val().split(','),
+                "subject": $('#Subject').val(),
+                "body": $('#EmailMessage').val()
+            },
+            type: "POST",
+            success: function (result) {
+                $('#EmailUsersModal').modal('hide');
+                showEmailSuccess();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                //console.log(errorThrown);
+                showEmailFailure(errorThrown);
+            }
+        });
+    });
+
+    function showEmailSuccess() {
+        var msg = 'Email to: <b>' + $('#Recipients').val() + '</b> successfully send!';
+
+        $('.alert-success .msg')
+            .html(msg)
+            .parent()
+            .removeClass('hidden')
+            .slideDown();
+    }
+
+    function showEmailFailure(msg) {
+        $('.alert-danger .msg')
+            .html(msg.ExceptionMessage)
+            .parent()
+            .removeClass('hidden')
+            .slideDown();
+    }    
 });

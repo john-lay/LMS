@@ -97,7 +97,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <div class="col-md-offset-4 col-md-8">
-                    <button id="EmailSelectedUsers" type="button" class="btn btn-default btn-primary pull-right">Email Selected Users</button>
+                    <button data-toggle="modal" data-target="#EmailUsersModal" type="button" class="btn btn-default btn-primary pull-right">Email Selected Users</button>
                 </div>
             </div>
         </div>
@@ -119,6 +119,46 @@
     </div>
     <table id="ReportResults"class="display" cellspacing="0" width="100%"></table>
     <div style="margin-bottom: 5em;"></div>
+</div>
+<div class="modal fade" id="EmailUsersModal" tabindex="-1" role="dialog" aria-labelledby="EmailUsersModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Email Users</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="Recipients" class="control-label col-md-2">To</label>
+                        <div class="col-md-10">
+                            <input id="Recipients" readonly class="form-control text-box single-line" type="text" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Subject" class="control-label col-md-2">Subject</label>
+                        <div class="col-md-10">
+                            <input id="Subject" required class="form-control text-box single-line" type="text" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="EmailMessage" class="control-label col-md-2">Message</label>
+                        <div class="col-md-10">
+                            <textarea id="EmailMessage" required class="form-control" cols="40" rows="5"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button id="SendEmail" type="button" class="btn btn-default btn-primary">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
 @section scripts {
     <script src="~/Scripts/Library/bootstrap/bootstrap-datepicker.js"></script>
