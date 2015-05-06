@@ -14,8 +14,7 @@ BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
-    -- Insert statements for procedure here
-	select DISTINCT TOP 1000 
+	SELECT DISTINCT TOP 1000 
 		usersinsession.LearningComplete, 
 		[user].UserId,
 		[user].FirstName, 
@@ -28,14 +27,14 @@ BEGIN
 		course.Name AS CourseName,
 		course.CourseType,
 		category.Name AS CourseCategoryName
-	FROM [avemtecDB1].[dbo].UsersInCourseSession usersinsession
+	FROM [LMS].[dbo].UsersInCourseSession usersinsession
 	INNER JOIN [User] [user] ON usersinsession.UserId = [user].UserId
-	INNER JOIN UsersInUserGroup uugroup ON usersinsession.UserId = uugroup.UserId
-	INNER JOIN UserGroup ugroup ON uugroup.UserGroupId = ugroup.UserGroupId
+	FULL OUTER JOIN UsersInUserGroup uugroup ON usersinsession.UserId = uugroup.UserId
+	FULL OUTER JOIN UserGroup ugroup ON uugroup.UserGroupId = ugroup.UserGroupId
 	INNER JOIN CourseSession [session] ON [session].CourseSessionId = usersinsession.CourseSessionId
 	INNER JOIN Course course ON [session].CourseId = course.CourseId
-	INNER JOIN CoursesInCourseGroup ccg ON course.CourseId = ccg.CourseId
-	INNER JOIN CourseCategory category ON ccg.CourseCategoryId = category.CourseCategoryId
+	FULL OUTER JOIN CoursesInCourseGroup ccg ON course.CourseId = ccg.CourseId
+	FULL OUTER JOIN CourseCategory category ON ccg.CourseCategoryId = category.CourseCategoryId
 	INNER JOIN Client client ON course.ClientId = client.ClientId
 	WHERE client.ClientId = @client_id;
 END
