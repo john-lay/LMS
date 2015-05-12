@@ -37,8 +37,8 @@ $(function () {
 
         for (var i = filteredData.length - 1; i >= 0; i--) {
             if (typeof filteredData[i] !== 'undefined') {
-                if ($("#EditStartDate").val() !== "" && getDateObjectFromDateString($("#EditStartDate").val()) >= getDateObjectFromDateString(filteredData[i].StartDate)
-                || $("#EditEndDate").val() !== "" && getDateObjectFromDateString($("#EditEndDate").val()) <= getDateObjectFromDateString(filteredData[i].EndDate)
+                if ($("#EditStartDate").val() !== "" && getDateObjectFromDateString($("#EditStartDate").val()) > getDateObjectFromDateString(filteredData[i].StartDate)
+                || $("#EditEndDate").val() !== "" && getDateObjectFromDateString($("#EditEndDate").val()) < getDateObjectFromDateString(filteredData[i].EndDate)
                 || $("#UserGroup").val() !== "" && $("#UserGroup").val() !== filteredData[i].UserGroupName
                 //|| $("#LearningStatus").val() !== "" && $("#LearningStatus").val() !== filteredData[i].LearningComplete
                 || $("#CourseCategory").val() !== "" && $("#CourseCategory").val() !== filteredData[i].CourseCategoryName
