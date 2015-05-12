@@ -36,12 +36,16 @@ $(function () {
         var filteredData = REPORT_DATA.slice();
 
         for (var i = filteredData.length - 1; i >= 0; i--) {
-            if ($("#EditStartDate").val() !== "" && getDateObjectFromDateString($("#EditStartDate").val()) >= getDateObjectFromDateString(filteredData[i].StartDate)) filteredData.splice(i, 1);
-            if ($("#EditEndDate").val() !== "" && getDateObjectFromDateString($("#EditEndDate").val()) <= getDateObjectFromDateString(filteredData[i].EndDate)) filteredData.splice(i, 1);
-            if ($("#UserGroup").val() !== "" && $("#UserGroup").val() !== filteredData[i].UserGroupName) filteredData.splice(i, 1);
-            //if ($("#LearningStatus").val() !== "" && $("#LearningStatus").val() !== filteredData[i].LearningComplete) filteredData.splice(i, 1);
-            if ($("#CourseCategory").val() !== "" && $("#CourseCategory").val() !== filteredData[i].CourseCategoryName) filteredData.splice(i, 1);
-            if ($("#Course").val() !== "" && $("#Course").val() !== filteredData[i].CourseName) filteredData.splice(i, 1);
+            if (typeof filteredData[i] !== 'undefined') {
+                if ($("#EditStartDate").val() !== "" && getDateObjectFromDateString($("#EditStartDate").val()) >= getDateObjectFromDateString(filteredData[i].StartDate)
+                || $("#EditEndDate").val() !== "" && getDateObjectFromDateString($("#EditEndDate").val()) <= getDateObjectFromDateString(filteredData[i].EndDate)
+                || $("#UserGroup").val() !== "" && $("#UserGroup").val() !== filteredData[i].UserGroupName
+                //|| $("#LearningStatus").val() !== "" && $("#LearningStatus").val() !== filteredData[i].LearningComplete
+                || $("#CourseCategory").val() !== "" && $("#CourseCategory").val() !== filteredData[i].CourseCategoryName
+                || $("#Course").val() !== "" && $("#Course").val() !== filteredData[i].CourseName) {
+                    filteredData.splice(i, 1);
+                }
+            }            
         }
 
         // update table
