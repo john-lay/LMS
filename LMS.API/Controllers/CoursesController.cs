@@ -1,193 +1,278 @@
-﻿using LMS.API.Contexts;
-using LMS.API.Models;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Web.Http;
-using System.Web.Script.Serialization;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CoursesController.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The courses controller.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace LMS.API.Controllers
 {
+    using System.Collections.Generic;
+    using System.Data.Entity;
+    using System.Data.Entity.Infrastructure;
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
+    using System.Web.Http;
+    using System.Web.Script.Serialization;
+
+    using LMS.API.Contexts;
+    using LMS.API.Models;
+
+    /// <summary>
+    /// The courses controller.
+    /// </summary>
     public class CoursesController : ApiBaseController
     {
-        private LMSContext db = new LMSContext();
+        /// <summary>
+        /// The db.
+        /// </summary>
+        private readonly LMSContext db = new LMSContext();
 
-        // GET: api/Users/5
-        [HttpGet]
-        public IHttpActionResult GetCourse(int id)
+        /// <summary>
+        /// The create course.
+        /// </summary>
+        /// <param name="course">
+        /// The course.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [HttpPost]
+        public async Task<IHttpActionResult> CreateCourse(Course course)
         {
-            Course course = db.Courses.Find(id);
-            if (course == null)
+            course.ClientId = this.ClientId;
+
+            if (!this.ModelState.IsValid)
             {
-                return NotFound();
+                return this.BadRequest(this.ModelState);
             }
 
-            return Ok(course);
+            this.db.Courses.Add(course);
+            this.db.SaveChanges();
+
+            return this.Ok(course);
         }
 
-        [HttpGet]
-        public IHttpActionResult GetCoursesByClient(int id)
+        /// <summary>
+        /// The delete course.
+        /// </summary>
+        /// <param name="id">
+        /// The id.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [HttpDelete]
+        public async Task<IHttpActionResult> DeleteCourse(int id)
         {
-            IEnumerable<Course> courses = db.Courses
+            Course course = this.db.Courses.Find(id);
+            if (course == null)
+            {
+                return this.NotFound();
+            }
+
+            this.db.Courses.Remove(course);
+            this.db.SaveChanges();
+
+            return this.Ok(course);
+        }
+
+        /// <summary>
+        /// The get course.
+        /// </summary>
+        /// <param name="id">
+        /// The id.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [HttpGet]
+        public async Task<IHttpActionResult> GetCourse(int id)
+        {
+            Course course = this.db.Courses.Find(id);
+            if (course == null)
+            {
+                return this.NotFound();
+            }
+
+            return this.Ok(course);
+        }
+
+        /// <summary>
+        /// The get courses by client.
+        /// </summary>
+        /// <param name="id">
+        /// The id.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [HttpGet]
+        public async Task<IHttpActionResult> GetCoursesByClient(int id)
+        {
+            IEnumerable<Course> courses = this.db.Courses
                 .Where(c => c.ClientId == id)
                 .Select(c => new
                 {
-                    CourseId = c.CourseId,
-                    Name = c.Name,
-                    Description = c.Description
+                    c.CourseId, 
+                    c.Name, 
+                    c.Description
                 })
                 .ToList()
                 .Select(c => new Course
                 {
-                    CourseId = c.CourseId,
-                    Name = c.Name,
+                    CourseId = c.CourseId, 
+                    Name = c.Name, 
                     Description = c.Description
                 });
 
-            return Ok(courses);
+            return this.Ok(courses);
         }
 
+        /// <summary>
+        /// The get courses by user.
+        /// </summary>
+        /// <param name="id">
+        /// The id.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
         [HttpGet]
-        public string GetCoursesByUser(int id)
-        { 
+        public async Task<string> GetCoursesByUser(int id)
+        {
             // courses, session, content
-            var query = (from usersInCourseSession in db.UsersInCourseSessions
-                        join courseSession in db.CourseSessions on usersInCourseSession.CourseSessionId equals courseSession.CourseSessionId
-                        join course in db.Courses on courseSession.CourseId equals course.CourseId
-                        join content in db.Contents on course.CourseId equals content.CourseId
-                        where usersInCourseSession.UserId == id
-                        select new 
+            var query = (from usersInCourseSession in this.db.UsersInCourseSessions
+                         join courseSession in this.db.CourseSessions on usersInCourseSession.CourseSessionId equals courseSession.CourseSessionId
+                         join course in this.db.Courses on courseSession.CourseId equals course.CourseId
+                         join content in this.db.Contents on course.CourseId equals content.CourseId
+                         where usersInCourseSession.UserId == id
+                         select new
                         {
-                            CourseName = course.Name,
-                            CourseDescription = course.Description,
-                            CourseContentName = content.Name,
-                            CourseContentDescription = content.Description,
-                            CourseContentResource = content.Resource,
-                            CourseSessionId = courseSession.CourseSessionId,
-                            CourseSessionStartDate = courseSession.StartDate,
-                            CourseSessionEndDate = courseSession.EndDate,
-                            LearningComplete = usersInCourseSession.LearningComplete
+                            CourseName = course.Name, 
+                            CourseDescription = course.Description, 
+                            CourseContentName = content.Name, 
+                            CourseContentDescription = content.Description, 
+                            CourseContentResource = content.Resource, 
+                            courseSession.CourseSessionId, 
+                            CourseSessionStartDate = courseSession.StartDate, 
+                            CourseSessionEndDate = courseSession.EndDate, 
+                            usersInCourseSession.LearningComplete
                         })
                         .Distinct()
                         .ToArray();
 
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            var serializer = new JavaScriptSerializer();
             return serializer.Serialize(query);
         }
 
         //// PUT: api/Courses/5
-        //[HttpPost]
-        //public HttpResponseMessage UpdateCourse(int id)
-        //{
-        //    var identity = Thread.CurrentPrincipal.Identity;
+        // [HttpPost]
+        // public HttpResponseMessage UpdateCourse(int id)
+        // {
+        // var identity = Thread.CurrentPrincipal.Identity;
 
-        //    HttpResponseMessage result = null;
-        //    var httpRequest = HttpContext.Current.Request;
+        // HttpResponseMessage result = null;
+        // var httpRequest = HttpContext.Current.Request;
 
-        //    if (httpRequest.Files.Count > 0)
-        //    {
-        //        var docfiles = new List<string>();
-        //        foreach (string file in httpRequest.Files)
-        //        {
-        //            var postedFile = httpRequest.Files[file];
-        //            var filePath = HttpContext.Current.Server.MapPath("~/" + postedFile.FileName);
-        //            postedFile.SaveAs(filePath);
+        // if (httpRequest.Files.Count > 0)
+        // {
+        // var docfiles = new List<string>();
+        // foreach (string file in httpRequest.Files)
+        // {
+        // var postedFile = httpRequest.Files[file];
+        // var filePath = HttpContext.Current.Server.MapPath("~/" + postedFile.FileName);
+        // postedFile.SaveAs(filePath);
 
-        //            docfiles.Add(filePath);
-        //        }
-        //        result = Request.CreateResponse(HttpStatusCode.Created, docfiles);
-        //    }
-        //    else
-        //    {
-        //        result = Request.CreateResponse(HttpStatusCode.BadRequest);
-        //    }
+        // docfiles.Add(filePath);
+        // }
+        // result = Request.CreateResponse(HttpStatusCode.Created, docfiles);
+        // }
+        // else
+        // {
+        // result = Request.CreateResponse(HttpStatusCode.BadRequest);
+        // }
 
-        //    //httpRequest.Form["Name"]
+        // //httpRequest.Form["Name"]
 
-        //    //db.Clients.Add(client);
-        //    //db.SaveChanges();
+        // //db.Clients.Add(client);
+        // //db.SaveChanges();
 
-        //    return result;
-        //}
+        // return result;
+        // }
+
+        /// <summary>
+        /// The update course.
+        /// </summary>
+        /// <param name="id">
+        /// The id.
+        /// </param>
+        /// <param name="course">
+        /// The course.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
         [HttpPut]
-        public IHttpActionResult UpdateCourse(int id, Course course)
+        public async Task<IHttpActionResult> UpdateCourse(int id, Course course)
         {
             course.ClientId = this.ClientId;
 
-            if (!ModelState.IsValid)
+            if (!this.ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return this.BadRequest(this.ModelState);
             }
 
-            db.Entry(course).State = EntityState.Modified;
+            this.db.Entry(course).State = EntityState.Modified;
 
             try
             {
-                db.SaveChanges();
+                this.db.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CourseExists(id))
+                if (!this.CourseExists(id))
                 {
-                    return NotFound();
+                    return this.NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+
+                throw;
             }
 
-            return StatusCode(HttpStatusCode.NoContent);
+            return this.StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Courses
-        [HttpPost]
-        public IHttpActionResult CreateCourse(Course course)
-        {
-            course.ClientId = this.ClientId;
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            db.Courses.Add(course);
-            db.SaveChanges();
-
-            return Ok(course);
-        }
-
-        // DELETE: api/Courses/5
-        [HttpDelete]
-        public IHttpActionResult DeleteCourse(int id)
-        {
-            Course course = db.Courses.Find(id);
-            if (course == null)
-            {
-                return NotFound();
-            }
-
-            db.Courses.Remove(course);
-            db.SaveChanges();
-
-            return Ok(course);
-        }
-
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        /// <param name="disposing">
+        /// The disposing.
+        /// </param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                db.Dispose();
+                this.db.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
+        /// <summary>
+        /// The course exists.
+        /// </summary>
+        /// <param name="id">
+        /// The id.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
         private bool CourseExists(int id)
         {
-            return db.Courses.Count(e => e.CourseId == id) > 0;
+            return this.db.Courses.Count(e => e.CourseId == id) > 0;
         }
     }
 }

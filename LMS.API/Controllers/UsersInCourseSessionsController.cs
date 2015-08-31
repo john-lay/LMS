@@ -1,141 +1,217 @@
-﻿using LMS.API.Contexts;
-using LMS.API.Models;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Net;
-using System.Web.Http;
-using System.Web.Http.Description;
-using System.Web.Script.Serialization;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="UsersInCourseSessionsController.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The users in course sessions controller.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace LMS.API.Controllers
 {
+    using System.Data.Entity.Infrastructure;
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
+    using System.Web.Http;
+    using System.Web.Script.Serialization;
+
+    using LMS.API.Contexts;
+    using LMS.API.Models;
+
+    /// <summary>
+    /// The users in course sessions controller.
+    /// </summary>
     public class UsersInCourseSessionsController : ApiBaseController
     {
-        private LMSContext db = new LMSContext();
+        /// <summary>
+        /// The db.
+        /// </summary>
+        private readonly LMSContext db = new LMSContext();
 
-        // GET: api/UsersInCourseSessions/5
-        [HttpGet]
-        public string GetUsersInCourseSession(int id)
-        {
-            UsersInCourseSession[] usersInCourseSession = db.UsersInCourseSessions.Where(x => x.CourseSessionId == id).ToArray();
-            if (usersInCourseSession == null)
-            {
-                return "Error: No users in session";
-            }
-
-            var users = usersInCourseSession.Select(u => new 
-            {
-                UserId = u.UserId,
-                Name = u.User.FirstName + " " + u.User.LastName
-            }).ToArray();
-
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            return serializer.Serialize(users);
-        }
-
-        // POST: api/AddUsersToCourseSession
+        /// <summary>
+        /// The add users to course session.
+        /// </summary>
+        /// <param name="id">
+        /// The id.
+        /// </param>
+        /// <param name="users">
+        /// The users.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
         [HttpPost]
-        public IHttpActionResult AddUsersToCourseSession(int id, [FromBody]User[] users)
+        public async Task<IHttpActionResult> AddUsersToCourseSession(int id, [FromBody] User[] users)
         {
-            if (!ModelState.IsValid)
+            if (!this.ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return this.BadRequest(this.ModelState);
             }
 
             foreach (User user in users)
             {
                 // check user isn't already registered in this session
-                if (UsersInCourseSessionExists(id, user.UserId))
+                if (this.UsersInCourseSessionExists(id, user.UserId))
                 {
-                    return BadRequest(ModelState);
+                    return this.BadRequest(this.ModelState);
                 }
-                else
-                {
-                    db.UsersInCourseSessions.Add(new UsersInCourseSession { CourseSessionId = id, UserId = user.UserId});
-                    db.SaveChanges();
-                }
+
+                this.db.UsersInCourseSessions.Add(new UsersInCourseSession
+                                                      {
+                                                          CourseSessionId = id, UserId = user.UserId
+                                                      });
+                this.db.SaveChanges();
             }
 
-            return Ok();
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// The get users in course session.
+        /// </summary>
+        /// <param name="id">
+        /// The id.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [HttpGet]
+        public async Task<string> GetUsersInCourseSession(int id)
+        {
+            UsersInCourseSession[] usersInCourseSession = this.db.UsersInCourseSessions.Where(x => x.CourseSessionId == id).ToArray();
+            if (usersInCourseSession == null)
+            {
+                return "Error: No users in session";
+            }
+
+            var users = usersInCourseSession.Select(u => new
+                                                             {
+                                                                 u.UserId, Name = u.User.FirstName + " " + u.User.LastName
+                                                             }).ToArray();
+
+            var serializer = new JavaScriptSerializer();
+            return serializer.Serialize(users);
         }
 
         // POST: api/RemoveUsersFromCourseSession
+        /// <summary>
+        /// The remove users from course session.
+        /// </summary>
+        /// <param name="id">
+        /// The id.
+        /// </param>
+        /// <param name="users">
+        /// The users.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
         [HttpPost]
-        public IHttpActionResult RemoveUsersFromCourseSession(int id, [FromBody]User[] users)
+        public async Task<IHttpActionResult> RemoveUsersFromCourseSession(int id, [FromBody] User[] users)
         {
-            if (!ModelState.IsValid)
+            if (!this.ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return this.BadRequest(this.ModelState);
             }
 
             foreach (User user in users)
             {
-                if (!UsersInCourseSessionExists(id, user.UserId))
+                if (!this.UsersInCourseSessionExists(id, user.UserId))
                 {
-                    return BadRequest(ModelState);
+                    return this.BadRequest(this.ModelState);
                 }
-                else
-                {
-                    var entityToRemove = new UsersInCourseSession { CourseSessionId = id, UserId = user.UserId };
-                    db.UsersInCourseSessions.Attach(entityToRemove);
-                    db.UsersInCourseSessions.Remove(entityToRemove);
-                    db.SaveChanges();
-                }
+
+                var entityToRemove = new UsersInCourseSession
+                                         {
+                                             CourseSessionId = id, UserId = user.UserId
+                                         };
+                this.db.UsersInCourseSessions.Attach(entityToRemove);
+                this.db.UsersInCourseSessions.Remove(entityToRemove);
+                this.db.SaveChanges();
             }
 
-            return Ok();
+            return this.Ok();
         }
 
+        /// <summary>
+        /// The update user result in course session.
+        /// </summary>
+        /// <param name="id">
+        /// The id.
+        /// </param>
+        /// <param name="userInCourseSession">
+        /// The user in course session.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
         [HttpPatch]
-        public IHttpActionResult UpdateUserResultInCourseSession(int id, [FromBody] UsersInCourseSession userInCourseSession)
+        public async Task<IHttpActionResult> UpdateUserResultInCourseSession(int id, [FromBody] UsersInCourseSession userInCourseSession)
         {
-            if (!ModelState.IsValid)
+            if (!this.ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return this.BadRequest(this.ModelState);
             }
 
             if (id != userInCourseSession.CourseSessionId)
             {
-                return BadRequest();
+                return this.BadRequest();
             }
 
             // grab the user details from a existing record. Don't want to overwrite AspNetUserId or email
-            UsersInCourseSession existingUser = db.UsersInCourseSessions.First(u => u.CourseSessionId == userInCourseSession.CourseSessionId && u.UserId == userInCourseSession.UserId);
+            UsersInCourseSession existingUser = this.db.UsersInCourseSessions.First(u => u.CourseSessionId == userInCourseSession.CourseSessionId && u.UserId == userInCourseSession.UserId);
 
             existingUser.LearningComplete = userInCourseSession.LearningComplete;
 
             try
             {
-                db.SaveChanges();
+                this.db.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UsersInCourseSessionExists(id, userInCourseSession.UserId))
+                if (!this.UsersInCourseSessionExists(id, userInCourseSession.UserId))
                 {
-                    return NotFound();
+                    return this.NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+
+                throw;
             }
 
-            return StatusCode(HttpStatusCode.NoContent);
+            return this.StatusCode(HttpStatusCode.NoContent);
         }
 
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        /// <param name="disposing">
+        /// The disposing.
+        /// </param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                db.Dispose();
+                this.db.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
+        /// <summary>
+        /// The users in course session exists.
+        /// </summary>
+        /// <param name="courseSessionId">
+        /// The course session id.
+        /// </param>
+        /// <param name="userId">
+        /// The user id.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
         private bool UsersInCourseSessionExists(int courseSessionId, int userId)
         {
-            return db.UsersInCourseSessions.Count(e => e.CourseSessionId == courseSessionId && e.UserId == userId) > 0;
+            return this.db.UsersInCourseSessions.Count(e => e.CourseSessionId == courseSessionId && e.UserId == userId) > 0;
         }
     }
 }

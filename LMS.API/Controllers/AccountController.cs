@@ -1,90 +1,141 @@
-﻿using LMS.API.Auth;
-using LMS.API.Models;
-using Microsoft.AspNet.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Web.Http;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="AccountController.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The account controller.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace LMS.API.Controllers
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using System.Web.Http;
+
+    using LMS.API.Auth;
+    using LMS.API.Models;
+
+    using Microsoft.AspNet.Identity;
+
+    /// <summary>
+    /// The account controller.
+    /// </summary>
     [RoutePrefix("api/Account")]
     public class AccountController : ApiBaseController
     {
-        private AuthRepository _repo = null;
+        /// <summary>
+        /// The _repo.
+        /// </summary>
+        private readonly AuthRepository repo;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AccountController"/> class.
+        /// </summary>
         public AccountController()
         {
-            _repo = new AuthRepository();
+            this.repo = new AuthRepository();
         }
 
-        // POST api/Account/Register
+        /// <summary>
+        /// The register.
+        /// </summary>
+        /// <param name="userModel">
+        /// The user model.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        /// <exception cref="Exception">
+        /// </exception>
         [AllowAnonymous]
         [Route("Register")]
         public async Task<IHttpActionResult> Register(User userModel)
         {
             userModel.ClientId = this.ClientId;
 
-            if (!ModelState.IsValid)
+            if (!this.ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return this.BadRequest(this.ModelState);
             }
 
-            IdentityResult result = await _repo.RegisterUser(userModel);
+            IdentityResult result = await this.repo.RegisterUser(userModel);
 
-            IHttpActionResult errorResult = GetErrorResult(result);
+            IHttpActionResult errorResult = await this.GetErrorResult(result);
 
             if (errorResult != null)
             {
                 throw new Exception(result.Errors.ElementAt(0));
             }
 
-            return Ok();
+            return this.Ok();
         }
 
-        // POST api/Account/RegisterAdmin
+        /// <summary>
+        /// The register admin.
+        /// </summary>
+        /// <param name="userModel">
+        /// The user model.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        /// <exception cref="Exception">
+        /// </exception>
         [AllowAnonymous]
         [Route("RegisterAdmin")]
         public async Task<IHttpActionResult> RegisterAdmin(User userModel)
         {
             // client id comes from the web application
-            //userModel.ClientId = this.ClientId;
-
-            if (!ModelState.IsValid)
+            // userModel.ClientId = this.ClientId;
+            if (!this.ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return this.BadRequest(this.ModelState);
             }
 
-            IdentityResult result = await _repo.RegisterAdmin(userModel);
+            IdentityResult result = await this.repo.RegisterAdmin(userModel);
 
-            IHttpActionResult errorResult = GetErrorResult(result);
+            IHttpActionResult errorResult = await this.GetErrorResult(result);
 
             if (errorResult != null)
             {
                 throw new Exception(result.Errors.ElementAt(0));
             }
 
-            return Ok();
+            return this.Ok();
         }
 
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        /// <param name="disposing">
+        /// The disposing.
+        /// </param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                _repo.Dispose();
+                this.repo.Dispose();
             }
 
             base.Dispose(disposing);
         }
 
-        private IHttpActionResult GetErrorResult(IdentityResult result)
+        /// <summary>
+        /// The get error result.
+        /// </summary>
+        /// <param name="result">
+        /// The result.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IHttpActionResult"/>.
+        /// </returns>
+        private async Task<IHttpActionResult> GetErrorResult(IdentityResult result)
         {
             if (result == null)
             {
-                return InternalServerError();
+                return this.InternalServerError();
             }
 
             if (!result.Succeeded)
@@ -93,17 +144,17 @@ namespace LMS.API.Controllers
                 {
                     foreach (string error in result.Errors)
                     {
-                        ModelState.AddModelError("", error);
+                        this.ModelState.AddModelError(string.Empty, error);
                     }
                 }
 
-                if (ModelState.IsValid)
+                if (this.ModelState.IsValid)
                 {
                     // No ModelState errors are available to send, so just return an empty BadRequest.
-                    return BadRequest();
+                    return this.BadRequest();
                 }
 
-                return BadRequest(ModelState);
+                return this.BadRequest(this.ModelState);
             }
 
             return null;

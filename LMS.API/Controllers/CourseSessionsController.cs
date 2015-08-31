@@ -1,113 +1,178 @@
-﻿using LMS.API.Contexts;
-using LMS.API.Models;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Net;
-using System.Web.Http;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CourseSessionsController.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The course sessions controller.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace LMS.API.Controllers
 {
+    using System.Data.Entity;
+    using System.Data.Entity.Infrastructure;
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
+    using System.Web.Http;
     using System.Web.Script.Serialization;
 
+    using LMS.API.Contexts;
+    using LMS.API.Models;
+
+    /// <summary>
+    /// The course sessions controller.
+    /// </summary>
     public class CourseSessionsController : ApiBaseController
     {
-        private LMSContext db = new LMSContext();
+        /// <summary>
+        /// The db.
+        /// </summary>
+        private readonly LMSContext db = new LMSContext();
 
         //// GET: api/CourseSessions
-        //[HttpGet]
-        //public IQueryable<CourseSession> GetCourseSessions(int id)
-        //{
-        //    return db.CourseSessions.Where(s => s.CourseId == id);
-        //}
+        // [HttpGet]
+        // public IQueryable<CourseSession> GetCourseSessions(int id)
+        // {
+        // return db.CourseSessions.Where(s => s.CourseId == id);
+        // }
 
-        // GET: api/CourseSessions
-        [HttpGet]
-        public string GetCourseSessions(int id)
+        /// <summary>
+        /// The create course session.
+        /// </summary>
+        /// <param name="courseSession">
+        /// The course session.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [HttpPost]
+        public async Task<IHttpActionResult> CreateCourseSession(CourseSession courseSession)
         {
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            var query = db.CourseSessions.Where(s => s.CourseId == id).ToArray();
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest(this.ModelState);
+            }
+
+            this.db.CourseSessions.Add(courseSession);
+            this.db.SaveChanges();
+
+            return this.Ok(courseSession);
+        }
+
+        /// <summary>
+        /// The delete course session.
+        /// </summary>
+        /// <param name="id">
+        /// The id.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [HttpDelete]
+        public async Task<IHttpActionResult> DeleteCourseSession(int id)
+        {
+            CourseSession courseSession = this.db.CourseSessions.Find(id);
+            if (courseSession == null)
+            {
+                return this.NotFound();
+            }
+
+            this.db.CourseSessions.Remove(courseSession);
+            this.db.SaveChanges();
+
+            return this.Ok(courseSession);
+        }
+
+        /// <summary>
+        /// The get course sessions.
+        /// </summary>
+        /// <param name="id">
+        /// The id.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [HttpGet]
+        public async Task<string> GetCourseSessions(int id)
+        {
+            var serializer = new JavaScriptSerializer();
+            CourseSession[] query = this.db.CourseSessions.Where(s => s.CourseId == id).ToArray();
             return serializer.Serialize(query);
         }
 
-        // PUT: api/CourseSessions/5
+        /// <summary>
+        /// The update course session.
+        /// </summary>
+        /// <param name="id">
+        /// The id.
+        /// </param>
+        /// <param name="courseSession">
+        /// The course session.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
         [HttpPut]
-        public IHttpActionResult UpdateCourseSession(int id, CourseSession courseSession)
+        public async Task<IHttpActionResult> UpdateCourseSession(int id, CourseSession courseSession)
         {
-            if (!ModelState.IsValid)
+            if (!this.ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return this.BadRequest(this.ModelState);
             }
 
             if (id != courseSession.CourseSessionId)
             {
-                return BadRequest();
+                return this.BadRequest();
             }
 
-            db.Entry(courseSession).State = EntityState.Modified;
+            this.db.Entry(courseSession).State = EntityState.Modified;
 
             try
             {
-                db.SaveChanges();
+                this.db.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CourseSessionExists(id))
+                if (!this.CourseSessionExists(id))
                 {
-                    return NotFound();
+                    return this.NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+
+                throw;
             }
 
-            return StatusCode(HttpStatusCode.NoContent);
+            return this.StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/CourseSessions
-        [HttpPost]
-        public IHttpActionResult CreateCourseSession(CourseSession courseSession)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            db.CourseSessions.Add(courseSession);
-            db.SaveChanges();
-
-            return Ok(courseSession);
-        }
-
-        // DELETE: api/CourseSessions/5
-        [HttpDelete]
-        public IHttpActionResult DeleteCourseSession(int id)
-        {
-            CourseSession courseSession = db.CourseSessions.Find(id);
-            if (courseSession == null)
-            {
-                return NotFound();
-            }
-
-            db.CourseSessions.Remove(courseSession);
-            db.SaveChanges();
-
-            return Ok(courseSession);
-        }
-
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        /// <param name="disposing">
+        /// The disposing.
+        /// </param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                db.Dispose();
+                this.db.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
+        /// <summary>
+        /// The course session exists.
+        /// </summary>
+        /// <param name="id">
+        /// The id.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
         private bool CourseSessionExists(int id)
         {
-            return db.CourseSessions.Count(e => e.CourseSessionId == id) > 0;
+            return this.db.CourseSessions.Count(e => e.CourseSessionId == id) > 0;
         }
     }
 }

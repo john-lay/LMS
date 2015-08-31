@@ -1,16 +1,27 @@
-﻿using Newtonsoft.Json.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Web.Http;
-using System.Web.Http.Routing;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="WebApiConfig.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The web api config.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace LMS.API
 {
+    using System.Web.Http;
+
+    /// <summary>
+    /// The web api config.
+    /// </summary>
     public static class WebApiConfig
     {
+        /// <summary>
+        /// The register.
+        /// </summary>
+        /// <param name="config">
+        /// The config.
+        /// </param>
         public static void Register(HttpConfiguration config)
         {
             // Web API configuration and services
@@ -24,12 +35,11 @@ namespace LMS.API
 
             config.Routes.MapHttpRoute("DefaultApiWithAction", "api/{controller}/{action}");
 
-            config.Routes.MapHttpRoute("DefaultApiWithActionAndId", "api/{controller}/{action}/{id}", 
+            config.Routes.MapHttpRoute("DefaultApiWithActionAndId", "api/{controller}/{action}/{id}",
                 new { id = RouteParameter.Optional }, new { id = @"\d+" });
 
-            //var jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First();
-            //jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-
+            // var jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First();
+            // jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
         }
     }

@@ -1,23 +1,43 @@
-﻿using System.Net;
-using System.Web.Http;
-using System.Net.Mail;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ContactController.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The contact controller.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace LMS.API.Controllers
 {
     using System;
-    using System.Linq;
+    using System.Net.Mail;
+    using System.Threading.Tasks;
+    using System.Web.Http;
 
     using LMS.API.Models;
 
+    /// <summary>
+    /// The contact controller.
+    /// </summary>
     public class ContactController : ApiBaseController
     {
-        // POST: api/Users
+        /// <summary>
+        /// The send email.
+        /// </summary>
+        /// <param name="email">
+        /// The email.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        /// <exception cref="Exception">
+        /// </exception>
         [HttpPost]
-        public IHttpActionResult SendEmail([FromBody]Email email)
+        public async Task<IHttpActionResult> SendEmail([FromBody] Email email)
         {
             using (var client = new SmtpClient())
             {
-                MailMessage mail = new MailMessage();
+                var mail = new MailMessage();
                 mail.To.Add(string.Join(",", email.Recipients));
                 mail.Subject = email.Subject;
                 mail.Body = email.Body;
@@ -25,7 +45,7 @@ namespace LMS.API.Controllers
                 try
                 {
                     client.Send(mail);
-                    return Ok("message sent");
+                    return this.Ok("message sent");
                 }
                 catch (Exception ex)
                 {

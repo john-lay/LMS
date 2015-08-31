@@ -1,25 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Web;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CoursesInCourseCategory.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The courses in course category.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace LMS.API.Models
 {
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+
+    /// <summary>
+    /// The courses in course category.
+    /// </summary>
     [Table("CoursesInCourseGroup")]
     public class CoursesInCourseCategory
     {
-        [Key, Column(Order = 0)]
+        #region Public Properties
+
+        /// <summary>
+        /// Gets or sets the course.
+        /// </summary>
+        public virtual Course Course { get; set; }
+
+        /// <summary>
+        /// Gets or sets the course category.
+        /// </summary>
+        public virtual CourseCategory CourseCategory { get; set; }
+
+        /// <summary>
+        /// Gets or sets the course category id.
+        /// </summary>
+        [Key]
+        [Column(Order = 0)]
         [ForeignKey("CourseCategory")]
         public int CourseCategoryId { get; set; }
 
-        public virtual CourseCategory CourseCategory { get; set; }
-
-        [Key, Column(Order = 1)]
+        /// <summary>
+        /// Gets or sets the course id.
+        /// </summary>
+        [Key]
+        [Column(Order = 1)]
         [ForeignKey("Course")]
         public int CourseId { get; set; }
 
-        public virtual Course Course { get; set; }
+        #endregion
     }
 }
