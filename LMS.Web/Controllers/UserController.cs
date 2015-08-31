@@ -1,27 +1,53 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="UserController.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The user controller.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace LMS.Web.Controllers
 {
-    public class UserController : LMSBaseController
+    using System.Threading.Tasks;
+    using System.Web.Mvc;
+
+    /// <summary>
+    /// The user controller.
+    /// </summary>
+    public class UserController : LmsBaseController
     {
-        // GET: User
-        public ActionResult Manage()
+        /// <summary>
+        /// The admin.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task<ActionResult> Admin()
         {
-            return View();
+            return this.View();
         }
 
-        public ActionResult Admin()
+        /// <summary>
+        /// The group.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task<ActionResult> Group()
         {
-            return View();
+            return this.View();
         }
 
-        public ActionResult Group()
+        /// <summary>
+        /// The manage.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task<ActionResult> Manage()
         {
-            return View();
+            return this.View();
         }
     }
 }

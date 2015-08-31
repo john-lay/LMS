@@ -1,17 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ReportController.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The report controller.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace LMS.Web.Controllers
 {
-    public class ReportController : LMSBaseController
+    using System.Threading.Tasks;
+    using System.Web.Mvc;
+
+    /// <summary>
+    /// The report controller.
+    /// </summary>
+    public class ReportController : LmsBaseController
     {
-        // GET: Report
-        public ActionResult Index()
+        /// <summary>
+        /// The index.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task<ActionResult> Index()
         {
-            return View();
+            return this.View();
         }
     }
 }

@@ -1,33 +1,59 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Security;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="HomeController.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The home controller.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace LMS.Web.Controllers
 {
-    public class HomeController : LMSBaseController
+    using System.Threading.Tasks;
+    using System.Web.Mvc;
+    using System.Web.Security;
+
+    /// <summary>
+    /// The home controller.
+    /// </summary>
+    public class HomeController : LmsBaseController
     {
-        // GET: Home
+        /// <summary>
+        /// The index.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
         [AllowAnonymous]
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View();
+            return this.View();
         }
 
-        public ActionResult Welcome()
+        /// <summary>
+        /// The logout.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task<ActionResult> Logout()
         {
-            return View();
-        }
-
-        public ActionResult Logout()
-        {
-            Session.Clear();
-            Session.Abandon();
+            this.Session.Clear();
+            this.Session.Abandon();
             FormsAuthentication.SignOut();
 
-            return View("Index");
+            return this.View("Index");
+        }
+
+        /// <summary>
+        /// The welcome.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task<ActionResult> Welcome()
+        {
+            return this.View();
         }
     }
 }

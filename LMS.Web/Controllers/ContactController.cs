@@ -1,17 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ContactController.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The contact controller.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace LMS.Web.Controllers
 {
-    public class ContactController : LMSBaseController
+    using System.Threading.Tasks;
+    using System.Web.Mvc;
+
+    /// <summary>
+    /// The contact controller.
+    /// </summary>
+    public class ContactController : LmsBaseController
     {
-        // GET: Contact/Email
-        public ActionResult Email()
+        /// <summary>
+        /// The email.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task<ActionResult> Email()
         {
-            return View();
+            return this.View();
         }
     }
 }

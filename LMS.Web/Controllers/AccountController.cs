@@ -1,56 +1,94 @@
-﻿using LMS.Web.Infrastructure;
-using LMS.Web.Models;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Security;
-using LMS.Web.Extensions;
-using System.Configuration;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="AccountController.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The account controller.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace LMS.Web.Controllers
 {
-    public class AccountController : LMSBaseController
+    using System;
+    using System.Collections.Generic;
+    using System.Configuration;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Threading.Tasks;
+    using System.Web;
+    using System.Web.Mvc;
+    using System.Web.Security;
+
+    using LMS.Web.Extensions;
+    using LMS.Web.Infrastructure;
+    using LMS.Web.Models;
+
+    using Newtonsoft.Json;
+
+    /// <summary>
+    /// The account controller.
+    /// </summary>
+    public class AccountController : LmsBaseController
     {
+        /// <summary>
+        /// The token.
+        /// </summary>
         private Token token;
 
+        /// <summary>
+        /// The login.
+        /// </summary>
+        /// <param name="model">
+        /// The model.
+        /// </param>
+        /// <param name="user">
+        /// The user.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Login(LoginViewModel model, UserProfile user)
+        public async Task<ActionResult> Login(LoginViewModel model, UserProfile user)
         {
-            if (ModelState.IsValid)
+            if (this.ModelState.IsValid)
             {
-                token = GetToken(model);
-                
+                this.token = await this.GetToken(model);
+
                 // check for a valid token
-                if(token.access_token != null)
+                if (this.token.access_token != null)
                 {
                     FormsAuthentication.SetAuthCookie(model.Username, false);
+
                     // create a cookie based on the token
-                    var tokenCookie = new HttpCookie("AvemtecLMS", token.access_token);
+                    var tokenCookie = new HttpCookie("AvemtecLMS", this.token.access_token);
                     tokenCookie.Expires.AddDays(1);
-                    HttpContext.Response.Cookies.Add(tokenCookie);
+                    this.HttpContext.Response.Cookies.Add(tokenCookie);
 
-                    //initialise the user profile
-                    this.Session.SetUserProfile(InitUserProfile(model.Username));
+                    // initialise the user profile
+                    this.Session.SetUserProfile(await this.InitializeUserProfile(model.Username));
 
-                    return RedirectToAction("Welcome", "Home");
+                    return this.RedirectToAction("Welcome", "Home");
                 }
 
-                ModelState.AddModelError("Username", "There was an error logging you in, please try again.");
-                return View("../Home/Index", model);
+                this.ModelState.AddModelError("Username", "There was an error logging you in, please try again.");
+                return this.View("../Home/Index", model);
             }
 
-            ModelState.AddModelError("Username", "There was an error logging you in, please try again.");
-            return View("../Home/Index", model);
+            this.ModelState.AddModelError("Username", "There was an error logging you in, please try again.");
+            return this.View("../Home/Index", model);
         }
 
-        private Token GetToken(LoginViewModel model)
+        /// <summary>
+        /// The get token.
+        /// </summary>
+        /// <param name="model">
+        /// The model.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        private async Task<Token> GetToken(LoginViewModel model)
         {
             HttpResponseMessage result;
 
@@ -61,23 +99,32 @@ namespace LMS.Web.Controllers
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
 
-                var content = new FormUrlEncodedContent(new[] 
-                {
-                    new KeyValuePair<string, string>("userName", model.Username),
-                    new KeyValuePair<string, string>("password", model.Password),
-                    new KeyValuePair<string, string>("grant_type", "password")
-                });
+                var content = new FormUrlEncodedContent(new[]
+                                                            {
+                                                                new KeyValuePair<string, string>("userName", model.Username), 
+                                                                new KeyValuePair<string, string>("password", model.Password), 
+                                                                new KeyValuePair<string, string>("grant_type", "password")
+                                                            });
 
-                result = client.PostAsync("/token", content).Result;
+                result = await client.PostAsync("/token", content);
             }
 
             string resultContent = result.Content.ReadAsStringAsync().Result;
-            Token token = JsonConvert.DeserializeObject<Token>(resultContent);
+            var clientToken = JsonConvert.DeserializeObject<Token>(resultContent);
 
-            return token;
+            return clientToken;
         }
 
-        private UserProfile InitUserProfile(string emailAddress)
+        /// <summary>
+        /// The initialize user profile.
+        /// </summary>
+        /// <param name="emailAddress">
+        /// The email address.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        private async Task<UserProfile> InitializeUserProfile(string emailAddress)
         {
             HttpResponseMessage result;
 
@@ -88,16 +135,16 @@ namespace LMS.Web.Controllers
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var content = new FormUrlEncodedContent(new[] 
-                {
-                    new KeyValuePair<string, string>("emailAddress", emailAddress)
-                });
+                var content = new FormUrlEncodedContent(new[]
+                                                            {
+                                                                new KeyValuePair<string, string>("emailAddress", emailAddress)
+                                                            });
 
-                result = client.PostAsync("/api/users/GetUserProfileByEmail", content).Result;
+                result = await client.PostAsync("/api/users/GetUserProfileByEmail", content);
             }
 
-            string resultContent = result.Content.ReadAsStringAsync().Result;
-            UserProfile[] userProfiles = JsonConvert.DeserializeObject<UserProfile[]>(resultContent);
+            string resultContent = await result.Content.ReadAsStringAsync();
+            var userProfiles = JsonConvert.DeserializeObject<UserProfile[]>(resultContent);
             return userProfiles[0];
         }
     }
