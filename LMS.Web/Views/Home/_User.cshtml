@@ -4,7 +4,7 @@
         <div id="calendar" kendo-calendar="calendar" data-k-options="calendarConfig"></div>
     </div>
     <div class="col-md-9">
-        <div id="CourseContainer" class="panel panel-default" data-ng-repeat="course in CoursesList">
+        <div id="CourseContainer" class="panel panel-default" data-ng-repeat="course in CoursesList" data-ng-cloak>
             <div class="panel-heading">{{course.CourseName}}</div>
             @* INCOMPLETE LEARNING *@
             <div data-ng-if="::!course.LearningComplete" class="panel-body">

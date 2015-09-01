@@ -15,7 +15,7 @@
         <div>
             <div class="k-loading" style="display: inline-block; width: 16px; height: 16px; top: 0; left: 0;"></div>&nbsp;Loading...
         </div>
-        <table id="clients" class="table">
+        <table id="clients" class="table" data-ng-cloak>
             <tr data-ng-repeat="client in ClientsList">
                 @* angular one way binding https://docs.angularjs.org/guide/expression#one-time-binding *@
                 <td>{{::client.Name}}</td>

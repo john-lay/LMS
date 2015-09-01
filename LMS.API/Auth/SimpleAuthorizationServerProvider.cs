@@ -10,6 +10,7 @@
 namespace LMS.API.Auth
 {
     using System.Data.Entity;
+    using System.Globalization;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -37,14 +38,11 @@ namespace LMS.API.Auth
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
             string clientId, roleName = string.Empty;
-            context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[]
-                                                                                        {
-                                                                                            "*"
-                                                                                        });
+            context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
 
-            using (var _repo = new AuthRepository())
+            using (var repo = new AuthRepository())
             {
-                IdentityUser user = await _repo.FindUser(context.UserName, context.Password);
+                IdentityUser user = await repo.FindUser(context.UserName, context.Password);
 
                 if (user == null)
                 {
@@ -95,7 +93,7 @@ namespace LMS.API.Auth
             {
                 User user = db.Users.First(u => u.ASPNetUserId == identityUser.Id);
 
-                clientId = user.ClientId.ToString();
+                clientId = user.ClientId.ToString(CultureInfo.InvariantCulture);
             }
 
             return clientId;

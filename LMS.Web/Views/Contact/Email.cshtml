@@ -29,7 +29,7 @@
                         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                         Please select at least one email recipient...
                     </div>
-                    <ul class="email-recipients form-control" ng-show="RecipientsList.length !== 0">
+                    <ul class="email-recipients form-control" ng-show="RecipientsList.length !== 0" data-ng-cloak>
                         <li data-ng-repeat="recipient in RecipientsList">
                             <span class="label label-primary">{{recipient}} <a class="remove-recipient" href="#" ng-click="removeRecipient($index)">x</a></span>
                             {{ !$last ? ', ' : '' }}

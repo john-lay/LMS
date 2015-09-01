@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
+    @* Hide angular cloaked items until they have been processed *@
+    <style type="text/css">
+        [ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak, .ng-hide:not(.ng-hide-animate) {
+            display: none !important;
+        }
+    </style>
     <title>@ViewBag.Title</title>
     @Styles.Render(BundleConfig.BootstrapPath)
     @RenderSection("head", required: false)

@@ -1638,7 +1638,6 @@
     <Content Include="Scripts\Library\modernizr-2.6.2.js" />
     <Content Include="Scripts\Report\BasicController.js" />
     <Content Include="Scripts\Site\DateLib.js" />
-    <Content Include="Scripts\Site\Home\WelcomeUser.js" />
     <Content Include="Scripts\User\GroupController.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -1830,7 +1829,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>58848</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

@@ -6,14 +6,7 @@
     string homeCssClass = controllerName == "Home" ? "active" : string.Empty;
     string clientCssClass = controllerName == "Client" ? "active" : string.Empty;
     string userCssClass = controllerName == "User" ? "active" : string.Empty;
-    UserProfile profile = Session["UserInfo"] as UserProfile;
-    if (profile == null)
-    {
-        profile = new UserProfile 
-        {
-            ClientName = "LMS"
-        };
-    }
+    UserProfile profile = Session["UserInfo"] as UserProfile ?? new UserProfile { ClientName = "LMS" };
 }
 <!DOCTYPE html>
 <html>
@@ -22,6 +15,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
+    @* Hide angular cloaked items until they have been processed *@
+    <style type="text/css">
+        [ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak, .ng-hide:not(.ng-hide-animate) {
+            display: none !important;
+        }
+    </style>
     <title>@ViewBag.Title</title>
     @Styles.Render(BundleConfig.BootstrapPath)
     <link rel="stylesheet" href="@Url.Content("~/Content/site/style.less")" />

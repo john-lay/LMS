@@ -154,3 +154,5 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+/LMS.API/App_Data/LMS.mdf
+/LMS.API/App_Data/LMS_log.ldf
